@@ -16,7 +16,7 @@ export class BoardPort implements PointPortModel {
 
         }
     }
-    toJSON() {
+    toJSON(): PointPortModel {
         return {
             id: this.id,
             offset: {
