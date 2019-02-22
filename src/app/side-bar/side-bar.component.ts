@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { PaletteModel, NodeModel, ConnectorModel, PointPortModel, PortVisibility, NodeConstraints, PortConstraints } from '@syncfusion/ej2-angular-diagrams';
-import { Arduino } from '../arduino';
+import { Arduino } from '../models/arduino';
 @Component({
   selector: 'app-side-bar',
   templateUrl: './side-bar.component.html',
@@ -8,11 +8,10 @@ import { Arduino } from '../arduino';
   encapsulation: ViewEncapsulation.None
 })
 export class SideBarComponent implements OnInit {
-
   public palettes: PaletteModel[];
   public getBoards(): NodeModel[] {
-    let arduino_board: Arduino = new Arduino();
-    let boards: NodeModel[] = [arduino_board.toJSON()];
+    console.log(new Arduino())
+    let boards: NodeModel[] = [new Arduino().toJSON()];
     return boards;
   };
 
