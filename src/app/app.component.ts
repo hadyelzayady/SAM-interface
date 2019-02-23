@@ -1,8 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
-import { Diagram } from '@syncfusion/ej2-diagrams';
 import { DiagramModule, DiagramComponent } from '@syncfusion/ej2-angular-diagrams';
-import { EditSettingsModel, ToolbarItems, GridComponent } from '@syncfusion/ej2-angular-grids';
-import { ClickEventArgs } from '@syncfusion/ej2-navigations';
+import { ToolbarItems } from '@syncfusion/ej2-angular-grids';
+import { ClickEventArgs } from '@syncfusion/ej2-angular-navigations';
+import { SharedVariablesService } from './shared-variables.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -12,18 +12,13 @@ export class AppComponent {
   @ViewChild("diagram")
   public diagram: DiagramComponent;
   title = 'SAM-interface';
-  public editSettings: EditSettingsModel;
-  public toolbar: ToolbarItems[] | Object;
-
-  @ViewChild('grid')
-  public grid: GridComponent;
+  constructor(public data: SharedVariablesService) {
+  }
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
-    this.toolbar = [{ text: 'save', tooltipText: 'save diagram', id: 'save' }, { text: 'load', tooltipText: 'load diagram', id: 'load' }];
+    this.data.diagram = this.diagram;
+
   }
   drop(args) {
-
   }
   clickHandler(args: ClickEventArgs): void {
     if (args.item.id === "load") {

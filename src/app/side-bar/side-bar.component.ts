@@ -10,7 +10,6 @@ import { Arduino } from '../models/arduino';
 export class SideBarComponent implements OnInit {
   public palettes: PaletteModel[];
   public getBoards(): NodeModel[] {
-    console.log(new Arduino())
     let boards: NodeModel[] = [new Arduino().toJSON()];
     return boards;
   };
