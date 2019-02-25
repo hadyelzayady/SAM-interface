@@ -6,6 +6,7 @@ import { cssClass } from '@syncfusion/ej2-lists';
 import { AppComponent } from '../app.component';
 import { SharedVariablesService } from '../shared-variables.service';
 import { DiagramTools, ConnectorConstraints, ConnectorModel, NodeConstraints } from '@syncfusion/ej2-angular-diagrams';
+import { UtilsService } from '../utils.service';
 
 @Component({
   selector: 'app-tool-bar',
@@ -15,7 +16,7 @@ import { DiagramTools, ConnectorConstraints, ConnectorModel, NodeConstraints } f
 })
 export class ToolBarComponent {
 
-  constructor(public sharedData: SharedVariablesService) {
+  constructor(public sharedData: SharedVariablesService, public utils: UtilsService) {
 
   }
 
@@ -30,10 +31,7 @@ export class ToolBarComponent {
     this.sharedData.diagram.zoom(factor);
   }
   drawConnector() {
-    this.sharedData.diagram.drawingObject = {
-      type: 'Orthogonal',
-      constraints: ConnectorConstraints.Default | ConnectorConstraints.Bridging
-    };
+    this.sharedData.diagram.drawingObject = this.utils.getConnector();
     this.sharedData.diagram.tool = DiagramTools.DrawOnce;
   }
 }

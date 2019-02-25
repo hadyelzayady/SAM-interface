@@ -6,6 +6,9 @@ export class BoardPort implements PointPortModel {
     offset: PointModel;
     visibility = PortVisibility.Visible;
     constraints = PortConstraints.InConnect | PortConstraints.OutConnect;
+    // constraints = PortConstraints.InConnect | PortConstraints.OutConnect | PortConstraints.Draw;//make connection when hover over port
+
+
     constructor(x: number, y: number, id: string) {
         {
             this.offset = {
@@ -17,6 +20,16 @@ export class BoardPort implements PointPortModel {
         }
     }
     toJSON(): PointPortModel {
+        let x = <PointPortModel>{
+            id: this.id,
+            name: "",
+            offset: {
+                x: this.offset.x,
+                y: this.offset.y
+            },
+            visibility: this.visibility,
+            constraints: this.constraints
+        }
         return {
             id: this.id,
             offset: {

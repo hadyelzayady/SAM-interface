@@ -8,6 +8,7 @@ import { ToolBarComponent } from './tool-bar/tool-bar.component';
 import { GridModule, ToolbarService } from '@syncfusion/ej2-angular-grids';
 import { ToolbarModule } from '@syncfusion/ej2-angular-navigations';
 import { SharedVariablesService } from './shared-variables.service';
+import { UtilsService } from './utils.service';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,7 @@ import { SharedVariablesService } from './shared-variables.service';
     ToolbarModule,
     SymbolPaletteModule,
   ],
-  providers: [ToolbarService, SharedVariablesService, UndoRedoService],
+  providers: [ToolbarService, SharedVariablesService, UndoRedoService, UtilsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

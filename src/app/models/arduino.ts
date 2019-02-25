@@ -2,14 +2,12 @@ import { NodeModel, PointPortModel, PortVisibility, NodeConstraints } from '@syn
 import { BoardPort } from './BoardPort';
 import { Board } from './board';
 
-export class Arduino extends Board implements NodeModel {
-    ports: PointPortModel[] = [new BoardPort(324 / 960, 33 / 680, "2").toJSON()];
-    id = "Arduino";
+export class Arduino extends Board {
+    static ports: PointPortModel[] = [new BoardPort(324 / 960, 33 / 680, "2").toJSON()];
+    static id = "Arduino";
 
-    constructor() {
-        super()
-    }
-    toJSON(): NodeModel {
+
+    static getObj(): NodeModel {
         return {
             ports: this.ports,
             id: this.id,
@@ -17,7 +15,8 @@ export class Arduino extends Board implements NodeModel {
                 type: 'Image',
                 source: "../assets/arduino2.png"
             },
-            constraints: this.constraints
+            constraints: this.constraints,
+            addInfo: { name: "port1" }
         }
     }
 
