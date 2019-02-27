@@ -1,17 +1,16 @@
 <div class="control-section e-tbar-section">
   <div class="e-sample-resize-container">
-    <ejs-toolbar id="toolbar" class="toggle">
-      <e-items>
-        <e-item tooltipText='Undo' prefixIcon='e-undo-icon' (click)='undo()'></e-item>
-        <e-item tooltipText='Redo' prefixIcon='e-redo-icon' (click)='redo()'></e-item>
-        <e-item type='Separator'></e-item>
-        <e-item tooltipText='Zoom In' prefixIcon='e-zoomin-icon' (click)='zoom(2)'></e-item>
-        <e-item tooltipText='Zoom Out' prefixIcon='e-zoomout-icon' (click)='zoom(.5)'></e-item>
-        <e-item type='Separator'></e-item>
-        <e-item tooltipText='Draw Connector' prefixIcon='icon-Con__Orthogonal  tb-icon' (click)='drawConnector()'>
-        </e-item>
-
-      </e-items>
+    <ejs-toolbar #toolbar class="toggle" (clicked)='toolbarClick($event)'>
+      <!-- <e-items>
+          <e-item tooltipText='Undo' prefixIcon='e-undo-icon' (click)='undo()'></e-item>
+          <e-item tooltipText='Redo' prefixIcon='e-redo-icon' (click)='redo()'></e-item>
+          <e-item type='Separator'></e-item>
+          <e-item tooltipText='Zoom In' prefixIcon='e-zoomin-icon' (click)='zoom(2)'></e-item>
+          <e-item tooltipText='Zoom Out' prefixIcon='e-zoomout-icon' (click)='zoom(.5)'></e-item>
+          <e-item type='Separator'></e-item>
+          <e-item tooltipText='Draw Connector' prefixIcon='icon-Con__Orthogonal  tb-icon' (click)='drawConnector()'>
+          </e-item> -->
+      <!-- </e-items> -->
     </ejs-toolbar>
   </div>
 </div>

@@ -1,8 +1,9 @@
-import { Component, ViewChild } from '@angular/core';
-import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector } from '@syncfusion/ej2-angular-diagrams';
-import { ToolbarItems } from '@syncfusion/ej2-angular-grids';
-import { ClickEventArgs } from '@syncfusion/ej2-angular-navigations';
+import { Component, ViewChild, EventEmitter, Output } from '@angular/core';
+import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs } from '@syncfusion/ej2-angular-diagrams';
+import { ToolbarItems, ToolbarService } from '@syncfusion/ej2-angular-grids';
+import { ClickEventArgs, ToolbarComponent } from '@syncfusion/ej2-angular-navigations';
 import { SharedVariablesService } from './shared-variables.service';
+import { ToolBarComponent } from './tool-bar/tool-bar.component';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -11,14 +12,20 @@ import { SharedVariablesService } from './shared-variables.service';
 export class AppComponent {
   @ViewChild("diagram")
   public diagram: DiagramComponent;
+
+  @ViewChild(ToolBarComponent)
+  private toolBar: ToolBarComponent;
+
   title = 'SAM-interface';
   constructor(public data: SharedVariablesService) {
   }
   ngOnInit(): void {
     this.data.diagram = this.diagram;
-    // this.diagram.connectionChange = (args) => {
-    //   console.log(args);
-    // }
+  }
+  selectionChangeEvent(args: ISelectionChangeEventArgs) {
+    if (args.state == "Changed") {
+      this.toolBar.boardSelected(this.diagram.selectedItems.nodes.length);
+    }
   }
 
   connectorEvent(args: IConnectionChangeEventArgs) {
@@ -33,14 +40,14 @@ export class AppComponent {
       else {
         if (args.connectorEnd === "ConnectorSourceEnd")
           args.connector.sourceDecorator = { shape: 'Circle', style: { fill: 'Green' }, };
-        else if (args.connectorEnd === "ConnectorTargetEnd")
+        else
           args.connector.targetDecorator = { shape: 'Circle', style: { fill: 'Green' }, };
 
       }
     }
   }
-  drop(args) {
-  }
+
+
   clickHandler(args: ClickEventArgs): void {
     if (args.item.id === "load") {
       let x = localStorage.getItem('fileName');
