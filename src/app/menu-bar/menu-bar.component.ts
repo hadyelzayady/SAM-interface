@@ -2,9 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MenuItemModel, MenuEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { enableRipple } from '@syncfusion/ej2-base';
 import { FilenameDialogComponent } from '../filename-dialog/filename-dialog.component';
-import { DialogService } from '../filename-dialog/filename-dialog.service';
 import { SimpleModalService } from 'ngx-simple-modal';
 import { SharedVariablesService } from '../shared-variables.service';
+import { LoadFileComponent } from '../load-file/load-file.component';
 
 @Component({
   selector: 'app-menu-bar',
@@ -50,12 +50,12 @@ export class MenuBarComponent implements OnInit {
           let disposable = this.simpleModalService.addModal(FilenameDialogComponent, {
             title: 'Download Digram as file',
             question: 'File name',
-            data: this.sharedData.diagram.saveDiagram()
+            file_content: this.sharedData.diagram.saveDiagram()
           })
             .subscribe((isConfirmed) => {
               //We get modal result
               if (isConfirmed) {//isconfirmed has the value of this.result which is in filename-dialog
-                alert('accepted');
+                // alert('accepted');
               }
               else {
                 //nothing
@@ -70,7 +70,22 @@ export class MenuBarComponent implements OnInit {
         }
       case this.load_id:
         {
-
+          let disposable = this.simpleModalService.addModal(LoadFileComponent)
+            .subscribe((data) => {
+              //We get modal result
+              if (data) {//isconfirmed has the value of this.result which is in filename-dialog
+                try {
+                  let x = this.sharedData.diagram.loadDiagram(data)
+                }
+                catch (e) {
+                  alert("corrupted file")
+                }
+              }
+              else {
+                //nothing
+              }
+            });
+          break;
         }
     }
 

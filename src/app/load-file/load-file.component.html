@@ -1,3 +1,16 @@
-<p>
-  load-file works!
-</p>
+<div class="modal-content">
+  <div class="modal-header">
+    <h4>load file</h4>
+  </div>
+  <div class="modal-body">
+    <ngb-alert [dismissible]="false" [type]="danger" *ngIf="isError">
+      <strong>Error!</strong> Please choose file or cancel loading
+    </ngb-alert>
+    <label>select file from computer</label>
+    <input #input type="file" class="form-control" (change)='setFile($event)' accept=".txt,.json" />
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-danger" (click)="close()">Cancel</button>
+    <button type="button" class="btn btn-primary" (click)="load()">Load</button>
+  </div>
+</div>

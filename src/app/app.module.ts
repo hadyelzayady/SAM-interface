@@ -15,6 +15,7 @@ import { SimpleModalModule } from 'ngx-simple-modal';
 import { ngFileSaver } from 'angular-file-saver'
 import { FormsModule } from '@angular/forms';
 import { LoadFileComponent } from './load-file/load-file.component';
+import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap'
 @NgModule({
   declarations: [
     AppComponent,
@@ -33,13 +34,15 @@ import { LoadFileComponent } from './load-file/load-file.component';
     SymbolPaletteModule,
     MenuModule,
     SimpleModalModule,
-    FormsModule
+    FormsModule,
+    NgbAlertModule
   ],
 
   providers: [ToolbarService, SharedVariablesService, UndoRedoService, UtilsService, DiagramContextMenuService],
   bootstrap: [AppComponent],
   entryComponents: [
-    FilenameDialogComponent
+    FilenameDialogComponent,
+    LoadFileComponent
   ],
 })
 export class AppModule { }
