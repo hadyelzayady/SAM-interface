@@ -1,0 +1,15 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h4>{{title || 'Prompt'}}</h4>
+  </div>
+  <div class="modal-body">
+    <label>{{question}}</label>
+    <input type="text" class="form-control" [(ngModel)]="filename" name="name" placeholder="diagramfile" />
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-danger" (click)="close()">Cancel</button>
+    <a [href]="fileUrl" download="{{filename+'.json'}}">
+      <button type="button" class="btn btn-primary" (click)="download()">Download</button>
+    </a>
+  </div>
+</div>

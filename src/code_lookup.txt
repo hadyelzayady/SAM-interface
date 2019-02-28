@@ -1,0 +1,13 @@
+ public create(): void {
+    this.zoomBtn = new Button({ cssClass: `e-flat`, iconCss: 'e-icons e-zoomin-icon', isToggle: true });
+    this.zoomBtn.appendTo('#zoom_btn');
+    this.zoomBtn.element.onclick = (): void => {
+        if (this.zoomBtn.element.classList.contains('e-active')) {
+            this.zoomBtn.iconCss = 'e-icons e-zoomout-icon';
+        } else {
+            this.zoomBtn.iconCss = 'e-icons e-zoomin-icon';
+        }
+    };
+
+
+############################################################################################

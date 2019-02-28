@@ -1,0 +1,9 @@
+{
+    "apps": [
+        {
+            "styles": [
+                "../node_modules/ngx-simple-modal/styles/simple-modal.css"
+            ]
+        }
+    ]
+}
