@@ -1,4 +1,3 @@
-
 import { Component, ViewEncapsulation, Inject, ViewChild, AfterViewInit, Input } from '@angular/core';
 import { cssClass } from '@syncfusion/ej2-lists';
 import { AppComponent } from '../app.component';
@@ -8,6 +7,7 @@ import { UtilsService } from '../utils.service';
 import { ItemModel, ToolbarComponent, ClickEventArgs, Item } from '@syncfusion/ej2-angular-navigations';
 import { ToolbarItem } from '@syncfusion/ej2-grids';
 import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
+import { DiagramApiService } from '../diagram-api.service';
 
 @Component({
   selector: 'app-tool-bar',
@@ -27,12 +27,12 @@ export class ToolBarComponent {
   zoomout_id = "zoomout"
   connector_id = "connector"
   fileupload_id = 'fileupload'
-
+  simulate_id = "simulate"
   ngAfterViewInit(): void {
 
   }
 
-  constructor(public sharedData: SharedVariablesService, public utils: UtilsService) {
+  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService) {
 
   }
 
@@ -90,9 +90,11 @@ export class ToolBarComponent {
         this.sharedData.diagram.drawingObject = this.utils.getConnector();
         this.sharedData.diagram.tool = DiagramTools.DrawOnce;
       }
+      case this.simulate_id: {
+        this.diagramService.sendSimulationData(this.boards_code[this.sharedData.diagram.nodes[0].id])
+      }
     }
 
   }
 
 }
-

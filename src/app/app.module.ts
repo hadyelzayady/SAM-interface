@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { LoadFileComponent } from './load-file/load-file.component';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap'
 import { UploaderModule } from '@syncfusion/ej2-angular-inputs';
+import { HttpClientModule } from '@angular/common/http';
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,7 +38,8 @@ import { UploaderModule } from '@syncfusion/ej2-angular-inputs';
     MenuModule,
     SimpleModalModule,
     FormsModule,
-    NgbAlertModule
+    NgbAlertModule,
+    HttpClientModule
   ],
 
   providers: [ToolbarService, SharedVariablesService, UndoRedoService, UtilsService, DiagramContextMenuService],
