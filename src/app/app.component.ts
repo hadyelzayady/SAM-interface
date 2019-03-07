@@ -38,8 +38,7 @@ export class AppComponent {
   connectorEvent(args: IConnectionChangeEventArgs) {
     console.log(args)
     if (args.state == "Changed") {
-
-      if (args.newValue.portId == "") {
+      if ((args.newValue as { nodeId: string, portId: string }).portId == "") {
         if (args.connectorEnd === "ConnectorSourceEnd")
           args.connector.sourceDecorator = { shape: 'Arrow', style: { fill: 'Black' }, };
         else if (args.connectorEnd === "ConnectorTargetEnd")
