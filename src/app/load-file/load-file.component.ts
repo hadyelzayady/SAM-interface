@@ -21,7 +21,7 @@ export class LoadFileComponent extends SimpleModalComponent<LoadModel, string> i
   }
   readingEnded = (e) => {
     this.result = e.target.result
-    this.close();
+    // this.close();
 
   }
   load() {

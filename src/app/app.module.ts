@@ -16,6 +16,7 @@ import { ngFileSaver } from 'angular-file-saver'
 import { FormsModule } from '@angular/forms';
 import { LoadFileComponent } from './load-file/load-file.component';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap'
+import { UploaderModule } from '@syncfusion/ej2-angular-inputs';
 @NgModule({
   declarations: [
     AppComponent,
@@ -31,6 +32,7 @@ import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap'
     DiagramModule,
     GridModule,
     ToolbarModule,
+    UploaderModule,
     SymbolPaletteModule,
     MenuModule,
     SimpleModalModule,

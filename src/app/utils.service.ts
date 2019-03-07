@@ -13,5 +13,12 @@ export class UtilsService {
       constraints: ConnectorConstraints.Default | ConnectorConstraints.Bridging,
     }
   }
-
+  // readingEnded = (e): string => { return e.target.result }
+  // readFile(file: File) {
+  //   let reader = new FileReader()
+  //   reader.onloadend = this.readingEnded;
+  //   reader.readAsText(file)
+  //   console.log(reader.result)
+  //   console.log(this.readingEnded)
+  // }
 }

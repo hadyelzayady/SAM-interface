@@ -1,7 +1,7 @@
 <div class="control-section e-tbar-section">
   <div class="e-sample-resize-container">
     <ejs-toolbar #toolbar class="toggle" (clicked)='toolbarClick($event)'>
-      <!-- <e-items>
+      <e-items>
         <e-item tooltipText='Undo' prefixIcon='e-undo-icon' (click)='undo()'></e-item>
         <e-item tooltipText='Redo' prefixIcon='e-redo-icon' (click)='redo()'></e-item>
         <e-item type='Separator'></e-item>
@@ -10,7 +10,17 @@
         <e-item type='Separator'></e-item>
         <e-item tooltipText='Draw Connector' prefixIcon='icon-Con__Orthogonal  tb-icon' (click)='drawConnector()'>
         </e-item>
-      </e-items> -->
+        <e-item type='Separator'></e-item>
+        <e-item>
+          <ng-template #template>
+            <div [hidden]="hide_fileupload">
+              <label for="fileupload" class="button">upload board code</label>
+              <input #fileinput type="file" id="fileupload" (change)='fileInputChange($event)'>
+              <p>{{selected_file}}</p>
+            </div>
+          </ng-template>
+        </e-item>
+      </e-items>
     </ejs-toolbar>
   </div>
 </div>
