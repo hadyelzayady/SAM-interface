@@ -1,9 +1,18 @@
-<app-menu-bar></app-menu-bar>
-<app-tool-bar></app-tool-bar>
-<app-side-bar></app-side-bar>
-
-<ejs-diagram #diagram id="diagram" width="80%" height="580px" (connectionChange)='connectorEvent($event)'
-    (selectionChange)='selectionChangeEvent($event)' [contextMenuSettings]="contextMenuSettings">
-</ejs-diagram>
+<div class="row">
+    <app-menu-bar></app-menu-bar>
+</div>
+<div class="row">
+    <app-tool-bar></app-tool-bar>
+</div>
+<div class="row">
+    <div class="col-3 nopadding">
+        <app-side-bar></app-side-bar>
+    </div>
+    <div class="col-9 w-80 nopadding">
+        <ejs-diagram #diagram id="diagram" width="100%" height="580px" (connectionChange)='connectorEvent($event)'
+            (selectionChange)='selectionChangeEvent($event)' [contextMenuSettings]="contextMenuSettings">
+        </ejs-diagram>
+    </div>
+</div>
 
 <router-outlet></router-outlet>

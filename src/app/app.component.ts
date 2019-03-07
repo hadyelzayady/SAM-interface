@@ -22,10 +22,12 @@ export class AppComponent {
   }
   ngOnInit(): void {
     this.data.diagram = this.diagram;
+
     this.contextMenuSettings = {
       show: true,
     }
   }
+
   selectionChangeEvent(args: ISelectionChangeEventArgs) {
     if (args.state == "Changed") {
       this.toolBar.boardSelected(args);
@@ -53,15 +55,4 @@ export class AppComponent {
     }
   }
 
-
-  clickHandler(args: ClickEventArgs): void {
-    if (args.item.id === "load") {
-      let x = localStorage.getItem('fileName');
-      this.diagram.loadDiagram(x);
-    }
-    else if (args.item.id === "save") {
-      let x = this.diagram.saveDiagram();
-      localStorage.setItem('fileName', x);
-    }
-  }
 }
