@@ -16,6 +16,7 @@ export class Arduino extends Board {
                 source: "../assets/arduino2.png"
             },
             constraints: this.constraints,
+
             addInfo: { name: "port1" }
         }
     }

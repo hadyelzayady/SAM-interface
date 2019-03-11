@@ -62,7 +62,6 @@ export class ToolBarComponent {
   }
 
   toolbarClick(args: ClickEventArgs): void {
-    console.log(args)
     switch (args.item.id) {
       case this.undo_id: {
         if (this.sharedData.diagram.historyManager.canUndo) {

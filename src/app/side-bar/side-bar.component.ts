@@ -27,7 +27,10 @@ export class SideBarComponent implements OnInit {
         y: 40
       },
       targetDecorator: {
-        shape: 'Arrow'
+        shape: 'Circle'
+      },
+      sourceDecorator: {
+        shape: "Circle"
       }
     },
     {
