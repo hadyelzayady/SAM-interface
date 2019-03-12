@@ -27,28 +27,12 @@ export class SideBarComponent implements OnInit {
         y: 40
       },
       targetDecorator: {
-        shape: 'Circle'
+        shape: 'Arrow'
       },
       sourceDecorator: {
         shape: "Circle"
       }
     },
-    {
-      id: 'Link21',
-      type: 'Straight',
-      sourcePoint: {
-        x: 0,
-        y: 0
-      },
-      targetPoint: {
-        x: 40,
-        y: 40
-      },
-      targetDecorator: {
-        shape: 'Arrow'
-      }
-    },
-
     ];
     return connectorSymbols;
   };

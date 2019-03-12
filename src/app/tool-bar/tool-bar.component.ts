@@ -90,6 +90,9 @@ export class ToolBarComponent {
         this.sharedData.diagram.tool = DiagramTools.DrawOnce;
       }
       case this.simulate_id: {
+        console.log("sim")
+        // let connections = this.utils.makeConnections(this.sharedData.diagram)
+
         this.diagramService.sendSimulationData(this.boards_code[this.sharedData.diagram.nodes[0].id])
       }
     }

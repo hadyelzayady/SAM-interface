@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-export interface Cat {
-  name: string;
-}
+import { HttpClient, HttpRequest } from '@angular/common/http';
+import { formatDate } from '@angular/common';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,10 +11,12 @@ export class DiagramApiService {
   constructor(private http: HttpClient) { }
 
   public sendSimulationData(files: File) {
-    console.log(files)
+    console.log("inside sim")
     const endpoint = 'localhost:3000/api/diagram';
-    const formData: FormData = new FormData();
-    formData.append('fileKey', files, files.name);
-    return this.http.post(endpoint, formData)
+    const req = new HttpRequest('POST', endpoint, files, {
+      reportProgress: false
+    });
+    // console.log(files)
+    // this.http.post(endpoint, connections)
   }
 }
