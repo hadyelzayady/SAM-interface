@@ -8,6 +8,7 @@ import { ItemModel, ToolbarComponent, ClickEventArgs, Item } from '@syncfusion/e
 import { ToolbarItem } from '@syncfusion/ej2-grids';
 import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
 import { DiagramApiService } from '../diagram-api.service';
+import { FilesDirective } from '@syncfusion/ej2-angular-inputs';
 
 @Component({
   selector: 'app-tool-bar',
@@ -60,7 +61,15 @@ export class ToolBarComponent {
     }
 
   }
-
+  getBoardsCodeFiles(files: FileList, board_id: string[]): void {
+    files = <FileList>{};
+    let i = 0
+    this.sharedData.diagram.nodes.forEach(node => {
+      files[i] = this.boards_code[node.id]
+      board_id[i] = node.id
+      i++;
+    });
+  }
   toolbarClick(args: ClickEventArgs): void {
     switch (args.item.id) {
       case this.undo_id: {
@@ -91,9 +100,10 @@ export class ToolBarComponent {
       }
       case this.simulate_id: {
         console.log("sim")
-        // let connections = this.utils.makeConnections(this.sharedData.diagram)
-
-        this.diagramService.sendSimulationData(this.boards_code[this.sharedData.diagram.nodes[0].id])
+        this.diagramService.sendCodeFiles(this.boards_code).subscribe(resp => console.log(resp));
+        let connections = this.utils.getDesignConnections(this.sharedData.diagram)
+        // this.diagramService.sendSimulationData(this.boards_code[this.sharedData.diagram.nodes[0].id]).subscribe()
+        this.diagramService.sendDesignConnections(connections).subscribe(resp => console.log(resp))
       }
     }
 

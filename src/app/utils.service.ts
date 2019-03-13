@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ConnectorModel, ConnectorConstraints } from '@syncfusion/ej2-diagrams';
+import { ConnectorModel, ConnectorConstraints, NodeModel } from '@syncfusion/ej2-diagrams';
 import { SharedVariablesService } from './shared-variables.service';
-import { DiagramComponent } from '@syncfusion/ej2-angular-diagrams';
+import { DiagramComponent, DiagramAllModule } from '@syncfusion/ej2-angular-diagrams';
 import { Arduino } from './models/arduino';
 
 @Injectable({
@@ -17,11 +17,16 @@ export class UtilsService {
     }
   }
 
-  makeConnections(diagram: DiagramComponent): any {
+  getDesignConnections(diagram: DiagramComponent): any {
     let connections = {}
     console.log("make connections")
-    diagram.connectors.forEach(connector => {
+    diagram.connectors.forEach(function (connector) {
       if (connector.targetID != "" && connector.sourceID != "") {
+        if (!(connector.sourceID in connections)) {
+          console.log("inside cond")
+          connections[connector.sourceID] = {};
+          connections[connector.targetID] = {};
+        }
         connections[connector.sourceID][connector.sourcePortID] = { "nodeId": connector.targetID, "portId": connector.targetPortID, "type": "I" };
 
         connections[connector.targetID][connector.targetPortID] = { "nodeId": connector.sourceID, "portId": connector.sourcePortID, "type": "O" }

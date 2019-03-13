@@ -42,9 +42,26 @@ export class AppComponent {
     }
   }
 
+  getDesignConnections(): any {
+    let connections = {}
+    console.log("make connections")
+    this.diagram.connectors.forEach(function (connector) {
+      if (connector.targetID != "" && connector.sourceID != "") {
+        if (!(connector.sourceID in connections)) {
+          console.log("inside cond")
+          connections[connector.sourceID] = {};
+          connections[connector.targetID] = {};
+        }
+        connections[connector.sourceID][connector.sourcePortID] = { "nodeId": connector.targetID, "portId": connector.targetPortID, "type": "I" };
 
+        connections[connector.targetID][connector.targetPortID] = { "nodeId": connector.sourceID, "portId": connector.sourcePortID, "type": "O" }
+      }
+    });
+    console.log(connections)
+    return connections;
+
+  }
   connectorEvent(args: IConnectionChangeEventArgs) {
-    console.log(args)
     if (args.state == "Changed") {
       if ((<ConnectorEnd>args.newValue).portId == "") {
         if (args.connectorEnd === "ConnectorSourceEnd")

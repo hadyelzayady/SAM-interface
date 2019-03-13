@@ -16,7 +16,6 @@ export class LoadFileComponent extends SimpleModalComponent<LoadModel, string> i
   isError = false;
   constructor() { super() }
   setFile(args) {
-    console.log(args);
     this.file = args.target.files[0];
   }
   readingEnded = (e) => {

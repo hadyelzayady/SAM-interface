@@ -17,7 +17,7 @@ export class Arduino extends Board {
             },
             constraints: this.constraints,
 
-            addInfo: { name: "port1" }
+            addInfo: { type: Arduino.name }
         }
     }
 
