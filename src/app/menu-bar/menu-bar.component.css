@@ -10,7 +10,9 @@
     font-weight: normal;
     font-style: normal;
 }
-
+.e-menu-wrapper{
+    width: 100%;
+}
 .em-icons {
     font-family: 'e-menu';
     font-style: normal;
