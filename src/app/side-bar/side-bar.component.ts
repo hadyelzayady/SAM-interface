@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { PaletteModel, NodeModel, ConnectorModel, PointPortModel, PortVisibility, NodeConstraints, PortConstraints } from '@syncfusion/ej2-angular-diagrams';
 import { Arduino } from '../models/arduino';
+import { Battery } from '../models/Battery';
+import { Led } from '../models/Led';
 @Component({
   selector: 'app-side-bar',
   templateUrl: './side-bar.component.html',
@@ -11,6 +13,14 @@ export class SideBarComponent implements OnInit {
   public palettes: PaletteModel[];
   public getBoards(): NodeModel[] {
     let boards: NodeModel[] = [Arduino.getObj()];
+    return boards;
+  };
+  public getLeds(): NodeModel[] {
+    let boards: NodeModel[] = [Led.getObj()];
+    return boards;
+  };
+  public getBattery(): NodeModel[] {
+    let boards: NodeModel[] = [Battery.getObj()];
     return boards;
   };
 
@@ -52,6 +62,22 @@ export class SideBarComponent implements OnInit {
         symbols: this.getConnectors(),
         title: 'Connectors',
         iconCss: 'e-ddb-icons e-connector'
+      }
+      ,
+      {
+        id: 'voltage_src',
+        expanded: true,
+        symbols: this.getBattery(),
+        title: 'Battery',
+        iconCss: 'e-ddb-icons e-basic'
+      }
+      ,
+      {
+        id: 'Leds',
+        expanded: true,
+        symbols: this.getLeds(),
+        title: 'Leds',
+        iconCss: 'e-ddb-icons e-basic'
       }
     ]
   }
