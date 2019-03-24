@@ -1,5 +1,5 @@
 import { Component, ViewChild, EventEmitter, Output } from '@angular/core';
-import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuSettingsModel } from '@syncfusion/ej2-angular-diagrams';
+import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuSettingsModel, IHistoryChangeArgs, UndoRedo } from '@syncfusion/ej2-angular-diagrams';
 import { ToolbarItems, ToolbarService } from '@syncfusion/ej2-angular-grids';
 import { ClickEventArgs, ToolbarComponent } from '@syncfusion/ej2-angular-navigations';
 import { SharedVariablesService } from './shared-variables.service';
@@ -27,6 +27,10 @@ export class AppComponent {
   public contextMenuSettings: ContextMenuSettingsModel;
   title = 'SAM-interface';
   constructor(public data: SharedVariablesService) {
+  }
+
+  create(args) {
+    console.log(args)
   }
   ngOnInit(): void {
     this.data.diagram = this.diagram;

@@ -30,14 +30,14 @@ export class DiagramApiService {
 
   public sendDesignConnections(connections: any) {
 
-    const endpoint = 'http://localhost:3000/api/diagram/connections';
+    const endpoint = 'http://localhost:3000/api/design/connections';
 
     return this.http.post(endpoint, connections, httpOptions)
   }
 
   public sendCodeFiles(boards_codes: { [key: string]: File }) {
 
-    const endpoint = 'http://localhost:3000/api/diagram/code';
+    const endpoint = 'http://localhost:3000/api/design/code/4';
     const formData: FormData = new FormData();
     for (let board_id in boards_codes) {
       formData.append("files", boards_codes[board_id])

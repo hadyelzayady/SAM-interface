@@ -10,7 +10,8 @@
     </div>
     <div class="col-9 w-80 nopadding">
         <ejs-diagram #diagram id="diagram" width="100%" height="580px" (connectionChange)='connectorEvent($event)'
-            (selectionChange)='selectionChangeEvent($event)' [contextMenuSettings]="contextMenuSettings">
+            (selectionChange)='selectionChangeEvent($event)' [contextMenuSettings]="contextMenuSettings"
+            (historyChange)='create($event)'>
         </ejs-diagram>
     </div>
 </div>
