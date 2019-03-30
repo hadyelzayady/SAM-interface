@@ -1,1 +1,11 @@
-<p>hello</p>
+<h1>Home page</h1>
+
+<div class="">
+    <h2>Design Files</h2>
+    <ul>
+        <li *ngFor="let file of design_files">
+            <hr>
+            <a href="{{file.file_name}}"> {{file.original_file_name}}</a>
+        </li>
+    </ul>
+</div>

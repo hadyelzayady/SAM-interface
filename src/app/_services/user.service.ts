@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { User } from '../_models';
+import { User, DesignFile } from '../_models';
 
 @Injectable()
 export class UserService {
@@ -9,7 +9,7 @@ export class UserService {
     getAll() {
         return this.http.get<User[]>(`/api/users`);
     }
-
+    baseurl = "http://localhost:3000/api"
     getById(id: number) {
         return this.http.get(`/api/users/` + id);
     }
@@ -26,6 +26,6 @@ export class UserService {
         return this.http.delete(`/users/` + id);
     }
     getDesignFiles() {
-        return this.http.get(`/api/user/designfiles`)
+        return this.http.get<DesignFile[]>(`${this.baseurl}/users/designfiles`)
     }
 }
