@@ -18,7 +18,6 @@ export class HomeComponent implements OnInit {
   }
   loadUserDesigns() {
     this.userService.getDesignFiles().pipe(first()).subscribe(files => {
-      console.log(files)
       this.design_files = files;
     });
   }

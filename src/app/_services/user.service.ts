@@ -26,6 +26,14 @@ export class UserService {
         return this.http.delete(`/users/` + id);
     }
     getDesignFiles() {
+
         return this.http.get<DesignFile[]>(`${this.baseurl}/users/designfiles`)
     }
+    getDesignFileById(id) {
+        return this.http.get<string>(`${this.baseurl}/users/designfile/${id}`)
+    }
+    // createDesignFile()
+    // {
+    //     return this.http.post(`${this.baseurl}/users/designfile`)
+    // }
 }
