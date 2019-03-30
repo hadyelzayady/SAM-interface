@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { PaletteModel, NodeModel, ConnectorModel, PointPortModel, PortVisibility, NodeConstraints, PortConstraints } from '@syncfusion/ej2-angular-diagrams';
-import { Arduino } from '../models/arduino';
-import { Battery } from '../models/Battery';
-import { Led } from '../models/Led';
+import { Arduino } from '../_models/arduino';
+import { Battery } from '../_models/Battery';
+import { Led } from '../_models/Led';
 @Component({
   selector: 'app-side-bar',
   templateUrl: './side-bar.component.html',

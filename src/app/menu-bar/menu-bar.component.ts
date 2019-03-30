@@ -3,7 +3,7 @@ import { MenuItemModel, MenuEventArgs } from '@syncfusion/ej2-angular-navigation
 import { enableRipple } from '@syncfusion/ej2-base';
 import { FilenameDialogComponent } from '../filename-dialog/filename-dialog.component';
 import { SimpleModalService } from 'ngx-simple-modal';
-import { SharedVariablesService } from '../shared-variables.service';
+import { SharedVariablesService } from '../_services/shared-variables.service';
 import { LoadFileComponent } from '../load-file/load-file.component';
 
 @Component({

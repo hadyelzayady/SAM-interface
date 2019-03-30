@@ -1,7 +1,7 @@
 import { BoardPort } from './BoardPort';
 import { PointPortModel, NodeConstraints } from '@syncfusion/ej2-diagrams';
 import { NullAstVisitor } from '@angular/compiler';
-import { SharedVariablesService } from '../shared-variables.service';
+import { SharedVariablesService } from '../_services/shared-variables.service';
 
 export abstract class Board {
 

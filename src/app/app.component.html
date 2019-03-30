@@ -1,24 +1,11 @@
-
-<div class="row " style="background-color:lightgray">
-    <div class="col-12">
-    <app-menu-bar></app-menu-bar>
+<!-- main app container -->
+<div class="jumbotron">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-6 offset-sm-3">
+                <alert></alert>
+                <router-outlet></router-outlet>
+            </div>
+        </div>
     </div>
 </div>
-<div class="row "style="background-color:lightgray">
-    <div class="col-12">
-    <app-tool-bar></app-tool-bar>
-</div>
-</div>
-<div class="row nopadding">
-    <div class="col-3 nopadding">
-        <app-side-bar></app-side-bar>
-    </div>
-    <div class="col-9 w-80 nopadding">
-        <ejs-diagram #diagram id="diagram" width="100%" height="580px" (connectionChange)='connectorEvent($event)'
-            (selectionChange)='selectionChangeEvent($event)' [contextMenuSettings]="contextMenuSettings"
-            (historyChange)='create($event)'>
-        </ejs-diagram>
-    </div>
-</div>
-
-<router-outlet></router-outlet>

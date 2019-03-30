@@ -1,13 +1,12 @@
 import { Component, ViewEncapsulation, Inject, ViewChild, AfterViewInit, Input } from '@angular/core';
 import { cssClass } from '@syncfusion/ej2-lists';
 import { AppComponent } from '../app.component';
-import { SharedVariablesService } from '../shared-variables.service';
+import { SharedVariablesService, UtilsService } from '../_services';
 import { DiagramTools, ConnectorConstraints, ConnectorModel, NodeConstraints, ISelectionChangeEventArgs, EventState, ChangeType } from '@syncfusion/ej2-angular-diagrams';
-import { UtilsService } from '../utils.service';
 import { ItemModel, ToolbarComponent, ClickEventArgs, Item } from '@syncfusion/ej2-angular-navigations';
 import { ToolbarItem } from '@syncfusion/ej2-grids';
 import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
-import { DiagramApiService } from '../diagram-api.service';
+import { DiagramApiService } from '../_services/diagram-api.service';
 import { FilesDirective } from '@syncfusion/ej2-angular-inputs';
 
 @Component({

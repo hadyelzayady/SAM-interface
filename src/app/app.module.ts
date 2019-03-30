@@ -7,17 +7,24 @@ import { SideBarComponent } from './side-bar/side-bar.component';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
 import { GridModule, ToolbarService } from '@syncfusion/ej2-angular-grids';
 import { ToolbarModule, MenuModule } from '@syncfusion/ej2-angular-navigations';
-import { SharedVariablesService } from './shared-variables.service';
-import { UtilsService } from './utils.service';
+import { SharedVariablesService, UtilsService, AuthenticationService } from './_services/';
 import { MenuBarComponent } from './menu-bar/menu-bar.component';
 import { FilenameDialogComponent } from './filename-dialog/filename-dialog.component';
 import { SimpleModalModule } from 'ngx-simple-modal';
 import { ngFileSaver } from 'angular-file-saver'
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoadFileComponent } from './load-file/load-file.component';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap'
 import { UploaderModule } from '@syncfusion/ej2-angular-inputs';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { LoginComponent } from './login/login.component';
+import { AlertComponent } from './_directives/alert.component';
+import { AlertService, UserService } from './_services';
+import { RegisterComponent } from './register/register.component';
+import { JwtInterceptor, ErrorInterceptor } from './_helpers';
+import { DesignComponent } from './design/design.component';
+import { AuthGuard } from './_guards/auth.guard';
+import { HomeComponent } from './home/home.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -25,11 +32,17 @@ import { HttpClientModule } from '@angular/common/http';
     ToolBarComponent,
     MenuBarComponent,
     FilenameDialogComponent,
-    LoadFileComponent
+    LoadFileComponent,
+    LoginComponent,
+    AlertComponent,
+    RegisterComponent,
+    DesignComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    ReactiveFormsModule,
     DiagramModule,
     GridModule,
     ToolbarModule,
@@ -39,10 +52,20 @@ import { HttpClientModule } from '@angular/common/http';
     SimpleModalModule,
     FormsModule,
     NgbAlertModule,
-    HttpClientModule
+    HttpClientModule,
   ],
 
-  providers: [ToolbarService, SharedVariablesService, UndoRedoService, UtilsService, DiagramContextMenuService],
+  providers: [
+    ToolbarService,
+    SharedVariablesService,
+    UndoRedoService, UtilsService,
+    DiagramContextMenuService,
+    AuthGuard,
+    AlertService, UserService
+    , AuthenticationService,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent],
   entryComponents: [
     FilenameDialogComponent,

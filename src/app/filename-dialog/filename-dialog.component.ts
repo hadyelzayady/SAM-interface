@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, ElementRef, ViewChild, Injectable } from '@a
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { DialogComponent } from '@syncfusion/ej2-angular-popups';
 import { EmitType } from '@syncfusion/ej2-base';
-import { SharedVariablesService } from '../shared-variables.service';
+import { SharedVariablesService } from '../_services/shared-variables.service';
 import { SimpleModalComponent } from "ngx-simple-modal";
 import { DomSanitizer } from '@angular/platform-browser';
 
