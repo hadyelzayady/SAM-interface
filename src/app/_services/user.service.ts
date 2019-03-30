@@ -32,8 +32,7 @@ export class UserService {
     getDesignFileById(id) {
         return this.http.get<string>(`${this.baseurl}/users/designfile/${id}`)
     }
-    // createDesignFile()
-    // {
-    //     return this.http.post(`${this.baseurl}/users/designfile`)
-    // }
+    createDesignFile(filename: string) {
+        return this.http.post<DesignFile>(`${this.baseurl}/users/designfile`, { filename: filename })
+    }
 }

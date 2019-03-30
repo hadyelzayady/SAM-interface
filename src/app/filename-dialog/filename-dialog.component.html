@@ -7,9 +7,17 @@
     <input type="text" class="form-control" [(ngModel)]="filename" name="name" placeholder="diagramfile" />
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-outline-danger" (click)="close()">Cancel</button>
-    <a [href]="fileUrl" download="{{filename+'.json'}}">
-      <button type="button" class="btn btn-primary" (click)="download()">Download</button>
-    </a>
+    <button type="button" class="btn btn-outline-danger" (click)="myClose()">Cancel</button>
+
+    <div *ngIf="isdownload; then thenBlock else elseBlock"></div>
+    <ng-template #thenBlock>
+      <a [href]="fileUrl" download="{{filename+'.json'}}">
+        <button type="button" class="btn btn-primary" (click)="download()">Download</button>
+      </a>
+    </ng-template>
+    <ng-template #elseBlock>
+      <button type="button" class="btn btn-primary" (click)="create()">Create File</button>
+    </ng-template>
+
   </div>
 </div>

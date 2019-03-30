@@ -50,11 +50,12 @@ export class MenuBarComponent implements OnInit {
           let disposable = this.simpleModalService.addModal(FilenameDialogComponent, {
             title: 'Download Digram as file',
             question: 'File name',
-            file_content: this.sharedData.diagram.saveDiagram()
+            file_content: this.sharedData.diagram.saveDiagram(),
+            isdownload: true
           })
-            .subscribe((isConfirmed) => {
+            .subscribe((filename) => {
               //We get modal result
-              if (isConfirmed) {//isconfirmed has the value of this.result which is in filename-dialog
+              if (filename != "") {//isconfirmed has the value of this.result which is in filename-dialog
                 // alert('accepted');
               }
               else {

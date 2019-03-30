@@ -4,7 +4,7 @@ import { ToolbarItems, ToolbarService } from '@syncfusion/ej2-angular-grids';
 import { ClickEventArgs, ToolbarComponent } from '@syncfusion/ej2-angular-navigations';
 import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../_services';
 
 
@@ -29,7 +29,7 @@ export class DesignComponent {
 
   public contextMenuSettings: ContextMenuSettingsModel;
   title = 'SAM-interface';
-  constructor(public data: SharedVariablesService, private route: ActivatedRoute, private userService: UserService) {
+  constructor(public data: SharedVariablesService, private route: ActivatedRoute, private userService: UserService, private approute: Router) {
   }
 
   create(args) {
@@ -49,11 +49,16 @@ export class DesignComponent {
     this.userService.getDesignFileById(id)
       .subscribe(file => {
         try {
-          this.diagram.loadDiagram(JSON.stringify(file));
+          if (file != null)
+            this.diagram.loadDiagram(JSON.stringify(file));
+          else
+            this.diagram.reset();
         } catch (error) {
           alert("error on loading design ,fie reseted")
           this.diagram.reset();
         }
+      }, error => {
+        this.approute.navigate(["home"])
       });
   }
 
