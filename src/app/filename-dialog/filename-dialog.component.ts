@@ -44,5 +44,8 @@ export class FilenameDialogComponent extends SimpleModalComponent<PromptModel, s
     this.result = this.filename;
     this.close();
   }
-
+  myClose() {
+    this.result = ""
+    this.close();
+  }
 }

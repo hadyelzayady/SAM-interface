@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../_services';
+import { UserService, DesignService } from '../_services';
 import { DesignFile } from '../_models/DesignFile'
 import { first } from 'rxjs/operators';
 import { FilenameDialogComponent } from '../filename-dialog/filename-dialog.component';
@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 
 export class HomeComponent implements OnInit {
   design_files: DesignFile[];
-  constructor(private userService: UserService, private simpleModalService: SimpleModalService, private router: Router) { }
+  constructor(private userService: UserService, private designService: DesignService, private simpleModalService: SimpleModalService, private router: Router) { }
 
   ngOnInit() {
     this.loadUserDesigns();
@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit {
     })
       .subscribe((filename) => {
         if (filename != "") {
-          this.userService.createDesignFile(filename).subscribe(file => {
+          this.designService.createDesignFile(filename).subscribe(file => {
             this.router.navigate(['design', file.id])
           });
         }

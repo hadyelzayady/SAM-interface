@@ -7,7 +7,7 @@ import { SideBarComponent } from './side-bar/side-bar.component';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
 import { GridModule, ToolbarService } from '@syncfusion/ej2-angular-grids';
 import { ToolbarModule, MenuModule } from '@syncfusion/ej2-angular-navigations';
-import { SharedVariablesService, UtilsService, AuthenticationService } from './_services/';
+import { SharedVariablesService, UtilsService, AuthenticationService, DesignService } from './_services/';
 import { MenuBarComponent } from './menu-bar/menu-bar.component';
 import { FilenameDialogComponent } from './filename-dialog/filename-dialog.component';
 import { SimpleModalModule } from 'ngx-simple-modal';
@@ -61,7 +61,7 @@ import { HomeComponent } from './home/home.component';
     UndoRedoService, UtilsService,
     DiagramContextMenuService,
     AuthGuard,
-    AlertService, UserService
+    AlertService, UserService, DesignService
     , AuthenticationService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }

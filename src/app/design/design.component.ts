@@ -1,11 +1,11 @@
-import { Component, ViewChild, EventEmitter, Output, OnInit } from '@angular/core';
+import { Component, ViewChild, EventEmitter, Output, OnInit, AfterViewInit } from '@angular/core';
 import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuSettingsModel, IHistoryChangeArgs, UndoRedo } from '@syncfusion/ej2-angular-diagrams';
 import { ToolbarItems, ToolbarService } from '@syncfusion/ej2-angular-grids';
 import { ClickEventArgs, ToolbarComponent } from '@syncfusion/ej2-angular-navigations';
 import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserService } from '../_services';
+import { DesignService } from '../_services';
 
 
 interface ConnectorEnd {
@@ -26,10 +26,10 @@ export class DesignComponent {
   private toolBar: ToolBarComponent;
 
   private connections = {}
-
+  private file_id: number;
   public contextMenuSettings: ContextMenuSettingsModel;
   title = 'SAM-interface';
-  constructor(public data: SharedVariablesService, private route: ActivatedRoute, private userService: UserService, private approute: Router) {
+  constructor(public data: SharedVariablesService, private route: ActivatedRoute, private designService: DesignService, private approute: Router) {
   }
 
   create(args) {
@@ -41,25 +41,36 @@ export class DesignComponent {
     this.contextMenuSettings = {
       show: true,
     }
-    this.loadDesignFile();
+    this.file_id = +this.route.snapshot.paramMap.get('id');
   }
 
+
   loadDesignFile(): void {
-    const id = +this.route.snapshot.paramMap.get('id');
-    this.userService.getDesignFileById(id)
+    // this.file_id = +this.route.snapshot.paramMap.get('id');
+
+    this.designService.getDesignFileById(this.file_id)
       .subscribe(file => {
         try {
+          // console.log(JSON.stringify(file))
           if (file != null)
-            this.diagram.loadDiagram(JSON.stringify(file));
+            this.diagram.loadDiagram(JSON.stringify(file))
           else
             this.diagram.reset();
         } catch (error) {
+          console.log(error)
+          this.approute.navigate(["home"])
           alert("error on loading design ,fie reseted")
-          this.diagram.reset();
         }
       }, error => {
         this.approute.navigate(["home"])
+        console.log("after reroute")
+
+
       });
+  }
+
+  diagramCreated() {
+    this.loadDesignFile();
   }
 
   selectionChangeEvent(args: ISelectionChangeEventArgs) {

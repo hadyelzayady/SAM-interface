@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { SharedVariablesService } from './shared-variables.service';
 
 @Injectable()
 export class AuthenticationService {
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private sharedData: SharedVariablesService) { }
 
     login(email: string, password: string) {
-        return this.http.post<any>(`http://localhost:3000/api/users/authenticate`, { email: email, password: password })
+        return this.http.post<any>(`${this.sharedData.baseurl}/users/authenticate`, { email: email, password: password })
             .pipe(map(user => {
                 // login successful if there's a jwt token in the response
                 if (user && user.token) {

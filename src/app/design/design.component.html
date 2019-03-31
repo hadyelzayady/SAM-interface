@@ -1,6 +1,6 @@
 <div class="row " style="background-color:lightgray">
   <div class="col-12">
-    <app-menu-bar></app-menu-bar>
+    <app-menu-bar [file_id]="file_id"></app-menu-bar>
   </div>
 </div>
 <div class="row " style="background-color:lightgray">
@@ -15,7 +15,8 @@
   <div class="col-9 w-80 nopadding">
     <ejs-diagram #diagram id="diagram" width="100%" height="580px" (connectionChange)='connectorEvent($event)'
       (selectionChange)='selectionChangeEvent($event)' [contextMenuSettings]="contextMenuSettings"
-      (historyChange)='create($event)'>
+      (historyChange)='create($event)' (created)='diagramCreated()'>
+
     </ejs-diagram>
   </div>
 </div>

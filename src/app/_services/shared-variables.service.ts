@@ -8,4 +8,7 @@ export class SharedVariablesService {
 
   diagram: DiagramComponent;
   dialog: DialogComponent;
+
+
+  baseurl = "http://localhost:3000/api"
 }

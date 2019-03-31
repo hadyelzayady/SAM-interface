@@ -1,10 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { MenuItemModel, MenuEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { enableRipple } from '@syncfusion/ej2-base';
 import { FilenameDialogComponent } from '../filename-dialog/filename-dialog.component';
 import { SimpleModalService } from 'ngx-simple-modal';
 import { SharedVariablesService } from '../_services/shared-variables.service';
 import { LoadFileComponent } from '../load-file/load-file.component';
+import { DesignService } from '../_services';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-menu-bar',
@@ -17,7 +19,7 @@ export class MenuBarComponent implements OnInit {
   open_id = "open";
   save_id = "save"
   download_id = "download"
-  load_id = "load"
+  load_id = "load";
   private menuItems: MenuItemModel[] = [
     {
       text: 'File',
@@ -30,7 +32,9 @@ export class MenuBarComponent implements OnInit {
       ]
     }
   ];
-  constructor(private simpleModalService: SimpleModalService, public sharedData: SharedVariablesService) { }
+  @Input() file_id: number;
+
+  constructor(private simpleModalService: SimpleModalService, public sharedData: SharedVariablesService, private designService: DesignService) { }
 
   ngOnInit() {
   }
@@ -42,7 +46,11 @@ export class MenuBarComponent implements OnInit {
     switch (args.item.id) {
       case this.save_id:
         {
-
+          this.designService.saveDesign(this.sharedData.diagram.saveDiagram(), this.file_id).pipe(first()).subscribe(file => {
+            alert("file edited")
+          }, error => {
+            console.log(error)
+          });
           break;
         }
       case this.download_id:
@@ -80,6 +88,7 @@ export class MenuBarComponent implements OnInit {
                 }
                 catch (e) {
                   alert("corrupted file")
+                  this.sharedData.diagram.reset();
                 }
               }
               else {
