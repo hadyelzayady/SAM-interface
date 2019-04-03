@@ -72,11 +72,20 @@ export class SideBarComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.sharedData.currentMode.subscribe(mode => {
-      this.sim_mode = mode;
-      this.sidebar.allowDrag = true
-    });
+    this.sharedData.currentMode.subscribe(sim_mode => {
+      this.sim_mode = sim_mode;
+      if (sim_mode) {
+        this.sidebar.palettes = []
+        this.sidebar.refresh()
+      }
+      else if (this.palettes) {
+        this.sidebar.palettes = this.palettes
+        this.sidebar.width = 0
+        this.sidebar.refresh()
+      }
 
+
+    });
     this.palettes = [
 
       {

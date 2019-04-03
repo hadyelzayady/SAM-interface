@@ -48,7 +48,7 @@ export class DesignComponent {
     this.sharedData.currentMode.subscribe(sim_mode => {
       this.sim_mode = sim_mode;
       this.setConstraints(sim_mode)
-    }); 
+    });
   }
 
   setConstraints(sim_mode: boolean) {
@@ -60,6 +60,7 @@ export class DesignComponent {
         connector.constraints = connectorSimConstraints;
       });
     }
+
     else {
       this.diagram.nodes.forEach(node => {
         node.constraints = nodeDesignConstraints;
@@ -69,7 +70,9 @@ export class DesignComponent {
       });
     }
   }
-
+  drag() {
+    console.log("drag enter")
+  }
   loadDesignFile(): void {
 
     // this.file_id = +this.route.snapshot.paramMap.get('id');

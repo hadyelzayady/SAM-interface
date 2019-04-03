@@ -19,9 +19,11 @@ export class ToolBarComponent {
 
   boards_code: { [key: string]: File; } = {};
   hide_fileupload = true;
+  hide_component_interacts_sim = true;
   sim_mode = false;
   selected_file = "no code file selected"
-  @ViewChild("toolbar") public toolbar: ToolbarComponent;
+  @ViewChild("toolbar_design") public designToolbar: ToolbarComponent;
+  @ViewChild("toolbar_sim") public simToolbar: ToolbarComponent;
   undo_id = "undo"
   redo_id = "redo"
   zoomin_id = "zoomin"
@@ -30,6 +32,7 @@ export class ToolBarComponent {
   fileupload_id = 'fileupload'
   simulate_id = "simulate"
   reserve_id = "reserve"
+  reset_id = "reset"
   ngAfterViewInit(): void {
 
   }
@@ -39,26 +42,35 @@ export class ToolBarComponent {
   }
 
   fileInputChange(event) {
-    console.log("input change ")
     let board_id = this.sharedData.diagram.selectedItems.nodes[0].id
     let file = event.target.files[0]
     this.boards_code[board_id] = file
     this.selected_file = file.name
   }
+  setOneBoardActionButtonsVisibility(visibility: boolean) {
+    this.simToolbar.hideItem(4, !visibility)
+  }
   boardSelected(args: ISelectionChangeEventArgs) {
     if (this.sharedData.diagram.selectedItems.nodes.length == 1) {
-      this.hide_fileupload = false;
-      if (this.sharedData.diagram.selectedItems.nodes[0].id in this.boards_code) {
-        this.selected_file = this.boards_code[this.sharedData.diagram.selectedItems.nodes[0].id].name
+      if (!this.sim_mode) {
+        this.hide_fileupload = false;
+        if (this.sharedData.diagram.selectedItems.nodes[0].id in this.boards_code) {
+          this.selected_file = this.boards_code[this.sharedData.diagram.selectedItems.nodes[0].id].name
+        }
+        else {
+          this.selected_file = "no code file selected"
+        }
+      } else {
+        //sim mode ,show on/off reset
+        this.setOneBoardActionButtonsVisibility(true)
+
       }
-      else {
-        this.selected_file = "no code file selected"
-      }
+
 
     }
     else {
       this.hide_fileupload = true;
-
+      this.setOneBoardActionButtonsVisibility(false)
     }
 
   }
@@ -103,6 +115,7 @@ export class ToolBarComponent {
       case this.simulate_id: {
         console.log("sim")
         this.sim_mode = !this.sim_mode
+        this.sharedData.diagram.clearSelection();
         this.sharedData.changeMode(this.sim_mode)
         // this.diagramService.sendCodeFiles(this.boards_code).subscribe(resp => console.log(resp));
         // let connections = this.utils.getDesignConnections(this.sharedData.diagram)
@@ -112,6 +125,11 @@ export class ToolBarComponent {
       }
       case this.reserve_id: {
         alert("reserved");
+        break;
+      }
+      case this.reset_id: {
+        alert("board resetted")
+
         break;
       }
     }
