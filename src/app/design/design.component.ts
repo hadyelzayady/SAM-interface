@@ -48,7 +48,7 @@ export class DesignComponent {
     this.sharedData.currentMode.subscribe(sim_mode => {
       this.sim_mode = sim_mode;
       this.setConstraints(sim_mode)
-    });
+    }); 
   }
 
   setConstraints(sim_mode: boolean) {

@@ -3,7 +3,11 @@ import { PaletteModel, NodeModel, ConnectorModel, PointPortModel, PortVisibility
 import { Arduino } from '../_models/arduino';
 import { Battery } from '../_models/Battery';
 import { Led } from '../_models/Led';
-import { SharedVariablesService } from '../_services';
+import { SharedVariablesService, DesignService } from '../_services';
+import { Board } from '../_models/board';
+import { finalize } from 'rxjs/operators';
+import { nodeDesignConstraints, connectorDesignConstraints } from '../utils';
+import { Components } from '../_models/Components';
 @Component({
   selector: 'app-side-bar',
   templateUrl: './side-bar.component.html',
@@ -13,14 +17,27 @@ import { SharedVariablesService } from '../_services';
 export class SideBarComponent implements OnInit {
   public palettes: PaletteModel[];
   private sim_mode = false;
+  boards: NodeModel[];
+
   @ViewChild("sidebar") sidebar: SymbolPaletteComponent;
 
-  constructor(private sharedData: SharedVariablesService) { }
+  constructor(private sharedData: SharedVariablesService, private designService: DesignService) { }
 
-  public getBoards(): NodeModel[] {
-    let boards: NodeModel[] = [Arduino.getObj()];
-    return boards;
+  public setBoards() {
+    this.designService.getSideBarItems().subscribe(data => {
+      // this.boards = data
+      // this.palettes[0].symbols = [Arduino.getObj()]
+      // this.sidebar[0].symbols = data["boards"]
+      this.boards = data["boards"]
+      this.sidebar.palettes = this.palettes
+
+    }, error => {
+      alert(error)
+    });
+    // let boards: NodeModel[] = [Arduino.getObj()];
+    // return boards;
   };
+
   public getLeds(): NodeModel[] {
     let boards: NodeModel[] = [Led.getObj()];
     return boards;
@@ -52,28 +69,19 @@ export class SideBarComponent implements OnInit {
     ];
     return connectorSymbols;
   };
-  drag() {
-    alert("drag over")
-  }
+
 
   ngOnInit(): void {
     this.sharedData.currentMode.subscribe(mode => {
       this.sim_mode = mode;
       this.sidebar.allowDrag = true
+    });
 
-
-    }
-    )
-
-    this.sidebar.on("DragOver", (event) => {
-      alert("drag enter")
-    })
     this.palettes = [
 
       {
         id: 'boards',
         expanded: true,
-        symbols: this.getBoards(),
         title: 'Boards',
         iconCss: 'e-ddb-icons e-basic'
       },
@@ -100,8 +108,32 @@ export class SideBarComponent implements OnInit {
         title: 'Leds',
         iconCss: 'e-ddb-icons e-basic'
       }
-    ]
+    ];
 
+
+    this.designService.getSideBarItems().pipe(
+      finalize(() => {
+        //Action to be executed always after subscribe
+        this.sidebar.palettes = this.palettes
+      }
+      )).subscribe(data => {
+        //todo: needs optimization as we can set properties of boards as default values but how?
+        this.boards = this.parseBoards(data["boards"])
+        this.palettes[0].symbols = this.boards
+
+      }, error => {
+        alert("error in loading sidebar items")
+      });
   }
 
+  parseBoards(boards: NodeModel[]): NodeModel[] {
+    boards.forEach(board => {
+      board.constraints = nodeDesignConstraints,
+        board.ports.forEach(port => {
+          port.constraints = connectorDesignConstraints;
+          port.visibility = PortVisibility.Visible;
+        })
+    });
+    return boards;
+  }
 }
