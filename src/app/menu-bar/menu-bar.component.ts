@@ -41,12 +41,11 @@ export class MenuBarComponent implements OnInit {
 
   //openadd file dialoge
   private select(args: MenuEventArgs): void {
-    console.log(args.item)
 
     switch (args.item.id) {
       case this.save_id:
         {
-          this.designService.saveDesign(this.sharedData.diagram.saveDiagram(), this.file_id).pipe(first()).subscribe(file => {
+          this.designService.saveDesign(this.sharedData.diagram.saveDiagram(), this.file_id).subscribe(() => {
             alert("file edited")
           }, error => {
             console.log(error)

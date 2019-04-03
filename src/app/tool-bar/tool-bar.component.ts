@@ -19,6 +19,7 @@ export class ToolBarComponent {
 
   boards_code: { [key: string]: File; } = {};
   hide_fileupload = true;
+  sim_mode = false;
   selected_file = "no code file selected"
   @ViewChild("toolbar") public toolbar: ToolbarComponent;
   undo_id = "undo"
@@ -28,6 +29,7 @@ export class ToolBarComponent {
   connector_id = "connector"
   fileupload_id = 'fileupload'
   simulate_id = "simulate"
+  reserve_id = "reserve"
   ngAfterViewInit(): void {
 
   }
@@ -96,13 +98,21 @@ export class ToolBarComponent {
       case this.connector_id: {
         this.sharedData.diagram.drawingObject = this.utils.getConnector();
         this.sharedData.diagram.tool = DiagramTools.DrawOnce;
+        break;
       }
       case this.simulate_id: {
         console.log("sim")
-        this.diagramService.sendCodeFiles(this.boards_code).subscribe(resp => console.log(resp));
-        let connections = this.utils.getDesignConnections(this.sharedData.diagram)
-        // this.diagramService.sendSimulationData(this.boards_code[this.sharedData.diagram.nodes[0].id]).subscribe()
-        this.diagramService.sendDesignConnections(connections).subscribe(resp => console.log(resp))
+        this.sim_mode = !this.sim_mode
+        this.sharedData.changeMode(this.sim_mode)
+        // this.diagramService.sendCodeFiles(this.boards_code).subscribe(resp => console.log(resp));
+        // let connections = this.utils.getDesignConnections(this.sharedData.diagram)
+        // // this.diagramService.sendSimulationData(this.boards_code[this.sharedData.diagram.nodes[0].id]).subscribe()
+        // this.diagramService.sendDesignConnections(connections).subscribe(resp => console.log(resp))
+        break;
+      }
+      case this.reserve_id: {
+        alert("reserved");
+        break;
       }
     }
 

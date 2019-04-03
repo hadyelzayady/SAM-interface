@@ -1,12 +1,12 @@
 import { Component, ViewChild, EventEmitter, Output, OnInit, AfterViewInit } from '@angular/core';
-import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuSettingsModel, IHistoryChangeArgs, UndoRedo } from '@syncfusion/ej2-angular-diagrams';
+import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuSettingsModel, IHistoryChangeArgs, UndoRedo, ConnectorConstraints, NodeConstraints } from '@syncfusion/ej2-angular-diagrams';
 import { ToolbarItems, ToolbarService } from '@syncfusion/ej2-angular-grids';
 import { ClickEventArgs, ToolbarComponent } from '@syncfusion/ej2-angular-navigations';
 import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DesignService } from '../_services';
-
+import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints } from '../utils';
 
 interface ConnectorEnd {
   nodeId: string,
@@ -19,6 +19,8 @@ interface ConnectorEnd {
 })
 export class DesignComponent {
 
+
+  sim_mode = false;
   @ViewChild("diagram")
   public diagram: DiagramComponent;
 
@@ -29,23 +31,47 @@ export class DesignComponent {
   private file_id: number;
   public contextMenuSettings: ContextMenuSettingsModel;
   title = 'SAM-interface';
-  constructor(public data: SharedVariablesService, private route: ActivatedRoute, private designService: DesignService, private approute: Router) {
+  constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, private designService: DesignService, private approute: Router) {
   }
 
   create(args) {
     console.log(args)
   }
+
   ngOnInit(): void {
-    this.data.diagram = this.diagram;
+    this.sharedData.diagram = this.diagram;
 
     this.contextMenuSettings = {
       show: true,
     }
     this.file_id = +this.route.snapshot.paramMap.get('id');
+    this.sharedData.currentMode.subscribe(sim_mode => {
+      this.sim_mode = sim_mode;
+      this.setConstraints(sim_mode)
+    });
   }
 
+  setConstraints(sim_mode: boolean) {
+    if (sim_mode) {
+      this.diagram.nodes.forEach(node => {
+        node.constraints = nodeSimConstraints;
+      });
+      this.diagram.connectors.forEach(connector => {
+        connector.constraints = connectorSimConstraints;
+      });
+    }
+    else {
+      this.diagram.nodes.forEach(node => {
+        node.constraints = nodeDesignConstraints;
+      });
+      this.diagram.connectors.forEach(connector => {
+        connector.constraints = connectorDesignConstraints;
+      });
+    }
+  }
 
   loadDesignFile(): void {
+
     // this.file_id = +this.route.snapshot.paramMap.get('id');
 
     this.designService.getDesignFileById(this.file_id)
@@ -96,8 +122,8 @@ export class DesignComponent {
     });
     console.log(connections)
     return connections;
-
   }
+
   connectorEvent(args: IConnectionChangeEventArgs) {
     if (args.state == "Changed") {
       if ((<ConnectorEnd>args.newValue).portId == "") {

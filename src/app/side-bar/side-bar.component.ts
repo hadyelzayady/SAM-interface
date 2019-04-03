@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { PaletteModel, NodeModel, ConnectorModel, PointPortModel, PortVisibility, NodeConstraints, PortConstraints } from '@syncfusion/ej2-angular-diagrams';
+import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
+import { PaletteModel, NodeModel, ConnectorModel, PointPortModel, PortVisibility, NodeConstraints, PortConstraints, SymbolPaletteComponent } from '@syncfusion/ej2-angular-diagrams';
 import { Arduino } from '../_models/arduino';
 import { Battery } from '../_models/Battery';
 import { Led } from '../_models/Led';
+import { SharedVariablesService } from '../_services';
 @Component({
   selector: 'app-side-bar',
   templateUrl: './side-bar.component.html',
@@ -11,6 +12,11 @@ import { Led } from '../_models/Led';
 })
 export class SideBarComponent implements OnInit {
   public palettes: PaletteModel[];
+  private sim_mode = false;
+  @ViewChild("sidebar") sidebar: SymbolPaletteComponent;
+
+  constructor(private sharedData: SharedVariablesService) { }
+
   public getBoards(): NodeModel[] {
     let boards: NodeModel[] = [Arduino.getObj()];
     return boards;
@@ -41,12 +47,27 @@ export class SideBarComponent implements OnInit {
       },
       sourceDecorator: {
         shape: "Circle"
-      }
+      },
     },
     ];
     return connectorSymbols;
   };
+  drag() {
+    alert("drag over")
+  }
+
   ngOnInit(): void {
+    this.sharedData.currentMode.subscribe(mode => {
+      this.sim_mode = mode;
+      this.sidebar.allowDrag = true
+
+
+    }
+    )
+
+    this.sidebar.on("DragOver", (event) => {
+      alert("drag enter")
+    })
     this.palettes = [
 
       {
@@ -80,6 +101,7 @@ export class SideBarComponent implements OnInit {
         iconCss: 'e-ddb-icons e-basic'
       }
     ]
+
   }
 
 }

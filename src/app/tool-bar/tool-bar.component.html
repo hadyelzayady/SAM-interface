@@ -1,27 +1,39 @@
 <div class="control-section e-tbar-section">
   <div class="e-sample-container" style="  padding-bottom: 5px;  margin-right: 0px;">
-    <ejs-toolbar #toolbar class="toggle" (clicked)='toolbarClick($event)'>
-      <e-items>
-        <e-item [id]="undo_id" tooltipText='Undo' prefixIcon='e-undo-icon'></e-item>
-        <e-item [id]="redo_id" tooltipText='Redo' prefixIcon='e-redo-icon'></e-item>
-        <e-item type='Separator'></e-item>
-        <e-item [id]="zoomin_id" tooltipText='Zoom In' prefixIcon='e-zoomin-icon'></e-item>
-        <e-item [id]="zoomout_id" tooltipText='Zoom Out' prefixIcon='e-zoomout-icon'></e-item>
-        <e-item type='Separator'></e-item>
-        <e-item [id]="connector_id" tooltipText='Draw Connector' prefixIcon='icon-Con__Orthogonal  tb-icon'>
-        </e-item>
-        <e-item type='Separator'></e-item>
-        <e-item>
-          <ng-template #template>
-            <div [hidden]="hide_fileupload">
-              <label [for]="fileupload_id" class="button">upload board code</label>
-              <input #fileinput type="file" [id]="fileupload_id" (change)='fileInputChange($event)'>
-              <p>{{selected_file}}</p>
-            </div>
-          </ng-template>
-        </e-item>
-        <e-item [id]="simulate_id" text="simulate"></e-item>
-      </e-items>
-    </ejs-toolbar>
+    <div [hidden]="sim_mode">
+      <ejs-toolbar #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
+        <e-items>
+          <e-item [id]="undo_id" tooltipText='Undo' prefixIcon='e-undo-icon'></e-item>
+          <e-item [id]="redo_id" tooltipText='Redo' prefixIcon='e-redo-icon'></e-item>
+          <e-item type='Separator'></e-item>
+          <e-item [id]="zoomin_id" tooltipText='Zoom In' prefixIcon='e-zoomin-icon'></e-item>
+          <e-item [id]="zoomout_id" tooltipText='Zoom Out' prefixIcon='e-zoomout-icon'></e-item>
+          <e-item type='Separator'></e-item>
+          <e-item [id]="connector_id" tooltipText='Draw Connector' prefixIcon='icon-Con__Orthogonal  tb-icon'>
+          </e-item>
+          <e-item type='Separator'></e-item>
+          <e-item>
+            <ng-template #template>
+              <div [hidden]="hide_fileupload">
+                <label [for]="fileupload_id" class="button">upload board code</label>
+                <input #fileinput type="file" [id]="fileupload_id" (change)='fileInputChange($event)'>
+                <p>{{selected_file}}</p>
+              </div>
+            </ng-template>
+          </e-item>
+          <e-item [id]="simulate_id" text="simulate"></e-item>
+        </e-items>
+      </ejs-toolbar>
+    </div>
+    <div [hidden]="!sim_mode">
+      <ejs-toolbar #toolbar_sim class="toggle" (clicked)='toolbarClick($event)'>
+        <e-items>
+          <e-item [id]="zoomin_id" tooltipText='Zoom In' prefixIcon='e-zoomin-icon'></e-item>
+          <e-item [id]="zoomout_id" tooltipText='Zoom Out' prefixIcon='e-zoomout-icon'></e-item>
+          <e-item type='Separator'></e-item>
+          <e-item [id]="simulate_id" text="stop simulation"></e-item>
+        </e-items>
+      </ejs-toolbar>
+    </div>
   </div>
 </div>
