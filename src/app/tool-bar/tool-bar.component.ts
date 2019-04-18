@@ -1,7 +1,7 @@
 import { Component, ViewEncapsulation, Inject, ViewChild, AfterViewInit, Input } from '@angular/core';
 import { cssClass } from '@syncfusion/ej2-lists';
 import { AppComponent } from '../app.component';
-import { SharedVariablesService, UtilsService } from '../_services';
+import { SharedVariablesService, UtilsService, DesignService } from '../_services';
 import { DiagramTools, ConnectorConstraints, ConnectorModel, NodeConstraints, ISelectionChangeEventArgs, EventState, ChangeType, NodeModel } from '@syncfusion/ej2-angular-diagrams';
 import { ItemModel, ToolbarComponent, ClickEventArgs, Item } from '@syncfusion/ej2-angular-navigations';
 import { ToolbarItem } from '@syncfusion/ej2-grids';
@@ -24,6 +24,7 @@ export class ToolBarComponent {
   selected_file = "no code file selected"
   @ViewChild("toolbar_design") public designToolbar: ToolbarComponent;
   @ViewChild("toolbar_sim") public simToolbar: ToolbarComponent;
+  @Input() file_id: number;
   undo_id = "undo"
   redo_id = "redo"
   zoomin_id = "zoomin"
@@ -37,7 +38,8 @@ export class ToolBarComponent {
 
   }
 
-  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService) {
+  //todo merge diagram service in designservice
+  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService) {
 
   }
 
@@ -138,11 +140,19 @@ export class ToolBarComponent {
         break;
       }
       case this.reserve_id: {
-        alert("reserved");
-        this.sharedData.diagram.nodes[0].shape = {
-          type: 'Image',
-          source: "../assets/redLED_on.jpg"
-        }
+        let reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
+        this.designService.reserve(reservecomps, this.file_id).subscribe(data => {
+          console.log("reserve result:", data)
+        }, error => {
+          console.log("my error", error)
+        })
+        //todo update connected component id in addinfo
+        console.log(reservecomps)
+        // alert("reserved");
+        // this.sharedData.diagram.nodes[0].shape = {
+        //   type: 'Image',
+        //   source: "../assets/redLED_on.jpg"
+        // }
         // this.sharedData.diagram.refreshDia gram()
         break;
       }

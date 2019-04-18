@@ -3,6 +3,8 @@ import { ConnectorModel, ConnectorConstraints, NodeModel } from '@syncfusion/ej2
 import { SharedVariablesService } from './shared-variables.service';
 import { DiagramComponent, DiagramAllModule } from '@syncfusion/ej2-angular-diagrams';
 import { Arduino } from '../_models/arduino';
+import { ReserveComponents } from '../_models';
+
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +35,20 @@ export class UtilsService {
       }
     });
     return connections;
+
+  }
+
+  //return component id as key with quantity as value
+  getDesignComponents(diagram: DiagramComponent) {
+    let components = {}
+    diagram.nodes.forEach(function (node) {
+      if (node.addInfo["ComponentId"] in components)
+        components[node.addInfo["ComponentId"]] += 1
+      else
+        components[node.addInfo["ComponentId"]] = 1
+    });
+    console.log(components)
+    return components;
 
   }
   // readingEnded = (e): string => { return e.target.result }

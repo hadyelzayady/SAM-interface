@@ -13,12 +13,17 @@ import { nodeDesignConstraints, connectorDesignConstraints } from '../utils';
 @Injectable()
 export class DesignService {
 
+
     constructor(private http: HttpClient, private sharedData: SharedVariablesService) { }
+    private baseurl = this.sharedData.baseurl + '/design'
     getAll() {
         return this.http.get<User[]>(`/api/users`);
     }
-    private baseurl = this.sharedData.baseurl + '/design'
 
+
+    reserve(reservecomps: {}, fileid: number) {
+        return this.http.post(`${this.baseurl}/${fileid}/reserve`, reservecomps)
+    }
     saveDesign(file_data: string, fileid: number) {
         const formData: FormData = new FormData();
 
@@ -39,7 +44,10 @@ export class DesignService {
             const components = response as Components[];
             const boards = components["boards"];
             boards.map(data => {
+                console.log(data)
                 const board = data as NodeModel;
+                console.log(board)
+                board.addInfo = { "ComponentId": data.ComponentId as string }
                 board.constraints = nodeDesignConstraints
                 const ports = board.ports
                 ports.map(port => {
@@ -48,7 +56,8 @@ export class DesignService {
                 })
                 return board
             });
-            console.log(components)
+            console.log("components", components)
+            components["boards"] = boards
             return components;
         }))
     }
