@@ -4,6 +4,7 @@ import { Board } from './board';
 
 export class Arduino extends Board {
     static ports: PointPortModel[] = [new BoardPort(324 / 960, 33 / 680, "2").toJSON()];
+
     static id = "Arduino";
 
 

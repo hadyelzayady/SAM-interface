@@ -10,7 +10,7 @@ import { Arduino } from '../_models/arduino';
 export class UtilsService {
 
   constructor() { }
-  getConnector(): ConnectorModel {
+  getConnector(): NodeModel | ConnectorModel {
     return {
       type: 'Orthogonal',
       constraints: ConnectorConstraints.Default | ConnectorConstraints.Bridging,

@@ -3,9 +3,9 @@ import { BoardPort } from './BoardPort';
 import { Board } from './board';
 
 export class Led extends Board {
-    static ports: PointPortModel[] = [new BoardPort(470 / 960, 620 / 680, "2").toJSON(),new BoardPort(560 / 960, 620 / 680, "3").toJSON()];
-    static id = "Led";
+    static ports: PointPortModel[] = [new BoardPort(470 / 960, 620 / 680, "2").toJSON(), new BoardPort(560 / 960, 620 / 680, "3").toJSON()];
 
+    static id = "Led";
 
     static getObj(): NodeModel {
         return {
@@ -13,10 +13,9 @@ export class Led extends Board {
             id: this.id,
             shape: {
                 type: 'Image',
-                source: "../assets/led.png"
+                source: "../assets/redLED_off.jpg"
             },
             constraints: this.constraints,
-
             addInfo: { type: Led.name }
         }
     }

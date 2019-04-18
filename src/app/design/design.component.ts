@@ -1,7 +1,6 @@
 import { Component, ViewChild, EventEmitter, Output, OnInit, AfterViewInit } from '@angular/core';
-import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuSettingsModel, IHistoryChangeArgs, UndoRedo, ConnectorConstraints, NodeConstraints } from '@syncfusion/ej2-angular-diagrams';
-import { ToolbarItems, ToolbarService } from '@syncfusion/ej2-angular-grids';
-import { ClickEventArgs, ToolbarComponent } from '@syncfusion/ej2-angular-navigations';
+import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuSettingsModel, ContextMenuItemModel, IHistoryChangeArgs, UndoRedo, ConnectorConstraints, NodeConstraints, DiagramConstraints, Keys, CommandManager, KeyModifiers, ContextMenuSettings } from '@syncfusion/ej2-angular-diagrams';
+import { ClickEventArgs, ToolbarComponent, ContextMenu, MenuEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,10 +22,9 @@ export class DesignComponent {
   sim_mode = false;
   @ViewChild("diagram")
   public diagram: DiagramComponent;
-
+  public commandManager: CommandManager;
   @ViewChild(ToolBarComponent)
   private toolBar: ToolBarComponent;
-
   private connections = {}
   private file_id: number;
   public contextMenuSettings: ContextMenuSettingsModel;
@@ -34,23 +32,34 @@ export class DesignComponent {
   constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, private designService: DesignService, private approute: Router) {
   }
 
-  create(args) {
-    console.log(args)
-  }
+
 
   ngOnInit(): void {
     this.sharedData.diagram = this.diagram;
-
     this.contextMenuSettings = {
-      show: true,
+      show: false,
     }
+    this.contextMenuSettings.show = false
     this.file_id = +this.route.snapshot.paramMap.get('id');
     this.sharedData.currentMode.subscribe(sim_mode => {
       this.sim_mode = sim_mode;
       this.setConstraints(sim_mode)
     });
+
+
   }
 
+  historyChange(args: IHistoryChangeArgs) {
+    console.log(args)
+  }
+
+  setSimContextMenu() {
+    //todo show send to front/back/..
+    this.contextMenuSettings = {
+      show: false,
+      items: []
+    }
+  }
   setConstraints(sim_mode: boolean) {
     if (sim_mode) {
       this.diagram.nodes.forEach(node => {
@@ -59,6 +68,34 @@ export class DesignComponent {
       this.diagram.connectors.forEach(connector => {
         connector.constraints = connectorSimConstraints;
       });
+      // command manager for shortcuts
+      this.diagram.commandManager = {
+        commands: [{
+          "name": "paste",
+          "canExecute": "false"
+        },
+        {
+          "name": "cut",
+          "canExecute": "false"
+        },
+        {
+          "name": "copy",
+          "canExecute": "false"
+        },
+        {
+          "name": "undo",
+          "canExecute": "false"
+        },
+        {
+          "name": "redo",
+          "canExecute": "false"
+        }
+        ]
+      }
+      this.setSimContextMenu()
+      //this should be the last line
+      // this.diagram.refresh()
+
     }
 
     else {
@@ -68,11 +105,16 @@ export class DesignComponent {
       this.diagram.connectors.forEach(connector => {
         connector.constraints = connectorDesignConstraints;
       });
+      // this.contextMenuSettings = {
+      //   show: true
+      // }
+
+      //this should be the last line
+      // this.diagram.refresh()
     }
   }
-  drag() {
-    console.log("drag enter")
-  }
+  //todo disable cut/copy/paste/undo/redo in sim mode . commandmanager does not work
+
   loadDesignFile(): void {
 
     // this.file_id = +this.route.snapshot.paramMap.get('id');
@@ -93,8 +135,6 @@ export class DesignComponent {
       }, error => {
         this.approute.navigate(["home"])
         console.log("after reroute")
-
-
       });
   }
 
@@ -126,7 +166,7 @@ export class DesignComponent {
     console.log(connections)
     return connections;
   }
-
+  //todo when user clicks simulate she receives the map of design board id and actual board id
   connectorEvent(args: IConnectionChangeEventArgs) {
     if (args.state == "Changed") {
       if ((<ConnectorEnd>args.newValue).portId == "") {

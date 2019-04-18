@@ -3,7 +3,8 @@ import { BoardPort } from './BoardPort';
 import { Board } from './board';
 
 export class Battery extends Board {
-    static ports: PointPortModel[] = [new BoardPort(480 / 960, 640 / 680, "3").toJSON(),new BoardPort(480 / 960, 40 / 680, "2").toJSON()];
+    static ports: PointPortModel[] = [new BoardPort(480 / 960, 640 / 680, "3").toJSON(), new BoardPort(480 / 960, 40 / 680, "2").toJSON()];
+
     static id = "Battery";
 
 

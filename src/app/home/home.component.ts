@@ -34,7 +34,8 @@ export class HomeComponent implements OnInit {
       .subscribe((filename) => {
         if (filename != "") {
           this.designService.createDesignFile(filename).subscribe(file => {
-            this.router.navigate(['design', file.id])
+            // this.router.navigate(['design', file.id])
+            this.loadUserDesigns()
           });
         }
       });

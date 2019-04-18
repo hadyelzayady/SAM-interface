@@ -2,7 +2,7 @@ import { Component, ViewEncapsulation, Inject, ViewChild, AfterViewInit, Input }
 import { cssClass } from '@syncfusion/ej2-lists';
 import { AppComponent } from '../app.component';
 import { SharedVariablesService, UtilsService } from '../_services';
-import { DiagramTools, ConnectorConstraints, ConnectorModel, NodeConstraints, ISelectionChangeEventArgs, EventState, ChangeType } from '@syncfusion/ej2-angular-diagrams';
+import { DiagramTools, ConnectorConstraints, ConnectorModel, NodeConstraints, ISelectionChangeEventArgs, EventState, ChangeType, NodeModel } from '@syncfusion/ej2-angular-diagrams';
 import { ItemModel, ToolbarComponent, ClickEventArgs, Item } from '@syncfusion/ej2-angular-navigations';
 import { ToolbarItem } from '@syncfusion/ej2-grids';
 import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
@@ -66,7 +66,6 @@ export class ToolBarComponent {
 
       }
 
-
     }
     else {
       this.hide_fileupload = true;
@@ -82,6 +81,21 @@ export class ToolBarComponent {
       board_id[i] = node.id
       i++;
     });
+  }
+
+  //todo I receive boards id with port id ,from received map get board id in the design then get port id then change its value
+  setConnectorSimValue(value: 1 | 0, board_id: string, port_id: string) {
+    //todo
+    let x = this.sharedData.diagram.getObject(board_id) as NodeModel
+    let port_index = x.ports.findIndex(port => port.id == port_id)
+    if (value == 0) {
+      this.sharedData.diagram.connectors[0].style.strokeWidth = 5;
+      this.sharedData.diagram.connectors[0].style.strokeColor = '#183853';
+    }
+    else {
+      this.sharedData.diagram.connectors[0].style.strokeWidth = 5;
+      this.sharedData.diagram.connectors[0].style.strokeColor = '#31fd08';
+    }
   }
   toolbarClick(args: ClickEventArgs): void {
     switch (args.item.id) {
@@ -108,7 +122,7 @@ export class ToolBarComponent {
         break;
       }
       case this.connector_id: {
-        this.sharedData.diagram.drawingObject = this.utils.getConnector();
+        this.sharedData.diagram.drawingObject = this.utils.getConnector() as unknown as ConnectorModel;
         this.sharedData.diagram.tool = DiagramTools.DrawOnce;
         break;
       }
@@ -125,6 +139,11 @@ export class ToolBarComponent {
       }
       case this.reserve_id: {
         alert("reserved");
+        this.sharedData.diagram.nodes[0].shape = {
+          type: 'Image',
+          source: "../assets/redLED_on.jpg"
+        }
+        // this.sharedData.diagram.refreshDia gram()
         break;
       }
       case this.reset_id: {
