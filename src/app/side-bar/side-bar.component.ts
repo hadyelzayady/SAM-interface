@@ -23,20 +23,7 @@ export class SideBarComponent implements OnInit {
 
   constructor(private sharedData: SharedVariablesService, private designService: DesignService) { }
 
-  public setBoards() {
-    this.designService.getSideBarItems().subscribe(data => {
-      // this.boards = data
-      // this.palettes[0].symbols = [Arduino.getObj()]
-      // this.sidebar[0].symbols = data["boards"]
-      this.boards = data["boards"]
-      this.sidebar.palettes = this.palettes
 
-    }, error => {
-      alert(error)
-    });
-    // let boards: NodeModel[] = [Arduino.getObj()];
-    // return boards;
-  };
 
   public getLeds(): NodeModel[] {
     let boards: NodeModel[] = [Led.getObj()];
@@ -131,8 +118,8 @@ export class SideBarComponent implements OnInit {
       }
       )).subscribe(data => {
         //todo: needs optimization as we can set properties of boards as default values but how?
-        this.boards = this.parseBoards(data["boards"])
-        this.palettes[0].symbols = this.boards
+        // this.boards = this.parseBoards(data["boards"])
+        this.palettes[0].symbols = data
 
       }, error => {
         alert("error in loading sidebar items")

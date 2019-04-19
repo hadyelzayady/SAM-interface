@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { KeyModifiers } from '@syncfusion/ej2-diagrams';
 export interface Cat {
   name: string;
 }

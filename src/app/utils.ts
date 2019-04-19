@@ -1,4 +1,4 @@
-import { ConnectorConstraints, NodeConstraints } from '@syncfusion/ej2-diagrams';
+import { ConnectorConstraints, NodeConstraints } from '@syncfusion/ej2-angular-diagrams';
 
 export const connectorDesignConstraints = ConnectorConstraints.Default | ConnectorConstraints.Bridging;
 export const connectorSimConstraints = ConnectorConstraints.None

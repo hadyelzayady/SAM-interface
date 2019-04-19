@@ -28,7 +28,6 @@
     "@syncfusion/ej2-angular-inputs": "^16.4.55",
     "@syncfusion/ej2-angular-navigations": "^16.4.54",
     "@syncfusion/ej2-angular-popups": "^16.4.54",
-    "@syncfusion/ej2-diagrams": "^17.1.41",
     "angular-file-saver": "^1.1.3",
     "class": "^0.1.4",
     "core-js": "^2.5.4",

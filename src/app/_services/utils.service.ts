@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ConnectorModel, ConnectorConstraints, NodeModel } from '@syncfusion/ej2-diagrams';
+import { ConnectorModel, ConnectorConstraints, NodeModel } from '@syncfusion/ej2-angular-diagrams';
 import { SharedVariablesService } from './shared-variables.service';
 import { DiagramComponent, DiagramAllModule } from '@syncfusion/ej2-angular-diagrams';
 import { Arduino } from '../_models/arduino';
