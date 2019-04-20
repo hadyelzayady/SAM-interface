@@ -166,6 +166,8 @@ export class DesignComponent {
     console.log(connections)
     return connections;
   }
+
+
   //todo when user clicks simulate she receives the map of design board id and actual board id
 
   connectorEvent(args: IConnectionChangeEventArgs) {

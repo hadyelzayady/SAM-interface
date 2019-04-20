@@ -3,7 +3,7 @@ import { ConnectorModel, ConnectorConstraints, NodeModel } from '@syncfusion/ej2
 import { SharedVariablesService } from './shared-variables.service';
 import { DiagramComponent, DiagramAllModule } from '@syncfusion/ej2-angular-diagrams';
 import { Arduino } from '../_models/arduino';
-import { ReserveComponents } from '../_models';
+import { addInfo_componentId } from '../utils';
 
 
 @Injectable({
@@ -11,7 +11,7 @@ import { ReserveComponents } from '../_models';
 })
 export class UtilsService {
 
-  constructor() { }
+  constructor(private sharedData: SharedVariablesService) { }
   getConnector(): NodeModel | ConnectorModel {
     return {
       type: 'Orthogonal',
@@ -42,10 +42,10 @@ export class UtilsService {
   getDesignComponents(diagram: DiagramComponent) {
     let components = {}
     diagram.nodes.forEach(function (node) {
-      if (node.addInfo["ComponentId"] in components)
-        components[node.addInfo["ComponentId"]] += 1
+      if (node.addInfo[addInfo_componentId] in components)
+        components[node.addInfo[addInfo_componentId]] += 1
       else
-        components[node.addInfo["ComponentId"]] = 1
+        components[node.addInfo[addInfo_componentId]] = 1
     });
     console.log(components)
     return components;

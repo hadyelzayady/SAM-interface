@@ -1,15 +1,14 @@
 import { Injectable, Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { User, DesignFile } from '../_models';
+import { User, DesignFile, ReserveComponentsResponse } from '../_models';
 import { SharedVariablesService } from './shared-variables.service';
 import { Components } from '../_models/Components';
 import { Observable } from 'rxjs';
 import { filter, map, flatMap, timestamp } from 'rxjs/operators';
 import { Board } from '../_models/board';
 import { NodeModel, PortModel } from '@syncfusion/ej2-angular-diagrams';
-import { nodeDesignConstraints, connectorDesignConstraints } from '../utils';
-
+import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved } from '../utils';
 @Injectable()
 export class DesignService {
 
@@ -22,7 +21,8 @@ export class DesignService {
 
 
     reserve(reservecomps: {}, fileid: number) {
-        return this.http.post(`${this.baseurl}/${fileid}/reserve`, reservecomps)
+        console.log(reservecomps)
+        return this.http.post<ReserveComponentsResponse[]>(`${this.baseurl}/${fileid}/reserve`, reservecomps)
     }
     saveDesign(file_data: string, fileid: number) {
         const formData: FormData = new FormData();
@@ -42,11 +42,11 @@ export class DesignService {
     getSideBarItems(): Observable<NodeModel[]> {
         return this.http.get(`${this.baseurl}/components`).pipe(map(response => {
             let components = response as Components;
-            let i = 9;
+            let i = 0;
             let boards = components.boards.map(board => {
                 let node: NodeModel = {};
                 node.id = board.name + i++
-                node.addInfo = { "name": board.name, "ComponentId": board.id }
+                node.addInfo = { [addInfo_name]: board.name, [addInfo_componentId]: board.id, [addInfo_reserved]: false }
                 node.shape = { type: "Image", source: board.image_path }
                 node.constraints = nodeDesignConstraints
                 node.ports = board.ports

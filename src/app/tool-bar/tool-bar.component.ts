@@ -8,6 +8,8 @@ import { ToolbarItem } from '@syncfusion/ej2-grids';
 import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
 import { DiagramApiService } from '../_services/diagram-api.service';
 import { FilesDirective } from '@syncfusion/ej2-angular-inputs';
+import { ReserveComponentsResponse } from '../_models';
+import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId } from '../utils';
 
 @Component({
   selector: 'app-tool-bar',
@@ -85,6 +87,43 @@ export class ToolBarComponent {
     });
   }
 
+  resetComponents() {
+    this.sharedData.diagram.nodes.forEach(node => {
+      node.addInfo[addInfo_reserved] = false
+    })
+  }
+  setComponentsReserveConfigs(reserved_comps: ReserveComponentsResponse[]) {
+    console.log("reserved new: ", reserved_comps)
+    let cache = {}
+    this.resetComponents()
+    let index = 0
+    this.sharedData.diagram.nodes.forEach((node, index) => {
+      if (node.addInfo[addInfo_componentId] in cache) {
+        let componentId = node.addInfo[addInfo_componentId];
+        node.addInfo[addInfo_reserved] = true;
+        node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
+        delete cache[componentId]
+      }
+      else {
+        for (index; index < reserved_comps.length; index++) {
+          if (node.addInfo[addInfo_componentId] == reserved_comps[index].ComponentId) {
+            node.addInfo[addInfo_reserved] = true;
+            node.addInfo[addInfo_connectedComponentId] = reserved_comps[index].id
+            break;
+          }
+          else {
+            cache[reserved_comps[index].ComponentId] = index
+          }
+
+        }
+      }
+    });
+
+    console.log("set compoent config:", this.sharedData.diagram.nodes[1].addInfo)
+
+  }
+
+
   //todo I receive boards id with port id ,from received map get board id in the design then get port id then change its value
   setConnectorSimValue(value: 1 | 0, board_id: string, port_id: string) {
     //todo
@@ -142,9 +181,10 @@ export class ToolBarComponent {
       case this.reserve_id: {
         let reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
         this.designService.reserve(reservecomps, this.file_id).subscribe(data => {
-          console.log("reserve result:", data)
+          console.log("reserved", data)
+          this.setComponentsReserveConfigs(data)
         }, error => {
-          console.log("my error", error)
+          alert("my error" + error)
         })
         //todo update connected component id in addinfo
         console.log(reservecomps)
