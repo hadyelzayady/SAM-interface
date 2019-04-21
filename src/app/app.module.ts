@@ -25,6 +25,7 @@ import { JwtInterceptor, ErrorInterceptor } from './_helpers';
 import { DesignComponent } from './design/design.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { HomeComponent } from './home/home.component';
+import { LoadingModalComponent } from './loading-modal/loading-modal.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -37,7 +38,8 @@ import { HomeComponent } from './home/home.component';
     AlertComponent,
     RegisterComponent,
     DesignComponent,
-    HomeComponent
+    HomeComponent,
+    LoadingModalComponent
   ],
   imports: [
     BrowserModule,

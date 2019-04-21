@@ -10,6 +10,7 @@ import { DiagramApiService } from '../_services/diagram-api.service';
 import { FilesDirective } from '@syncfusion/ej2-angular-inputs';
 import { ReserveComponentsResponse } from '../_models';
 import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId } from '../utils';
+import { ModalService } from '../modal.service';
 
 @Component({
   selector: 'app-tool-bar',
@@ -36,12 +37,13 @@ export class ToolBarComponent {
   simulate_id = "simulate"
   reserve_id = "reserve"
   reset_id = "reset"
-  ngAfterViewInit(): void {
-
+  
+  
+  closeModal(id: string) {
+    this.modalService.close(id);
   }
-
   //todo merge diagram service in designservice
-  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService) {
+  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService) {
 
   }
 
@@ -179,15 +181,16 @@ export class ToolBarComponent {
         break;
       }
       case this.reserve_id: {
-        let reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
-        this.designService.reserve(reservecomps, this.file_id).subscribe(data => {
-          console.log("reserved", data)
-          this.setComponentsReserveConfigs(data)
-        }, error => {
-          alert("my error" + error)
-        })
-        //todo update connected component id in addinfo
-        console.log(reservecomps)
+        this.modalService.open("custom-modal-1")
+        // let reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
+        // this.designService.reserve(reservecomps, this.file_id).subscribe(data => {
+        //   console.log("reserved", data)
+        //   this.setComponentsReserveConfigs(data)
+        // }, error => {
+        //   alert("my error" + error)
+        // })
+        // //todo update connected component id in addinfo
+        // console.log(reservecomps)
         // alert("reserved");
         // this.sharedData.diagram.nodes[0].shape = {
         //   type: 'Image',
