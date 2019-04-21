@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 import { ModalService } from '../modal.service';
 
 @Component({
@@ -28,11 +28,11 @@ export class LoadingModalComponent implements OnInit {
     document.body.appendChild(this.element);
 
     // close modal on background click
-    this.element.addEventListener('click', function (e: any) {
-      if (e.target.className === 'jw-modal') {
-        modal.close();
-      }
-    });
+    // this.element.addEventListener('click', function (e: any) {
+    //   if (e.target.className === 'jw-modal') {
+    //     modal.close();
+    //   }
+    // });
 
     // add self (this modal instance) to the modal service so it's accessible from controllers
     this.modalService.add(this);
@@ -54,5 +54,9 @@ export class LoadingModalComponent implements OnInit {
   close(): void {
     this.element.style.display = 'none';
     document.body.classList.remove('jw-modal-open');
+  }
+  @Output() childEvent = new EventEmitter();
+  customClose() {
+    this.childEvent.emit();
   }
 }

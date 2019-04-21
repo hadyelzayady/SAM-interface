@@ -40,8 +40,27 @@
   </div>
 </div>
 
-<jw-modal id="custom-modal-1">
-  <h1>A Custom Modal!</h1>
-  <p>Home page text: <input type="text" [(ngModel)]="bodyText" /></p>
-  <button (click)="closeModal('custom-modal-1');">Close</button>
+<jw-modal id="{{reserve_modal_id}}">
+  <h1>reserving components in the desgin</h1>
+  <ul>
+    <li>
+      <p style="display:inline">parsing components in design</p>
+      <span style="display:inline" [hidden]="!parsed">&#9989;</span>
+      <span style="display:inline" [hidden]="!error_parsed">&#10060;</span>
+
+    </li>
+    <li>
+      <p style="display:inline">reserveing components </p>
+      <span style="display:inline" [hidden]="!reserved">&#9989;</span>
+      <span style="display:inline" [hidden]="!error_reserved">&#10060;</span>
+    </li>
+    <li>
+      <p style="display:inline">set configurations of components</p>
+      <span style="display:inline" [hidden]="!configured">&#9989;</span>
+      <span style="display:inline" [hidden]="!error_config">&#10060;</span>
+
+    </li>
+  </ul>
+  <button (click)='customClose()' [hidden]="hide_modal_close_btn"> Close</button>
+
 </jw-modal>

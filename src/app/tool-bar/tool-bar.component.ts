@@ -11,6 +11,7 @@ import { FilesDirective } from '@syncfusion/ej2-angular-inputs';
 import { ReserveComponentsResponse } from '../_models';
 import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId } from '../utils';
 import { ModalService } from '../modal.service';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-tool-bar',
@@ -25,6 +26,17 @@ export class ToolBarComponent {
   hide_component_interacts_sim = true;
   sim_mode = false;
   selected_file = "no code file selected"
+  //modal variables
+  status = ""
+  parsed = false;
+  reserved = false;
+  configured = false;
+  error_parsed = false;
+  error_reserved = false;
+  error_config = false;
+  reserve_modal_id = "reserve"
+  hide_modal_close_btn = true
+  ///
   @ViewChild("toolbar_design") public designToolbar: ToolbarComponent;
   @ViewChild("toolbar_sim") public simToolbar: ToolbarComponent;
   @Input() file_id: number;
@@ -37,11 +49,9 @@ export class ToolBarComponent {
   simulate_id = "simulate"
   reserve_id = "reserve"
   reset_id = "reset"
-  
-  
-  closeModal(id: string) {
-    this.modalService.close(id);
-  }
+
+
+
   //todo merge diagram service in designservice
   constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService) {
 
@@ -99,33 +109,49 @@ export class ToolBarComponent {
     let cache = {}
     this.resetComponents()
     let index = 0
-    this.sharedData.diagram.nodes.forEach((node, index) => {
-      if (node.addInfo[addInfo_componentId] in cache) {
-        let componentId = node.addInfo[addInfo_componentId];
-        node.addInfo[addInfo_reserved] = true;
-        node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
-        delete cache[componentId]
-      }
-      else {
-        for (index; index < reserved_comps.length; index++) {
-          if (node.addInfo[addInfo_componentId] == reserved_comps[index].ComponentId) {
-            node.addInfo[addInfo_reserved] = true;
-            node.addInfo[addInfo_connectedComponentId] = reserved_comps[index].id
-            break;
-          }
-          else {
-            cache[reserved_comps[index].ComponentId] = index
-          }
-
+    try {
+      this.sharedData.diagram.nodes.forEach((node, index) => {
+        if (node.addInfo[addInfo_componentId] in cache) {
+          let componentId = node.addInfo[addInfo_componentId];
+          node.addInfo[addInfo_reserved] = true;
+          node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
+          delete cache[componentId]
         }
-      }
-    });
+        else {
+          for (index; index < reserved_comps.length; index++) {
+            if (node.addInfo[addInfo_componentId] == reserved_comps[index].ComponentId) {
+              node.addInfo[addInfo_reserved] = true;
+              node.addInfo[addInfo_connectedComponentId] = reserved_comps[index].id
+              break;
+            }
+            else {
+              cache[reserved_comps[index].ComponentId] = index
+            }
 
-    console.log("set compoent config:", this.sharedData.diagram.nodes[1].addInfo)
+          }
+        }
+      });
+      this.configured = true
+
+    } catch (error) {
+      this.configured = false
+      this.error_config = true;
+    }
+
 
   }
 
-
+  customClose() {
+    console.log("close modal")
+    this.error_config = false
+    this.error_reserved = false
+    this.error_parsed = false
+    this.reserved = false
+    this.configured = false;
+    this.parsed = false;
+    this.hide_modal_close_btn = true;
+    this.modalService.close(this.reserve_modal_id)
+  }
   //todo I receive boards id with port id ,from received map get board id in the design then get port id then change its value
   setConnectorSimValue(value: 1 | 0, board_id: string, port_id: string) {
     //todo
@@ -181,14 +207,28 @@ export class ToolBarComponent {
         break;
       }
       case this.reserve_id: {
-        this.modalService.open("custom-modal-1")
-        // let reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
-        // this.designService.reserve(reservecomps, this.file_id).subscribe(data => {
-        //   console.log("reserved", data)
-        //   this.setComponentsReserveConfigs(data)
-        // }, error => {
-        //   alert("my error" + error)
-        // })
+        this.modalService.open("reserve")
+        let reservecomps;
+        try {
+          reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
+          this.parsed = true
+
+        } catch (error) {
+          this.error_parsed = true
+        }
+        this.designService.reserve(reservecomps, this.file_id).pipe(finalize(() => {
+          this.hide_modal_close_btn = false
+        })).subscribe(data => {
+          // this.status = "components reserved "
+          this.reserved = true
+          this.setComponentsReserveConfigs(data)
+        }, error => {
+          // this.status = `<span style="color:red">sorry ,reserving failed ,my be the components not available now,try later</span>`
+          this.reserved = false;
+          this.error_reserved = true
+
+        })
+
         // //todo update connected component id in addinfo
         // console.log(reservecomps)
         // alert("reserved");
