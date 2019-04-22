@@ -9,6 +9,7 @@ export class SharedVariablesService {
 
   diagram: DiagramComponent;
   dialog: DialogComponent;
+  connected_component_id_index = {};
   // sim_mode: boolean = false;
   private sim_mode = new BehaviorSubject(false);
   currentMode = this.sim_mode.asObservable();

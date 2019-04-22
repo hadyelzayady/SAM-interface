@@ -6,7 +6,7 @@ import { ToolBarComponent } from '../tool-bar/tool-bar.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DesignService } from '../_services';
 import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints } from '../utils';
-
+//TODO enable context menu 
 interface ConnectorEnd {
   nodeId: string,
   portId: string
@@ -37,9 +37,8 @@ export class DesignComponent {
   ngOnInit(): void {
     this.sharedData.diagram = this.diagram;
     this.contextMenuSettings = {
-      show: false,
+      show: true,
     }
-    this.contextMenuSettings.show = false
     this.file_id = +this.route.snapshot.paramMap.get('id');
     this.sharedData.currentMode.subscribe(sim_mode => {
       this.sim_mode = sim_mode;
@@ -55,10 +54,10 @@ export class DesignComponent {
 
   setSimContextMenu() {
     //todo show send to front/back/..
-    this.contextMenuSettings = {
-      show: false,
-      items: []
-    }
+    // this.contextMenuSettings = {
+    //   show: true,
+    //   items: []
+    // }
   }
   setConstraints(sim_mode: boolean) {
     if (sim_mode) {
@@ -105,6 +104,29 @@ export class DesignComponent {
       this.diagram.connectors.forEach(connector => {
         connector.constraints = connectorDesignConstraints;
       });
+      this.diagram.commandManager = {
+        commands: [{
+          "name": "paste",
+          "canExecute": "true"
+        },
+        {
+          "name": "cut",
+          "canExecute": "true"
+        },
+        {
+          "name": "copy",
+          "canExecute": "true"
+        },
+        {
+          "name": "undo",
+          "canExecute": "true"
+        },
+        {
+          "name": "redo",
+          "canExecute": "true"
+        }
+        ]
+      }
       // this.contextMenuSettings = {
       //   show: true
       // }

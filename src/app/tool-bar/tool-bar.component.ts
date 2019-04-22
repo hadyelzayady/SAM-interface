@@ -108,31 +108,41 @@ export class ToolBarComponent {
     console.log("reserved new: ", reserved_comps)
     let cache = {}
     this.resetComponents()
-    let index = 0
+    let reserved_index = 0
+    let connected_components_id_index = {}
     try {
       this.sharedData.diagram.nodes.forEach((node, index) => {
+        console.log("diagram component:", node.addInfo)
         if (node.addInfo[addInfo_componentId] in cache) {
           let componentId = node.addInfo[addInfo_componentId];
           node.addInfo[addInfo_reserved] = true;
           node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
+
           delete cache[componentId]
         }
         else {
-          for (index; index < reserved_comps.length; index++) {
-            if (node.addInfo[addInfo_componentId] == reserved_comps[index].ComponentId) {
+          let found_component = false;
+          for (reserved_index; reserved_index < reserved_comps.length; reserved_index++) {
+            console.log(reserved_index)
+            if (node.addInfo[addInfo_componentId] == reserved_comps[reserved_index].ComponentId) {
               node.addInfo[addInfo_reserved] = true;
-              node.addInfo[addInfo_connectedComponentId] = reserved_comps[index].id
+              node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
+              found_component = true;
+              reserved_index++
               break;
             }
             else {
-              cache[reserved_comps[index].ComponentId] = index
+              cache[reserved_comps[index].ComponentId] = reserved_index
             }
-
           }
+          if (!found_component)
+            throw Error("error in config")
         }
+        connected_components_id_index[node.addInfo[addInfo_connectedComponentId]] = index
       });
       this.configured = true
-
+      this.sharedData.connected_component_id_index = connected_components_id_index
+      console.log("mapper", connected_components_id_index)
     } catch (error) {
       this.configured = false
       this.error_config = true;
