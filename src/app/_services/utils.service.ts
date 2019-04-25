@@ -3,7 +3,7 @@ import { ConnectorModel, ConnectorConstraints, NodeModel } from '@syncfusion/ej2
 import { SharedVariablesService } from './shared-variables.service';
 import { DiagramComponent, DiagramAllModule } from '@syncfusion/ej2-angular-diagrams';
 import { Arduino } from '../_models/arduino';
-import { addInfo_componentId } from '../utils';
+import { addInfo_componentId, addInfo_type, ComponentType } from '../utils';
 
 
 @Injectable({
@@ -38,16 +38,18 @@ export class UtilsService {
 
   }
 
-  //return component id as key with quantity as value
+  //return component id as key with quantity as value,only components that not software sim
   getDesignComponents(diagram: DiagramComponent) {
     let components = {}
     diagram.nodes.forEach(function (node) {
-      if (node.addInfo[addInfo_componentId] in components)
-        components[node.addInfo[addInfo_componentId]] += 1
-      else
-        components[node.addInfo[addInfo_componentId]] = 1
+      if (node.addInfo[addInfo_type] == ComponentType.Hardware) {
+        if (node.addInfo[addInfo_componentId] in components)
+          components[node.addInfo[addInfo_componentId]] += 1
+        else
+          components[node.addInfo[addInfo_componentId]] = 1
+      }
+
     });
-    console.log(components)
     return components;
 
   }

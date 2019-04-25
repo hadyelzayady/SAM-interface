@@ -5,7 +5,7 @@ import { Battery } from '../_models/Battery';
 import { Led } from '../_models/Led';
 import { SharedVariablesService, DesignService } from '../_services';
 import { Board } from '../_models/board';
-import { finalize } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
 import { nodeDesignConstraints, connectorDesignConstraints } from '../utils';
 import { Components } from '../_models/Components';
 @Component({
@@ -59,7 +59,7 @@ export class SideBarComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.sharedData.currentMode.subscribe(sim_mode => {
+    this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
       this.sim_mode = sim_mode;
       if (sim_mode) {
         // this.sidebar.palettes = [{}]
@@ -106,7 +106,7 @@ export class SideBarComponent implements OnInit {
         expanded: true,
         symbols: this.getLeds(),
         title: 'Leds',
-        iconCss: 'e-ddb-icons e-basic'
+        iconCss: 'e-ddb-icons e-basic',
       }
     ];
 

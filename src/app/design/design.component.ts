@@ -6,6 +6,8 @@ import { ToolBarComponent } from '../tool-bar/tool-bar.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DesignService } from '../_services';
 import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints } from '../utils';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 //TODO enable context menu 
 interface ConnectorEnd {
   nodeId: string,
@@ -40,7 +42,7 @@ export class DesignComponent {
       show: true,
     }
     this.file_id = +this.route.snapshot.paramMap.get('id');
-    this.sharedData.currentMode.subscribe(sim_mode => {
+    this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
       this.sim_mode = sim_mode;
       this.setConstraints(sim_mode)
     });
@@ -48,6 +50,11 @@ export class DesignComponent {
 
   }
 
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.sharedData
+  }
   historyChange(args: IHistoryChangeArgs) {
     console.log(args)
   }
@@ -132,7 +139,6 @@ export class DesignComponent {
       // }
 
       //this should be the last line
-      // this.diagram.refresh()
     }
   }
   //todo disable cut/copy/paste/undo/redo in sim mode . commandmanager does not work

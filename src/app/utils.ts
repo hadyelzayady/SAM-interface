@@ -8,7 +8,9 @@ export const nodeSimConstraints = NodeConstraints.Default & ~NodeConstraints.Del
 
 export const addInfo_componentId = "componentId";
 export const addInfo_name = "name";
+export const addInfo_type = "type";
 export const addInfo_reserved = "reserved";
 export const addInfo_connectedComponentId = "connectedComponentId";
+export enum ComponentType { Hardware, Software }
 
 

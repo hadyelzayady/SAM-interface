@@ -9,9 +9,13 @@ import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
 import { DiagramApiService } from '../_services/diagram-api.service';
 import { FilesDirective } from '@syncfusion/ej2-angular-inputs';
 import { ReserveComponentsResponse } from '../_models';
-import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId } from '../utils';
+import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType } from '../utils';
 import { ModalService } from '../modal.service';
-import { finalize } from 'rxjs/operators';
+import { finalize, takeUntil } from 'rxjs/operators';
+import { WebSocketService } from '../_services/web-socket.service';
+import { SimCommunicationService } from '../_services/sim-communication.service';
+import { Led } from '../_models/Led';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-tool-bar',
@@ -49,11 +53,11 @@ export class ToolBarComponent {
   simulate_id = "simulate"
   reserve_id = "reserve"
   reset_id = "reset"
-
-
+  // to unsubscribe from observables when sim ends
+  private unsubscribe: Subject<void> = new Subject();
 
   //todo merge diagram service in designservice
-  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService) {
+  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService, private simComm: SimCommunicationService) {
 
   }
 
@@ -110,39 +114,46 @@ export class ToolBarComponent {
     this.resetComponents()
     let reserved_index = 0
     let connected_components_id_index = {}
+    let componentid_index = {}
     try {
       this.sharedData.diagram.nodes.forEach((node, index) => {
-        console.log("diagram component:", node.addInfo)
-        if (node.addInfo[addInfo_componentId] in cache) {
-          let componentId = node.addInfo[addInfo_componentId];
-          node.addInfo[addInfo_reserved] = true;
-          node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
+        if (node.addInfo[addInfo_type] == ComponentType.Hardware) {
+          console.log("diagram component:", node.addInfo)
+          if (node.addInfo[addInfo_componentId] in cache) {
+            let componentId = node.addInfo[addInfo_componentId];
+            node.addInfo[addInfo_reserved] = true;
+            node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
 
-          delete cache[componentId]
-        }
-        else {
-          let found_component = false;
-          for (reserved_index; reserved_index < reserved_comps.length; reserved_index++) {
-            console.log(reserved_index)
-            if (node.addInfo[addInfo_componentId] == reserved_comps[reserved_index].ComponentId) {
-              node.addInfo[addInfo_reserved] = true;
-              node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
-              found_component = true;
-              reserved_index++
-              break;
-            }
-            else {
-              cache[reserved_comps[index].ComponentId] = reserved_index
-            }
+            delete cache[componentId]
           }
-          if (!found_component)
-            throw Error("error in config")
+          else {
+            let found_component = false;
+            for (reserved_index; reserved_index < reserved_comps.length; reserved_index++) {
+              console.log(reserved_index)
+              if (node.addInfo[addInfo_componentId] == reserved_comps[reserved_index].ComponentId) {
+                node.addInfo[addInfo_reserved] = true;
+                node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
+                found_component = true;
+                reserved_index++
+                break;
+              }
+              else {
+                cache[reserved_comps[index].ComponentId] = reserved_index
+              }
+            }
+            if (!found_component)
+              throw Error("error in config")
+          }
+          connected_components_id_index[node.addInfo[addInfo_connectedComponentId]] = index
+          componentid_index[node.id] = index
         }
-        connected_components_id_index[node.addInfo[addInfo_connectedComponentId]] = index
       });
+
       this.configured = true
       this.sharedData.connected_component_id_index = connected_components_id_index
+      this.sharedData.componentid_index = componentid_index
       console.log("mapper", connected_components_id_index)
+      console.log("componentid_index", componentid_index)
     } catch (error) {
       this.configured = false
       this.error_config = true;
@@ -150,7 +161,42 @@ export class ToolBarComponent {
 
 
   }
+  //todo get reserved boards on loading design to save them in the table
+  PrepareDiagramForOutput() {
+    // console.log("table:", this.sharedData.diagram.node)
+    let led_id_index = {}
+    this.sharedData.diagram.nodes.forEach((node, index) => {
+      if (node.addInfo[addInfo_name] == Led.name) {
+        led_id_index[node.id] = index
+      }
+    })
+    this.sharedData.diagram.connectors.forEach((connector) => {
+      let targetID = connector.targetID
+      if (targetID.includes(Led.name)) {
+        //! only works if source is connected to one target
+        this.sharedData.addOutputEvent(connector.sourcePortID, this.sharedData.componentid_index[connector.sourceID]).pipe(takeUntil(this.unsubscribe)).subscribe((val) => {
+          let source;
+          if (val)
+            source = "../assets/redLED_on.jpg"
+          else
+            source = "../assets/redLED_off.jpg"
+          this.sharedData.diagram.nodes[led_id_index[targetID]].shape = {
+            type: 'Image',
+            source: source
+          }
+        })
+      }
+    })
 
+    // this.sharedData.ports_values.subscribe((val) => {
+    //   console.log("event in sim to chag eled")
+    //   this.sharedData.diagram.nodes[0].shape = {
+    //     type: 'Image',
+    //     source: "../assets/redLED_on.jpg"
+    //   }
+    // })
+
+  }
   customClose() {
     console.log("close modal")
     this.error_config = false
@@ -210,6 +256,17 @@ export class ToolBarComponent {
         this.sim_mode = !this.sim_mode
         this.sharedData.diagram.clearSelection();
         this.sharedData.changeMode(this.sim_mode)
+        if (this.sim_mode) {
+          this.PrepareDiagramForOutput();
+          this.sharedData.changePortValue(true, "1", 0)
+          // this.simComm.initConnection()
+        } else {
+          // this.simComm.closeConnection() 
+          this.sharedData.changePortValue(false, "1", 0)
+          this.unsubscribe.next()
+          this.unsubscribe.complete();
+        }
+        // this.sharedData.changePortValue(true, "1", "1")
         // this.diagramService.sendCodeFiles(this.boards_code).subscribe(resp => console.log(resp));
         // let connections = this.utils.getDesignConnections(this.sharedData.diagram)
         // // this.diagramService.sendSimulationData(this.boards_code[this.sharedData.diagram.nodes[0].id]).subscribe()
@@ -239,8 +296,7 @@ export class ToolBarComponent {
 
         })
 
-        // //todo update connected component id in addinfo
-        // console.log(reservecomps)
+        console.log("compoinetn index", this.sharedData.componentid_index)
         // alert("reserved");
         // this.sharedData.diagram.nodes[0].shape = {
         //   type: 'Image',

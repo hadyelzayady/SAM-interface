@@ -7,8 +7,8 @@ import { Components } from '../_models/Components';
 import { Observable } from 'rxjs';
 import { filter, map, flatMap, timestamp } from 'rxjs/operators';
 import { Board } from '../_models/board';
-import { NodeModel, PortModel } from '@syncfusion/ej2-angular-diagrams';
-import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved } from '../utils';
+import { NodeModel, PortModel, PortVisibility } from '@syncfusion/ej2-angular-diagrams';
+import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType } from '../utils';
 @Injectable()
 export class DesignService {
 
@@ -46,7 +46,7 @@ export class DesignService {
             let boards = components.boards.map(board => {
                 let node: NodeModel = {};
                 node.id = board.name + i++
-                node.addInfo = { [addInfo_name]: board.name, [addInfo_componentId]: board.id, [addInfo_reserved]: false }
+                node.addInfo = { [addInfo_name]: board.name, [addInfo_componentId]: board.id, [addInfo_reserved]: false, [addInfo_type]: ComponentType.Hardware }
                 node.shape = { type: "Image", source: board.image_path }
                 node.constraints = nodeDesignConstraints
                 node.ports = board.ports

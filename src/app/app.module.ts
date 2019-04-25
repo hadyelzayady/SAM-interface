@@ -26,6 +26,8 @@ import { DesignComponent } from './design/design.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { HomeComponent } from './home/home.component';
 import { LoadingModalComponent } from './loading-modal/loading-modal.component';
+import { WebSocketService } from './_services/web-socket.service';
+import { SimCommunicationService } from './_services/sim-communication.service';
 @NgModule({
   declarations: [
     AppComponent,
@@ -64,7 +66,7 @@ import { LoadingModalComponent } from './loading-modal/loading-modal.component';
     DiagramContextMenuService,
     AuthGuard,
     AlertService, UserService, DesignService
-    , AuthenticationService,
+    , AuthenticationService, WebSocketService, SimCommunicationService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],
