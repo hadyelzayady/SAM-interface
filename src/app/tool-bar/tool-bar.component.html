@@ -61,6 +61,35 @@
 
     </li>
   </ul>
-  <button (click)='customClose()' [hidden]="hide_modal_close_btn"> Close</button>
+  <button (click)='customClose(reserve_modal_id)' [hidden]="hide_modal_close_btn"> Close</button>
+
+</jw-modal>
+<jw-modal id="{{simulate_modal_id}}">
+  <h1>pre simulate </h1>
+  <ul>
+    <li>
+      <p style="display:inline">send connections</p>
+      <span style="display:inline" [hidden]="!send_connections">&#9989;</span>
+      <span style="display:inline" [hidden]="!error_send_connections">&#10060;</span>
+
+    </li>
+    <li>
+      <p style="display:inline">reserveing new components </p>
+      <span style="display:inline" [hidden]="!reserved">&#9989;</span>
+      <span style="display:inline" [hidden]="!error_reserved">&#10060;</span>
+    </li>
+    <li>
+      <p style="display:inline">set configurations of new components</p>
+      <span style="display:inline" [hidden]="!configured">&#9989;</span>
+      <span style="display:inline" [hidden]="!error_config">&#10060;</span>
+
+    </li>
+    <li>
+      <p style="display:inline"> prepare design for simulation environemnt </p>
+      <span style="display:inline" [hidden]="!prepared">&#9989;</span>
+      <span style="display:inline" [hidden]="!error_prepare">&#10060;</span>
+    </li>
+  </ul>
+  <button (click)='customClose(simulate_modal_id)' [hidden]="hide_modal_close_btn"> Close</button>
 
 </jw-modal>

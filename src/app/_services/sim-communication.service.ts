@@ -18,9 +18,7 @@ export class SimCommunicationService {
 
   initConnection() {
     this.webSocket.initSocket()
-    this.webSocket.onMessage().subscribe((message) => {
-      console.log(message)
-    })
+
 
     this.webSocket.onEvent(SocketEvent.CONNECT).subscribe(() => {
       console.log("connected")
@@ -41,7 +39,9 @@ export class SimCommunicationService {
       port.style = { "fill": "Green" }
     })
   }
-
+  sendMsg(msg) {
+    this.webSocket.send(msg)
+  }
 
   closeConnection() {
     this.webSocket.close()

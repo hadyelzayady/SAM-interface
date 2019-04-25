@@ -30,7 +30,7 @@ export class ToolBarComponent {
   hide_component_interacts_sim = true;
   sim_mode = false;
   selected_file = "no code file selected"
-  //modal variables
+  ///////////reserve modal variables
   status = ""
   parsed = false;
   reserved = false;
@@ -40,7 +40,15 @@ export class ToolBarComponent {
   error_config = false;
   reserve_modal_id = "reserve"
   hide_modal_close_btn = true
-  ///
+  //added for sim
+  prepared = false
+  error_prepared = false
+  error_send_connections = false
+  send_connections = false
+  simulate_modal_id = "simulate"
+
+  //////////////
+
   @ViewChild("toolbar_design") public designToolbar: ToolbarComponent;
   @ViewChild("toolbar_sim") public simToolbar: ToolbarComponent;
   @Input() file_id: number;
@@ -56,7 +64,7 @@ export class ToolBarComponent {
   // to unsubscribe from observables when sim ends
   private unsubscribe: Subject<void> = new Subject();
 
-  //todo merge diagram service in designservice
+  //TODO: merge diagram service in designservice
   constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService, private simComm: SimCommunicationService) {
 
   }
@@ -111,65 +119,61 @@ export class ToolBarComponent {
   setComponentsReserveConfigs(reserved_comps: ReserveComponentsResponse[]) {
     console.log("reserved new: ", reserved_comps)
     let cache = {}
-    this.resetComponents()
+    // this.resetComponents()
     let reserved_index = 0
     let connected_components_id_index = {}
     let componentid_index = {}
-    try {
-      this.sharedData.diagram.nodes.forEach((node, index) => {
-        if (node.addInfo[addInfo_type] == ComponentType.Hardware) {
-          console.log("diagram component:", node.addInfo)
-          if (node.addInfo[addInfo_componentId] in cache) {
-            let componentId = node.addInfo[addInfo_componentId];
-            node.addInfo[addInfo_reserved] = true;
-            node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
+    this.sharedData.diagram.nodes.forEach((node, index) => {
+      if (node.addInfo[addInfo_type] == ComponentType.Hardware) {
+        console.log("diagram component:", node.addInfo)
+        if (node.addInfo[addInfo_componentId] in cache) {
+          let componentId = node.addInfo[addInfo_componentId];
+          node.addInfo[addInfo_reserved] = true;
+          node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
 
-            delete cache[componentId]
-          }
-          else {
-            let found_component = false;
-            for (reserved_index; reserved_index < reserved_comps.length; reserved_index++) {
-              console.log(reserved_index)
-              if (node.addInfo[addInfo_componentId] == reserved_comps[reserved_index].ComponentId) {
-                node.addInfo[addInfo_reserved] = true;
-                node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
-                found_component = true;
-                reserved_index++
-                break;
-              }
-              else {
-                cache[reserved_comps[index].ComponentId] = reserved_index
-              }
-            }
-            if (!found_component)
-              throw Error("error in config")
-          }
-          connected_components_id_index[node.addInfo[addInfo_connectedComponentId]] = index
-          componentid_index[node.id] = index
+          delete cache[componentId]
         }
-      });
+        else {
+          let found_component = false;
+          for (reserved_index; reserved_index < reserved_comps.length; reserved_index++) {
+            console.log(reserved_index)
+            if (node.addInfo[addInfo_componentId] == reserved_comps[reserved_index].ComponentId) {
+              node.addInfo[addInfo_reserved] = true;
+              node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
+              found_component = true;
+              reserved_index++
+              break;
+            }
+            else {
+              cache[reserved_comps[index].ComponentId] = reserved_index
+            }
+          }
+          if (!found_component)
+            throw Error("error in config")
+        }
+        connected_components_id_index[node.addInfo[addInfo_connectedComponentId]] = index
+        componentid_index[node.id] = index
+      }
+    });
 
-      this.configured = true
-      this.sharedData.connected_component_id_index = connected_components_id_index
-      this.sharedData.componentid_index = componentid_index
-      console.log("mapper", connected_components_id_index)
-      console.log("componentid_index", componentid_index)
-    } catch (error) {
-      this.configured = false
-      this.error_config = true;
-    }
+    this.sharedData.connected_component_id_index = connected_components_id_index
+    this.sharedData.componentid_index = componentid_index
+    console.log("mapper", connected_components_id_index)
+    console.log("componentid_index", componentid_index)
 
 
   }
-  //todo get reserved boards on loading design to save them in the table
+  //TODO: get reserved boards on loading design to save them in the table
   PrepareDiagramForOutput() {
     // console.log("table:", this.sharedData.diagram.node)
     let led_id_index = {}
     this.sharedData.diagram.nodes.forEach((node, index) => {
+      console.log("nodeid", node)
       if (node.addInfo[addInfo_name] == Led.name) {
         led_id_index[node.id] = index
       }
     })
+    console.log("led_id_index", led_id_index)
     this.sharedData.diagram.connectors.forEach((connector) => {
       let targetID = connector.targetID
       if (targetID.includes(Led.name)) {
@@ -180,10 +184,18 @@ export class ToolBarComponent {
             source = "../assets/redLED_on.jpg"
           else
             source = "../assets/redLED_off.jpg"
-          this.sharedData.diagram.nodes[led_id_index[targetID]].shape = {
-            type: 'Image',
-            source: source
+          try {
+            console.log(targetID)
+            this.sharedData.diagram.nodes[led_id_index[targetID]].shape = {
+              type: 'Image',
+              source: source
+            }
+
+          } catch (error) {
+            console.log(error)
           }
+        }, error => {
+          throw Error("error in in subscribe function")
         })
       }
     })
@@ -197,20 +209,23 @@ export class ToolBarComponent {
     // })
 
   }
-  customClose() {
-    console.log("close modal")
-    this.error_config = false
-    this.error_reserved = false
-    this.error_parsed = false
-    this.reserved = false
-    this.configured = false;
+  customClose(id: string) {
     this.parsed = false;
-    this.hide_modal_close_btn = true;
-    this.modalService.close(this.reserve_modal_id)
+    this.reserved = false;
+    this.configured = false;
+    this.error_parsed = false;
+    this.error_reserved = false;
+    this.error_config = false;
+    this.hide_modal_close_btn = true
+    //added for sim
+    this.prepared = false
+    this.error_prepared = false
+    this.error_send_connections = false
+    this.send_connections = false
+    this.modalService.close(id)
   }
-  //todo I receive boards id with port id ,from received map get board id in the design then get port id then change its value
+  //TODO: I receive boards id with port id ,from received map get board id in the design then get port id then change its value
   setConnectorSimValue(value: 1 | 0, board_id: string, port_id: string) {
-    //todo
     let x = this.sharedData.diagram.getObject(board_id) as NodeModel
     let port_index = x.ports.findIndex(port => port.id == port_id)
     if (value == 0) {
@@ -222,6 +237,8 @@ export class ToolBarComponent {
       this.sharedData.diagram.connectors[0].style.strokeColor = '#31fd08';
     }
   }
+
+
   toolbarClick(args: ClickEventArgs): void {
     switch (args.item.id) {
       case this.undo_id: {
@@ -243,7 +260,9 @@ export class ToolBarComponent {
         break;
       }
       case this.zoomout_id: {
-        this.sharedData.diagram.zoom(.5);
+        // this.sharedData.diagram.zoom(.5);
+        this.simComm.initConnection()
+        this.simComm.sendMsg("hello")
         break;
       }
       case this.connector_id: {
@@ -252,20 +271,77 @@ export class ToolBarComponent {
         break;
       }
       case this.simulate_id: {
-        console.log("sim")
-        this.sim_mode = !this.sim_mode
-        this.sharedData.diagram.clearSelection();
-        this.sharedData.changeMode(this.sim_mode)
-        if (this.sim_mode) {
-          this.PrepareDiagramForOutput();
-          this.sharedData.changePortValue(true, "1", 0)
-          // this.simComm.initConnection()
-        } else {
-          // this.simComm.closeConnection() 
-          this.sharedData.changePortValue(false, "1", 0)
+
+        if (!this.sim_mode) {
+          this.modalService.open(this.simulate_modal_id)
+
+          let connections = this.utils.getDesignConnections()
+          this.designService.sendDesignConnections(connections, this.file_id).pipe(finalize(() => {
+            this.hide_modal_close_btn = false
+          })).subscribe((data) => {
+            console.log("send cond", data)
+            this.send_connections = true
+            //reserve
+            let reservecomps;
+            try {
+              reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
+              this.parsed = true
+              this.designService.reserve(reservecomps, this.file_id).subscribe(data => {
+                // this.status = "components reserved "
+                this.reserved = true
+                try {
+                  this.setComponentsReserveConfigs(data)
+                  this.configured = true
+
+                  try {
+
+                    //prepare sim env
+                    this.PrepareDiagramForOutput();
+                    this.sim_mode = true
+                    this.sharedData.changeMode(this.sim_mode)
+                    this.sharedData.diagram.clearSelection();
+                    this.prepared = true
+
+                  } catch (error) {
+                    this.error_prepared = true
+                    this.prepared = false
+                  }
+
+                } catch (error) {
+                  this.configured = false
+                  this.error_config = true;
+                }
+              }, error => {
+                this.reserved = false;
+                this.error_reserved = true
+
+              })
+            } catch (error) {
+              this.error_parsed = true
+              this.hide_modal_close_btn = false
+            }
+            // this.sharedData.changePortValue(true, "1", 0)
+            // this.simComm.initConnection()
+            // } else {
+            //   // this.simComm.closeConnection() 
+            //   this.sharedData.changePortValue(false, "1", 0)
+            //   this.unsubscribe.next()
+            //   this.unsubscribe.complete();
+            // }
+
+          }, error => {
+            this.error_send_connections = true
+            this.send_connections = false;
+          })
+        }
+        else {
+          this.sim_mode = false
+          this.sharedData.changeMode(this.sim_mode)
           this.unsubscribe.next()
           this.unsubscribe.complete();
         }
+
+
         // this.sharedData.changePortValue(true, "1", "1")
         // this.diagramService.sendCodeFiles(this.boards_code).subscribe(resp => console.log(resp));
         // let connections = this.utils.getDesignConnections(this.sharedData.diagram)
@@ -274,29 +350,35 @@ export class ToolBarComponent {
         break;
       }
       case this.reserve_id: {
-        this.modalService.open("reserve")
+        this.modalService.open(this.reserve_modal_id)
         let reservecomps;
         try {
           reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
           this.parsed = true
-
         } catch (error) {
           this.error_parsed = true
+          this.hide_modal_close_btn = false
+          break;
         }
         this.designService.reserve(reservecomps, this.file_id).pipe(finalize(() => {
           this.hide_modal_close_btn = false
         })).subscribe(data => {
           // this.status = "components reserved "
           this.reserved = true
-          this.setComponentsReserveConfigs(data)
+          try {
+            this.setComponentsReserveConfigs(data)
+            this.configured = true
+          } catch (error) {
+            this.configured = false
+            this.error_config = true;
+          }
         }, error => {
-          // this.status = `<span style="color:red">sorry ,reserving failed ,my be the components not available now,try later</span>`
           this.reserved = false;
           this.error_reserved = true
 
         })
 
-        console.log("compoinetn index", this.sharedData.componentid_index)
+
         // alert("reserved");
         // this.sharedData.diagram.nodes[0].shape = {
         //   type: 'Image',
@@ -307,7 +389,8 @@ export class ToolBarComponent {
       }
       case this.reset_id: {
         alert("board resetted")
-
+        this.simComm.initConnection()
+        this.simComm.sendMsg("hello")
         break;
       }
     }

@@ -47,7 +47,6 @@ export class DesignComponent {
       this.setConstraints(sim_mode)
     });
 
-
   }
 
   ngOnDestroy(): void {
@@ -60,7 +59,7 @@ export class DesignComponent {
   }
 
   setSimContextMenu() {
-    //todo show send to front/back/..
+    //TODO: show send to front/back/..
     // this.contextMenuSettings = {
     //   show: true,
     //   items: []
@@ -141,7 +140,7 @@ export class DesignComponent {
       //this should be the last line
     }
   }
-  //todo disable cut/copy/paste/undo/redo in sim mode . commandmanager does not work
+  //TODO: disable cut/copy/paste/undo/redo in sim mode . commandmanager does not work
 
   loadDesignFile(): void {
 
@@ -196,7 +195,7 @@ export class DesignComponent {
   }
 
 
-  //todo when user clicks simulate she receives the map of design board id and actual board id
+  //TODO: when user clicks simulate she receives the map of design board id and actual board id
 
   connectorEvent(args: IConnectionChangeEventArgs) {
     if (args.state == "Changed") {

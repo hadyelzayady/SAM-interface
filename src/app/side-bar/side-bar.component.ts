@@ -117,7 +117,7 @@ export class SideBarComponent implements OnInit {
         this.sidebar.palettes = this.palettes
       }
       )).subscribe(data => {
-        //todo: needs optimization as we can set properties of boards as default values but how?
+        //TODO: needs optimization as we can set properties of boards as default values but how?
         // this.boards = this.parseBoards(data["boards"])
         this.palettes[0].symbols = data
 

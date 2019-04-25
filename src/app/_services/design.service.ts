@@ -21,7 +21,6 @@ export class DesignService {
 
 
     reserve(reservecomps: {}, fileid: number) {
-        console.log(reservecomps)
         return this.http.post<ReserveComponentsResponse[]>(`${this.baseurl}/${fileid}/reserve`, reservecomps)
     }
     saveDesign(file_data: string, fileid: number) {
@@ -38,7 +37,11 @@ export class DesignService {
     createDesignFile(filename: string) {
         return this.http.post<DesignFile>(`${this.baseurl}/designfile`, { filename: filename })
     }
+    sendDesignConnections(connections: any, design_id) {
 
+        const endpoint = `${this.baseurl}/${design_id}/connections`;
+        return this.http.post(endpoint, connections)
+    }
     getSideBarItems(): Observable<NodeModel[]> {
         return this.http.get(`${this.baseurl}/components`).pipe(map(response => {
             let components = response as Components;

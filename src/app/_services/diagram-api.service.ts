@@ -27,12 +27,7 @@ export class DiagramApiService {
   //   return this.http.post(endpoint, formData)
   // }
 
-  public sendDesignConnections(connections: any) {
 
-    const endpoint = 'http://localhost:3000/api/design/connections';
-
-    return this.http.post(endpoint, connections, httpOptions)
-  }
 
   public sendCodeFiles(boards_codes: { [key: string]: File }) {
 
