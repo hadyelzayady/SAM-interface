@@ -117,7 +117,6 @@ export class ToolBarComponent {
     })
   }
   setComponentsReserveConfigs(reserved_comps: ReserveComponentsResponse[]) {
-    console.log("reserved new: ", reserved_comps)
     let cache = {}
     // this.resetComponents()
     let reserved_index = 0
@@ -125,7 +124,6 @@ export class ToolBarComponent {
     let componentid_index = {}
     this.sharedData.diagram.nodes.forEach((node, index) => {
       if (node.addInfo[addInfo_type] == ComponentType.Hardware) {
-        console.log("diagram component:", node.addInfo)
         if (node.addInfo[addInfo_componentId] in cache) {
           let componentId = node.addInfo[addInfo_componentId];
           node.addInfo[addInfo_reserved] = true;
@@ -136,7 +134,6 @@ export class ToolBarComponent {
         else {
           let found_component = false;
           for (reserved_index; reserved_index < reserved_comps.length; reserved_index++) {
-            console.log(reserved_index)
             if (node.addInfo[addInfo_componentId] == reserved_comps[reserved_index].ComponentId) {
               node.addInfo[addInfo_reserved] = true;
               node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
@@ -158,22 +155,16 @@ export class ToolBarComponent {
 
     this.sharedData.connected_component_id_index = connected_components_id_index
     this.sharedData.componentid_index = componentid_index
-    console.log("mapper", connected_components_id_index)
-    console.log("componentid_index", componentid_index)
-
-
   }
   //TODO: get reserved boards on loading design to save them in the table
   PrepareDiagramForOutput() {
     // console.log("table:", this.sharedData.diagram.node)
     let led_id_index = {}
     this.sharedData.diagram.nodes.forEach((node, index) => {
-      console.log("nodeid", node)
       if (node.addInfo[addInfo_name] == Led.name) {
         led_id_index[node.id] = index
       }
     })
-    console.log("led_id_index", led_id_index)
     this.sharedData.diagram.connectors.forEach((connector) => {
       let targetID = connector.targetID
       if (targetID.includes(Led.name)) {
@@ -185,7 +176,6 @@ export class ToolBarComponent {
           else
             source = "../assets/redLED_off.jpg"
           try {
-            console.log(targetID)
             this.sharedData.diagram.nodes[led_id_index[targetID]].shape = {
               type: 'Image',
               source: source
@@ -279,7 +269,6 @@ export class ToolBarComponent {
           this.designService.sendDesignConnections(connections, this.file_id).pipe(finalize(() => {
             this.hide_modal_close_btn = false
           })).subscribe((data) => {
-            console.log("send cond", data)
             this.send_connections = true
             //reserve
             let reservecomps;

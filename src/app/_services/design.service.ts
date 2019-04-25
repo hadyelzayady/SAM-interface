@@ -58,7 +58,6 @@ export class DesignService {
                 })
                 return node;
             });
-            console.log("components", boards)
             return boards;
         }))
     }

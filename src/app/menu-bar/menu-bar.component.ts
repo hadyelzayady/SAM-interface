@@ -48,7 +48,6 @@ export class MenuBarComponent implements OnInit {
           this.designService.saveDesign(this.sharedData.diagram.saveDiagram(), this.file_id).subscribe(() => {
             alert("file edited")
           }, error => {
-            console.log(error)
           });
           break;
         }

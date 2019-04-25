@@ -21,11 +21,9 @@ export class SimCommunicationService {
 
 
     this.webSocket.onEvent(SocketEvent.CONNECT).subscribe(() => {
-      console.log("connected")
     })
 
     this.webSocket.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
-      console.log("disconnected")
     })
     this.webSocket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
       alert("the local server not running ")
@@ -34,7 +32,6 @@ export class SimCommunicationService {
       let port = this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[msg.component_id]].ports.find((port) => {
         return parseInt(port.id) == msg.port_id;
       });
-      console.log(port.style)
       port.visibility = PortVisibility.Visible
       port.style = { "fill": "Green" }
     })

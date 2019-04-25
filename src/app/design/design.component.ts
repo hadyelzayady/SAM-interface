@@ -55,7 +55,6 @@ export class DesignComponent {
     this.sharedData
   }
   historyChange(args: IHistoryChangeArgs) {
-    console.log(args)
   }
 
   setSimContextMenu() {
@@ -155,13 +154,11 @@ export class DesignComponent {
           else
             this.diagram.reset();
         } catch (error) {
-          console.log(error)
           this.approute.navigate(["home"])
           alert("error on loading design ,fie reseted")
         }
       }, error => {
         this.approute.navigate(["home"])
-        console.log("after reroute")
       });
   }
 
@@ -177,11 +174,9 @@ export class DesignComponent {
 
   getDesignConnections(): any {
     let connections = {}
-    console.log("make connections")
     this.diagram.connectors.forEach(function (connector) {
       if (connector.targetID != "" && connector.sourceID != "") {
         if (!(connector.sourceID in connections)) {
-          console.log("inside cond")
           connections[connector.sourceID] = {};
           connections[connector.targetID] = {};
         }
@@ -190,7 +185,6 @@ export class DesignComponent {
         connections[connector.targetID][connector.targetPortID] = { "nodeId": connector.sourceID, "portId": connector.sourcePortID, "type": "O" }
       }
     });
-    console.log(connections)
     return connections;
   }
 

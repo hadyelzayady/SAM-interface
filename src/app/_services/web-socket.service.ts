@@ -20,7 +20,6 @@ export class WebSocketService {
     this.socket.emit('message', message);
   }
   public close(): void {
-    console.log("close socket")
     this.socket.close()
   }
   public onMessage(): Observable<Message> {

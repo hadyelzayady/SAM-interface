@@ -21,11 +21,9 @@ export class UtilsService {
 
   getDesignConnections(): any {
     let connections = {}
-    console.log("make connections")
     this.sharedData.diagram.connectors.forEach(function (connector) {
       if (connector.targetID != "" && connector.sourceID != "") {
         if (!(connector.sourceID in connections)) {
-          console.log("inside cond")
           connections[connector.sourceID] = {};
           connections[connector.targetID] = {};
         }
