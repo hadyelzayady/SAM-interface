@@ -264,73 +264,60 @@ export class ToolBarComponent {
 
         if (!this.sim_mode) {
           this.modalService.open(this.simulate_modal_id)
-
-          let connections = this.utils.getDesignConnections()
-          this.designService.sendDesignConnections(connections, this.file_id).pipe(finalize(() => {
-            this.hide_modal_close_btn = false
-          })).subscribe((data) => {
-            this.send_connections = true
+          try {
+            //parse
+            let reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
+            this.parsed = true
             //reserve
-            let reservecomps;
-            try {
-              reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
-              this.parsed = true
-              this.designService.reserve(reservecomps, this.file_id).subscribe(data => {
-                // this.status = "components reserved "
-                this.reserved = true
-                try {
-                  this.setComponentsReserveConfigs(data)
-                  this.configured = true
-
-                  try {
-
-                    //prepare sim env
-                    this.PrepareDiagramForOutput();
-                    this.sim_mode = true
-                    this.sharedData.changeMode(this.sim_mode)
-                    this.sharedData.diagram.clearSelection();
-                    this.prepared = true
-
-                  } catch (error) {
-                    this.error_prepared = true
-                    this.prepared = false
-                  }
-
-                } catch (error) {
-                  this.configured = false
-                  this.error_config = true;
-                }
-              }, error => {
-                this.reserved = false;
-                this.error_reserved = true
-
-              })
-            } catch (error) {
-              this.error_parsed = true
+            this.designService.reserve(reservecomps, this.file_id).pipe(finalize(() => {
               this.hide_modal_close_btn = false
-            }
-            // this.sharedData.changePortValue(true, "1", 0)
-            // this.simComm.initConnection()
-            // } else {
-            //   // this.simComm.closeConnection() 
-            //   this.sharedData.changePortValue(false, "1", 0)
-            //   this.unsubscribe.next()
-            //   this.unsubscribe.complete();
-            // }
+            })).subscribe((data) => {
+              this.reserved = true
+              //config
+              try {
+                this.setComponentsReserveConfigs(data)
+                this.configured = true
+                //connections
+                let connections = this.utils.getDesignConnections()
+                this.designService.sendDesignConnections(connections, this.file_id)
+                  .subscribe(data => {
+                    this.send_connections = true
+                    //prepare sim en
+                    try {
+                      //prepare sim env
+                      this.PrepareDiagramForOutput();
+                      this.sim_mode = true
+                      this.sharedData.changeMode(this.sim_mode)
+                      this.sharedData.diagram.clearSelection();
+                      this.prepared = true
 
-          }, error => {
-            this.error_send_connections = true
-            this.send_connections = false;
-          })
-        }
-        else {
+                    } catch (error) {
+                      this.error_prepared = true
+                      this.prepared = false
+                    }
+
+                  }, error => {
+                    this.error_send_connections = true
+                    this.send_connections = false;
+                  });
+              } catch (error) {
+                this.configured = false
+                this.error_config = true;
+              }
+            }, error => {
+              this.reserved = false;
+              this.error_reserved = true
+            });
+          } catch (error) {
+            this.error_parsed = true
+            this.hide_modal_close_btn = false
+          }
+        } else {
           this.sim_mode = false
           this.sharedData.changeMode(this.sim_mode)
           this.unsubscribe.next()
           this.unsubscribe.complete();
         }
-
-
         // this.sharedData.changePortValue(true, "1", "1")
         // this.diagramService.sendCodeFiles(this.boards_code).subscribe(resp => console.log(resp));
         // let connections = this.utils.getDesignConnections(this.sharedData.diagram)
