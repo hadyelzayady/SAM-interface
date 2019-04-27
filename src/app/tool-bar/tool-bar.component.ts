@@ -233,6 +233,14 @@ export class ToolBarComponent {
       nodeid_index[node.id] = index
     })
   }
+  closeSimulationMode() {
+
+    this.sim_mode = false
+    this.sharedData.changeMode(this.sim_mode)
+    this.unsubscribe.next()
+    this.unsubscribe.complete();
+    this.simComm.closeConnection()
+  }
 
   toolbarClick(args: ClickEventArgs): void {
     switch (args.item.id) {
@@ -304,15 +312,19 @@ export class ToolBarComponent {
                       } catch (error) {
                         this.error_prepared = true
                         this.prepared = false
+                        this.simComm.closeConnection()
                       }
-                    }, error => {
-                      alert(error)
                     })
                     socket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
                       this.error_connected = true
+                      //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
+                      if (this.sim_mode) {
+                        this.sim_mode = false
+                        this.sharedData.changeMode(this.sim_mode)
+                        this.unsubscribe.next()
+                        this.unsubscribe.complete();
+                      }
                       this.simComm.closeConnection()
-                    }, error => {
-                      alert(error)
                     })
                   }, error => {
                     this.error_send_connections = true
@@ -331,11 +343,7 @@ export class ToolBarComponent {
             this.hide_modal_close_btn = false
           }
         } else {
-          this.sim_mode = false
-          this.sharedData.changeMode(this.sim_mode)
-          this.unsubscribe.next()
-          this.unsubscribe.complete();
-          this.simComm.closeConnection()
+          this.closeSimulationMode()
         }
         // this.sharedData.changePortValue(true, "1", "1")
         // this.diagramService.sendCodeFiles(this.boards_code).subscribe(resp => console.log(resp));

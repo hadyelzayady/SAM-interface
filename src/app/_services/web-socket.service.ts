@@ -13,7 +13,10 @@ export class WebSocketService {
   private socket;
 
   public initSocket(): void {
-    this.socket = socketIo(SERVER_URL);
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+    this.socket = socketIo(SERVER_URL, {
+      query: { token: token }
+    });
     console.log(this.socket)
   }
 

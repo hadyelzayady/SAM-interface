@@ -39,6 +39,7 @@ export class SimCommunicationService {
 
   closeConnection() {
     this.webSocket.close()
+
   }
 
 
