@@ -14,6 +14,7 @@ export class WebSocketService {
 
   public initSocket(): void {
     this.socket = socketIo(SERVER_URL);
+    console.log(this.socket)
   }
 
   public send(message: Message): void {
@@ -21,6 +22,7 @@ export class WebSocketService {
   }
   public close(): void {
     this.socket.close()
+    this.socket.r
   }
   public onMessage(): Observable<Message> {
     return new Observable<Message>(observer => {

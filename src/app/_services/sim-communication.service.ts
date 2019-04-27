@@ -9,32 +9,29 @@ import { PortVisibility } from '@syncfusion/ej2-angular-diagrams';
   providedIn: 'root'
 })
 export class SimCommunicationService {
-  private url = 'http://localhost:3001';
-  private socket;
-  m
   constructor(private webSocket: WebSocketService, private sharedData: SharedVariablesService) {
   }
 
 
   initConnection() {
     this.webSocket.initSocket()
+    return this.webSocket
 
+    // this.webSocket.onEvent(SocketEvent.CONNECT).subscribe(() => {
+    // })
 
-    this.webSocket.onEvent(SocketEvent.CONNECT).subscribe(() => {
-    })
-
-    this.webSocket.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
-    })
-    this.webSocket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
-      alert("the local server not running ")
-    })
-    this.webSocket.onMessage().subscribe((msg) => {
-      let port = this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[msg.component_id]].ports.find((port) => {
-        return parseInt(port.id) == msg.port_id;
-      });
-      port.visibility = PortVisibility.Visible
-      port.style = { "fill": "Green" }
-    })
+    // this.webSocket.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
+    // })
+    // this.webSocket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
+    //   alert("the local server not running ")
+    // })
+    // this.webSocket.onMessage().subscribe((msg) => {
+    //   let port = this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[msg.component_id]].ports.find((port) => {
+    //     return parseInt(port.id) == msg.port_id;
+    //   });
+    //   port.visibility = PortVisibility.Visible
+    //   port.style = { "fill": "Green" }
+    // })
   }
   sendMsg(msg) {
     this.webSocket.send(msg)
@@ -42,7 +39,6 @@ export class SimCommunicationService {
 
   closeConnection() {
     this.webSocket.close()
-    this.socket.removeAllListeners();
   }
 
 

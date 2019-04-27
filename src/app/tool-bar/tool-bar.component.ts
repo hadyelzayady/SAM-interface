@@ -16,6 +16,7 @@ import { WebSocketService } from '../_services/web-socket.service';
 import { SimCommunicationService } from '../_services/sim-communication.service';
 import { Led } from '../_models/Led';
 import { Subject } from 'rxjs';
+import { SocketEvent } from '../_models/event';
 
 @Component({
   selector: 'app-tool-bar',
@@ -46,7 +47,9 @@ export class ToolBarComponent {
   error_send_connections = false
   send_connections = false
   simulate_modal_id = "simulate"
-
+  //websocket
+  connected = false
+  error_connected = false
   //////////////
 
   @ViewChild("toolbar_design") public designToolbar: ToolbarComponent;
@@ -121,7 +124,7 @@ export class ToolBarComponent {
     // this.resetComponents()
     let reserved_index = 0
     let connected_components_id_index = {}
-    let componentid_index = {}
+    let nodeid_index = {}
     this.sharedData.diagram.nodes.forEach((node, index) => {
       if (node.addInfo[addInfo_type] == ComponentType.Hardware) {
         if (node.addInfo[addInfo_componentId] in cache) {
@@ -149,34 +152,28 @@ export class ToolBarComponent {
             throw Error("error in config")
         }
         connected_components_id_index[node.addInfo[addInfo_connectedComponentId]] = index
-        componentid_index[node.id] = index
       }
     });
 
     this.sharedData.connected_component_id_index = connected_components_id_index
-    this.sharedData.componentid_index = componentid_index
+    this.sharedData.nodeid_index = nodeid_index
   }
   //TODO: get reserved boards on loading design to save them in the table
   PrepareDiagramForOutput() {
+    //TODO: should be merged with getconnections
     // console.log("table:", this.sharedData.diagram.node)
-    let led_id_index = {}
-    this.sharedData.diagram.nodes.forEach((node, index) => {
-      if (node.addInfo[addInfo_name] == Led.name) {
-        led_id_index[node.id] = index
-      }
-    })
     this.sharedData.diagram.connectors.forEach((connector) => {
       let targetID = connector.targetID
       if (targetID.includes(Led.name)) {
         //! only works if source is connected to one target
-        this.sharedData.addOutputEvent(connector.sourcePortID, this.sharedData.componentid_index[connector.sourceID]).pipe(takeUntil(this.unsubscribe)).subscribe((val) => {
+        this.sharedData.addOutputEvent(connector.sourcePortID, this.sharedData.nodeid_index[connector.sourceID]).pipe(takeUntil(this.unsubscribe)).subscribe((val) => {
           let source;
           if (val)
             source = "../assets/redLED_on.jpg"
           else
             source = "../assets/redLED_off.jpg"
           try {
-            this.sharedData.diagram.nodes[led_id_index[targetID]].shape = {
+            this.sharedData.diagram.nodes[this.sharedData.nodeid_index[targetID]].shape = {
               type: 'Image',
               source: source
             }
@@ -212,6 +209,8 @@ export class ToolBarComponent {
     this.error_prepared = false
     this.error_send_connections = false
     this.send_connections = false
+    this.connected = false
+    this.error_connected = false
     this.modalService.close(id)
   }
   //TODO: I receive boards id with port id ,from received map get board id in the design then get port id then change its value
@@ -228,6 +227,12 @@ export class ToolBarComponent {
     }
   }
 
+  setNodeIdIndex() {
+    let nodeid_index = this.sharedData.nodeid_index
+    this.sharedData.diagram.nodes.forEach((node, index) => {
+      nodeid_index[node.id] = index
+    })
+  }
 
   toolbarClick(args: ClickEventArgs): void {
     switch (args.item.id) {
@@ -278,24 +283,37 @@ export class ToolBarComponent {
                 this.setComponentsReserveConfigs(data)
                 this.configured = true
                 //connections
+                //set nodeid_index as it is a dependancy for getconnection,prepare diagram
+                this.setNodeIdIndex()
                 let connections = this.utils.getDesignConnections()
                 this.designService.sendDesignConnections(connections, this.file_id)
                   .subscribe(data => {
                     this.send_connections = true
                     //prepare sim en
-                    try {
-                      //prepare sim env
-                      this.PrepareDiagramForOutput();
-                      this.sim_mode = true
-                      this.sharedData.changeMode(this.sim_mode)
-                      this.sharedData.diagram.clearSelection();
-                      this.prepared = true
+                    //prepare sim env
+                    let socket = this.simComm.initConnection()
+                    socket.onEvent(SocketEvent.CONNECT).subscribe(() => {
+                      this.connected = true
+                      try {
+                        this.PrepareDiagramForOutput();
+                        this.sim_mode = true
+                        this.sharedData.changeMode(this.sim_mode)
+                        this.sharedData.diagram.clearSelection();
+                        this.prepared = true
 
-                    } catch (error) {
-                      this.error_prepared = true
-                      this.prepared = false
-                    }
-
+                      } catch (error) {
+                        this.error_prepared = true
+                        this.prepared = false
+                      }
+                    }, error => {
+                      alert(error)
+                    })
+                    socket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
+                      this.error_connected = true
+                      this.simComm.closeConnection()
+                    }, error => {
+                      alert(error)
+                    })
                   }, error => {
                     this.error_send_connections = true
                     this.send_connections = false;
@@ -317,6 +335,7 @@ export class ToolBarComponent {
           this.sharedData.changeMode(this.sim_mode)
           this.unsubscribe.next()
           this.unsubscribe.complete();
+          this.simComm.closeConnection()
         }
         // this.sharedData.changePortValue(true, "1", "1")
         // this.diagramService.sendCodeFiles(this.boards_code).subscribe(resp => console.log(resp));

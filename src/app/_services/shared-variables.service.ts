@@ -11,7 +11,7 @@ export class SharedVariablesService {
   diagram: DiagramComponent;
   dialog: DialogComponent;
   connected_component_id_index = {};
-  componentid_index = {}
+  nodeid_index = {} // settd in simulation button before get_desin_conections
   // sim_mode: boolean = false;
   /////////////
   //called when design component is destroyed so every subscriber subscribes from it

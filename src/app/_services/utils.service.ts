@@ -3,7 +3,7 @@ import { ConnectorModel, ConnectorConstraints, NodeModel } from '@syncfusion/ej2
 import { SharedVariablesService } from './shared-variables.service';
 import { DiagramComponent, DiagramAllModule } from '@syncfusion/ej2-angular-diagrams';
 import { Arduino } from '../_models/arduino';
-import { addInfo_componentId, addInfo_type, ComponentType } from '../utils';
+import { addInfo_componentId, addInfo_type, ComponentType, addInfo_connectedComponentId, addinfo_IP_Port } from '../utils';
 
 
 @Injectable({
@@ -20,16 +20,30 @@ export class UtilsService {
   }
 
   getDesignConnections(): any {
-    let connections = {}
+    let connections: { [key: string]: string } = {}
+    let nodeid_index = this.sharedData.nodeid_index
+    let nodes = this.sharedData.diagram.nodes
     this.sharedData.diagram.connectors.forEach(function (connector) {
       if (connector.targetID != "" && connector.sourceID != "") {
-        if (!(connector.sourceID in connections)) {
-          connections[connector.sourceID] = {};
-          connections[connector.targetID] = {};
-        }
-        connections[connector.sourceID][connector.sourcePortID] = { "nodeId": connector.targetID, "portId": connector.targetPortID, "type": "I" };
+        // let connectedcomponent_id= this.sharedData.
 
-        connections[connector.targetID][connector.targetPortID] = { "nodeId": connector.sourceID, "portId": connector.sourcePortID, "type": "O" }
+        let O_Component = nodes[nodeid_index[connector.sourceID]]
+        let I_Component = nodes[nodeid_index[connector.targetID]]
+
+        let source_pin = connector.sourcePortID
+        let destination_pin = connector.sourcePortID
+        let destination_ip_port = I_Component.addInfo[addinfo_IP_Port]
+        if (!(O_Component.addInfo[addInfo_connectedComponentId] in connections)) {
+          connections[O_Component.addInfo[addInfo_connectedComponentId]] = ''
+        }
+        if (!(I_Component.addInfo[addInfo_connectedComponentId]! in connections)) {
+          connections[I_Component.addInfo[addInfo_connectedComponentId]] = ''
+        }
+
+        connections[O_Component.addInfo[addInfo_connectedComponentId]] += `"O":${source_pin}:${destination_ip_port}:${destination_pin},`
+
+        connections[I_Component.addInfo[addInfo_connectedComponentId]] += `"I":${destination_pin},`
+
       }
     });
     return connections;
