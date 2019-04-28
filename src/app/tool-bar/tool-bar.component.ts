@@ -264,7 +264,7 @@ export class ToolBarComponent {
       }
       case this.zoomout_id: {
         // this.sharedData.diagram.zoom(.5);
-        this.simComm.initConnection()
+        // this.simComm.initConnection()
         this.simComm.sendMsg("hello")
         break;
       }
@@ -299,7 +299,7 @@ export class ToolBarComponent {
                     this.send_connections = true
                     //prepare sim en
                     //prepare sim env
-                    let socket = this.simComm.initConnection()
+                    let socket = this.simComm.initConnection(this.file_id)
                     socket.onEvent(SocketEvent.CONNECT).subscribe(() => {
                       this.connected = true
                       try {
@@ -315,8 +315,11 @@ export class ToolBarComponent {
                         this.simComm.closeConnection()
                       }
                     })
-                    socket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
+                    socket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe((data) => {
+                      console.log(data)
                       this.error_connected = true
+                      this.connected = false
+
                       //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
                       if (this.sim_mode) {
                         this.sim_mode = false
@@ -392,7 +395,7 @@ export class ToolBarComponent {
       }
       case this.reset_id: {
         alert("board resetted")
-        this.simComm.initConnection()
+        // this.simComm.initConnection()
         this.simComm.sendMsg("hello")
         break;
       }

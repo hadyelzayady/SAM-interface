@@ -13,8 +13,8 @@ export class SimCommunicationService {
   }
 
 
-  initConnection() {
-    this.webSocket.initSocket()
+  initConnection(fileid) {
+    this.webSocket.initSocket({ design_id: fileid })
     return this.webSocket
 
     // this.webSocket.onEvent(SocketEvent.CONNECT).subscribe(() => {

@@ -12,10 +12,11 @@ const SERVER_URL = 'http://localhost:3001';
 export class WebSocketService {
   private socket;
 
-  public initSocket(): void {
+  public initSocket(data): void {
     let token = JSON.parse(localStorage.getItem('currentUser')).token;
+    data["token"] = token
     this.socket = socketIo(SERVER_URL, {
-      query: { token: token }
+      query: data,
     });
     console.log(this.socket)
   }
@@ -35,7 +36,7 @@ export class WebSocketService {
 
   public onEvent(event: SocketEvent): Observable<any> {
     return new Observable<SocketEvent>(observer => {
-      this.socket.on(event, () => observer.next());
+      this.socket.on(event, (data) => observer.next(data));
     });
   }
 }
