@@ -17,6 +17,7 @@ import { SimCommunicationService } from '../_services/sim-communication.service'
 import { Led } from '../_models/Led';
 import { Subject } from 'rxjs';
 import { SocketEvent } from '../_models/event';
+import { LocalWebSocketService } from '../_services/local-web-socket.service';
 
 @Component({
   selector: 'app-tool-bar',
@@ -50,6 +51,8 @@ export class ToolBarComponent {
   //websocket
   connected = false
   error_connected = false
+  local_connected = false
+  error_local_connected = false
   //////////////
 
   @ViewChild("toolbar_design") public designToolbar: ToolbarComponent;
@@ -68,7 +71,7 @@ export class ToolBarComponent {
   private unsubscribe: Subject<void> = new Subject();
 
   //TODO: merge diagram service in designservice
-  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService, private simComm: SimCommunicationService) {
+  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService, private simComm: SimCommunicationService, private LocalCommService: LocalWebSocketService) {
 
   }
 
@@ -211,6 +214,8 @@ export class ToolBarComponent {
     this.send_connections = false
     this.connected = false
     this.error_connected = false
+    this.local_connected = false
+    this.error_local_connected = false
     this.modalService.close(id)
   }
   //TODO: I receive boards id with port id ,from received map get board id in the design then get port id then change its value
@@ -239,7 +244,8 @@ export class ToolBarComponent {
     this.sharedData.changeMode(this.sim_mode)
     this.unsubscribe.next()
     this.unsubscribe.complete();
-    this.simComm.closeConnection()
+    this.simComm.close()
+    this.LocalCommService.close()
   }
 
   toolbarClick(args: ClickEventArgs): void {
@@ -263,9 +269,7 @@ export class ToolBarComponent {
         break;
       }
       case this.zoomout_id: {
-        // this.sharedData.diagram.zoom(.5);
-        // this.simComm.initConnection()
-        this.simComm.sendMsg("hello")
+        this.sharedData.diagram.zoom(.5);
         break;
       }
       case this.connector_id: {
@@ -299,8 +303,19 @@ export class ToolBarComponent {
                     this.send_connections = true
                     //prepare sim en
                     //prepare sim env
-                    let socket = this.simComm.initConnection(this.file_id)
-                    socket.onEvent(SocketEvent.CONNECT).subscribe(() => {
+                    this.simComm.initSocket(this.file_id)
+                    this.LocalCommService.initSocket()
+                    this.LocalCommService.onEvent(SocketEvent.CONNECT).subscribe(() => {
+                      this.local_connected = true
+                      this.error_local_connected = false
+                    })
+                    this.LocalCommService.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
+                      this.local_connected = false
+                      this.error_local_connected = true
+                      this.closeSimulationMode()
+                    })
+
+                    this.simComm.onEvent(SocketEvent.CONNECT).subscribe(() => {
                       this.connected = true
                       try {
                         this.PrepareDiagramForOutput();
@@ -312,22 +327,20 @@ export class ToolBarComponent {
                       } catch (error) {
                         this.error_prepared = true
                         this.prepared = false
-                        this.simComm.closeConnection()
+                        this.simComm.close()
                       }
                     })
-                    socket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe((data) => {
+                    this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe((data) => {
                       console.log(data)
                       this.error_connected = true
                       this.connected = false
 
                       //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
                       if (this.sim_mode) {
-                        this.sim_mode = false
-                        this.sharedData.changeMode(this.sim_mode)
-                        this.unsubscribe.next()
-                        this.unsubscribe.complete();
+                        this.closeSimulationMode();
+                      } else {
+                        this.simComm.close()
                       }
-                      this.simComm.closeConnection()
                     })
                   }, error => {
                     this.error_send_connections = true
