@@ -28,7 +28,10 @@ export class SharedVariablesService {
   port_observables_table: { [k: string]: any } = {}
 
   changePortValue(value: boolean, port_id, component_index) {
-    this.port_value_table[component_index][port_id].next(value)
+    console.log("port value table", this.port_value_table)
+    console.log("params", component_index, port_id, value)
+    if (component_index in this.port_value_table && port_id in this.port_value_table[component_index])
+      this.port_value_table[component_index][port_id].next(value)
   }
 
   addOutputEvent(port_id, component_index): Observable<boolean> {

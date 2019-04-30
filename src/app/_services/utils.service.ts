@@ -26,7 +26,6 @@ export class UtilsService {
     this.sharedData.diagram.connectors.forEach(function (connector) {
       if (connector.targetID != "" && connector.sourceID != "") {
         // let connectedcomponent_id= this.sharedData.
-
         let O_Component = nodes[nodeid_index[connector.sourceID]]
         let I_Component = nodes[nodeid_index[connector.targetID]]
 
@@ -36,13 +35,18 @@ export class UtilsService {
         if (!(O_Component.addInfo[addInfo_connectedComponentId] in connections)) {
           connections[O_Component.addInfo[addInfo_connectedComponentId]] = ''
         }
-        if (!(I_Component.addInfo[addInfo_connectedComponentId]! in connections)) {
-          connections[I_Component.addInfo[addInfo_connectedComponentId]] = ''
+        if (I_Component.addInfo[addInfo_type] == ComponentType.Hardware) {
+          //so led for example won't be sent to the server
+          if (!(I_Component.addInfo[addInfo_connectedComponentId]! in connections)) {
+            connections[I_Component.addInfo[addInfo_connectedComponentId]] = ''
+          }
+          connections[I_Component.addInfo[addInfo_connectedComponentId]] += `"I":${destination_pin},`
+
         }
+
 
         connections[O_Component.addInfo[addInfo_connectedComponentId]] += `"O":${source_pin}:${destination_ip_port}:${destination_pin},`
 
-        connections[I_Component.addInfo[addInfo_connectedComponentId]] += `"I":${destination_pin},`
 
       }
     });

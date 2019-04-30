@@ -8,7 +8,7 @@ import { PortVisibility } from '@syncfusion/ej2-angular-diagrams';
 import { Observable } from 'rxjs';
 import * as socketIo from 'socket.io-client';
 
-const SERVER_URL = 'http://localhost:3002';
+const SERVER_URL = 'http://localhost:3003';
 
 
 @Injectable({
@@ -16,11 +16,14 @@ const SERVER_URL = 'http://localhost:3002';
 })
 export class LocalWebSocketService {
 
+
   constructor(private sharedData: SharedVariablesService) {
   }
 
   private socket;
-
+  resetBoard(connected_component_id: any) {
+    this.socket.emit('reset', { component_id: connected_component_id })
+  }
   public initSocket(): void {
     this.socket = socketIo(SERVER_URL);
     // this.webSocket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {

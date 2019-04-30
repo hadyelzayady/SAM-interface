@@ -84,8 +84,10 @@ export class ToolBarComponent {
   setOneBoardActionButtonsVisibility(visibility: boolean) {
     this.simToolbar.hideItem(4, !visibility)
   }
+  selected_board;
   boardSelected(args: ISelectionChangeEventArgs) {
-    if (this.sharedData.diagram.selectedItems.nodes.length == 1) {
+    let nodes = this.sharedData.diagram.selectedItems.nodes
+    if (nodes.length == 1) {
       if (!this.sim_mode) {
         this.hide_fileupload = false;
         if (this.sharedData.diagram.selectedItems.nodes[0].id in this.boards_code) {
@@ -96,6 +98,7 @@ export class ToolBarComponent {
         }
       } else {
         //sim mode ,show on/off reset
+        this.selected_board = nodes[0]
         this.setOneBoardActionButtonsVisibility(true)
 
       }
@@ -155,6 +158,7 @@ export class ToolBarComponent {
             throw Error("error in config")
         }
         connected_components_id_index[node.addInfo[addInfo_connectedComponentId]] = index
+        console.log("in for each:", connected_components_id_index)
       }
     });
 
@@ -301,9 +305,7 @@ export class ToolBarComponent {
                 this.designService.sendDesignConnections(connections, this.file_id)
                   .subscribe(data => {
                     this.send_connections = true
-                    //prepare sim en
                     //prepare sim env
-                    this.simComm.initSocket(this.file_id)
                     this.LocalCommService.initSocket()
                     this.LocalCommService.onEvent(SocketEvent.CONNECT).subscribe(() => {
                       this.local_connected = true
@@ -312,12 +314,15 @@ export class ToolBarComponent {
                     this.LocalCommService.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
                       this.local_connected = false
                       this.error_local_connected = true
-                      this.closeSimulationMode()
+                      // this.closeSimulationMode()
                     })
 
+                    //socket with server to start and end sim
+                    this.simComm.initSocket(this.file_id)
                     this.simComm.onEvent(SocketEvent.CONNECT).subscribe(() => {
                       this.connected = true
                       try {
+                        //prepare outputs in the design
                         this.PrepareDiagramForOutput();
                         this.sim_mode = true
                         this.sharedData.changeMode(this.sim_mode)
@@ -409,7 +414,7 @@ export class ToolBarComponent {
       case this.reset_id: {
         alert("board resetted")
         // this.simComm.initConnection()
-        this.simComm.sendMsg("hello")
+        this.LocalCommService.resetBoard(this.selected_board.addInfo[addInfo_connectedComponentId])
         break;
       }
     }

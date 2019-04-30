@@ -8,6 +8,7 @@ import { DesignService } from '../_services';
 import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints } from '../utils';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { LocalWebSocketService } from '../_services/local-web-socket.service';
 //TODO enable context menu 
 interface ConnectorEnd {
   nodeId: string,
@@ -31,7 +32,7 @@ export class DesignComponent {
   private file_id: number;
   public contextMenuSettings: ContextMenuSettingsModel;
   title = 'SAM-interface';
-  constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, private designService: DesignService, private approute: Router) {
+  constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, private designService: DesignService, private approute: Router, private localSocketService: LocalWebSocketService) {
   }
 
 
@@ -72,6 +73,11 @@ export class DesignComponent {
       this.diagram.connectors.forEach(connector => {
         connector.constraints = connectorSimConstraints;
       });
+      this.localSocketService.onMessage().subscribe(msg => {
+        console.log(msg.port_id)
+        console.log(this.sharedData.connected_component_id_index)
+        this.sharedData.changePortValue(msg.value, msg.port_id, this.sharedData.connected_component_id_index[msg.connected_component_id])
+      })
       // command manager for shortcuts
       this.diagram.commandManager = {
         commands: [{
