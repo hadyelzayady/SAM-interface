@@ -7,11 +7,12 @@ export const nodeDesignConstraints = NodeConstraints.Default & ~NodeConstraints.
 export const nodeSimConstraints = NodeConstraints.Default & ~NodeConstraints.Delete & ~NodeConstraints.InConnect;
 
 export const addInfo_componentId = "componentId";
-export const addinfo_IP_Port = "componentId";
+export const addinfo_IP_Port = "IPPort";
 export const addInfo_name = "name";
 export const addInfo_type = "type";
 export const addInfo_reserved = "reserved";
 export const addInfo_connectedComponentId = "connectedComponentId";
 export enum ComponentType { Hardware, Software }
+export const local_udp_server_port = "3003"
 
 

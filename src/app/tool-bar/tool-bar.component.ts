@@ -9,7 +9,7 @@ import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
 import { DiagramApiService } from '../_services/diagram-api.service';
 import { FilesDirective } from '@syncfusion/ej2-angular-inputs';
 import { ReserveComponentsResponse } from '../_models';
-import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType } from '../utils';
+import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP_Port } from '../utils';
 import { ModalService } from '../modal.service';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { WebSocketService } from '../_services/web-socket.service';
@@ -137,7 +137,7 @@ export class ToolBarComponent {
           let componentId = node.addInfo[addInfo_componentId];
           node.addInfo[addInfo_reserved] = true;
           node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
-
+          node.addInfo[addinfo_IP_Port] = reserved_comps[cache[componentId]].IP + ":" + reserved_comps[cache[componentId]].port
           delete cache[componentId]
         }
         else {
@@ -146,6 +146,7 @@ export class ToolBarComponent {
             if (node.addInfo[addInfo_componentId] == reserved_comps[reserved_index].ComponentId) {
               node.addInfo[addInfo_reserved] = true;
               node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
+              node.addInfo[addinfo_IP_Port] = reserved_comps[reserved_index].IP + ":" + reserved_comps[reserved_index].port
               found_component = true;
               reserved_index++
               break;
