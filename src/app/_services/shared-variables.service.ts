@@ -35,8 +35,14 @@ export class SharedVariablesService {
   }
 
   addOutputEvent(port_id, component_index): Observable<boolean> {
-    this.port_value_table[component_index] = { [port_id]: new BehaviorSubject(false) }
-    this.port_observables_table[component_index] = { [port_id]: this.port_value_table[component_index][port_id].asObservable() };
+    if (!(component_index in this.port_value_table)) {
+      this.port_value_table[component_index] = {}
+      this.port_observables_table[component_index] = {}
+
+    }
+    console.log("add output:", this.port_value_table[component_index])
+    this.port_value_table[component_index][port_id] = new BehaviorSubject(false)
+    this.port_observables_table[component_index][port_id] = this.port_value_table[component_index][port_id].asObservable();
     return this.port_observables_table[component_index][port_id];
 
   }

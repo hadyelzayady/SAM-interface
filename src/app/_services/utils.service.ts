@@ -37,7 +37,7 @@ export class UtilsService {
         }
         if (I_Component.addInfo[addInfo_type] == ComponentType.Hardware) {
           //so led for example won't be sent to the server
-          if (!(I_Component.addInfo[addInfo_connectedComponentId]! in connections)) {
+          if (!(I_Component.addInfo[addInfo_connectedComponentId] in connections)) {
             connections[I_Component.addInfo[addInfo_connectedComponentId]] = ''
           }
           connections[I_Component.addInfo[addInfo_connectedComponentId]] += `"I":${destination_pin},`

@@ -189,7 +189,7 @@ export class ToolBarComponent {
             console.log(error)
           }
         }, error => {
-          throw Error("error in in subscribe function")
+          console.log(error)
         })
       }
     })
