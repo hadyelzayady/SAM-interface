@@ -3,7 +3,7 @@ import { ConnectorModel, ConnectorConstraints, NodeModel } from '@syncfusion/ej2
 import { SharedVariablesService } from './shared-variables.service';
 import { DiagramComponent, DiagramAllModule } from '@syncfusion/ej2-angular-diagrams';
 import { Arduino } from '../_models/arduino';
-import { addInfo_componentId, addInfo_type, ComponentType, addInfo_connectedComponentId, addinfo_IP_Port } from '../utils';
+import { addInfo_componentId, addInfo_type, ComponentType, addInfo_connectedComponentId, addinfo_port, addinfo_IP } from '../utils';
 
 
 @Injectable({
@@ -31,7 +31,7 @@ export class UtilsService {
 
         let source_pin = connector.sourcePortID
         let destination_pin = connector.sourcePortID
-        let destination_ip_port = I_Component.addInfo[addinfo_IP_Port]
+        let destination_ip_port = I_Component.addInfo[addinfo_IP] + ":" + I_Component.addInfo[addinfo_port]
         if (!(O_Component.addInfo[addInfo_connectedComponentId] in connections)) {
           connections[O_Component.addInfo[addInfo_connectedComponentId]] = ''
         }

@@ -21,8 +21,8 @@ export class LocalWebSocketService {
   }
 
   private socket;
-  resetBoard(connected_component_id: any) {
-    this.socket.emit('reset', { component_id: connected_component_id })
+  resetBoard(ip: any, port) {
+    this.socket.emit('reset', ip, port)
   }
   public initSocket(): void {
     this.socket = socketIo(SERVER_URL);

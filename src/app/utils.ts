@@ -7,7 +7,8 @@ export const nodeDesignConstraints = NodeConstraints.Default & ~NodeConstraints.
 export const nodeSimConstraints = NodeConstraints.Default & ~NodeConstraints.Delete & ~NodeConstraints.InConnect;
 
 export const addInfo_componentId = "componentId";
-export const addinfo_IP_Port = "IPPort";
+export const addinfo_IP = "IP";
+export const addinfo_port = "port";
 export const addInfo_name = "name";
 export const addInfo_type = "type";
 export const addInfo_reserved = "reserved";

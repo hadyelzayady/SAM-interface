@@ -9,7 +9,7 @@ import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
 import { DiagramApiService } from '../_services/diagram-api.service';
 import { FilesDirective } from '@syncfusion/ej2-angular-inputs';
 import { ReserveComponentsResponse } from '../_models';
-import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP_Port } from '../utils';
+import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port } from '../utils';
 import { ModalService } from '../modal.service';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { WebSocketService } from '../_services/web-socket.service';
@@ -96,7 +96,7 @@ export class ToolBarComponent {
         else {
           this.selected_file = "no code file selected"
         }
-      } else {
+      } else if (nodes[0].addInfo[addInfo_type] == ComponentType.Hardware) {
         //sim mode ,show on/off reset
         this.selected_board = nodes[0]
         this.setOneBoardActionButtonsVisibility(true)
@@ -137,7 +137,8 @@ export class ToolBarComponent {
           let componentId = node.addInfo[addInfo_componentId];
           node.addInfo[addInfo_reserved] = true;
           node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
-          node.addInfo[addinfo_IP_Port] = reserved_comps[cache[componentId]].IP + ":" + reserved_comps[cache[componentId]].port
+          node.addInfo[addinfo_IP] = reserved_comps[cache[componentId]].IP;
+          node.addInfo[addinfo_port] = reserved_comps[cache[componentId]].port;
           delete cache[componentId]
         }
         else {
@@ -146,7 +147,8 @@ export class ToolBarComponent {
             if (node.addInfo[addInfo_componentId] == reserved_comps[reserved_index].ComponentId) {
               node.addInfo[addInfo_reserved] = true;
               node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
-              node.addInfo[addinfo_IP_Port] = reserved_comps[reserved_index].IP + ":" + reserved_comps[reserved_index].port
+              node.addInfo[addinfo_IP] = reserved_comps[reserved_index].IP
+              node.addInfo[addinfo_port] = reserved_comps[reserved_index].port
               found_component = true;
               reserved_index++
               break;
@@ -413,9 +415,9 @@ export class ToolBarComponent {
         break;
       }
       case this.reset_id: {
-        alert("board resetted")
+        // alert("board resetted")
         // this.simComm.initConnection()
-        this.LocalCommService.resetBoard(this.selected_board.addInfo[addInfo_connectedComponentId])
+        this.LocalCommService.resetBoard(this.selected_board.addInfo[addinfo_IP], this.selected_board.addInfo[addinfo_port])
         break;
       }
     }
