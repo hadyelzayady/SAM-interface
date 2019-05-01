@@ -102,6 +102,11 @@
       <span style="display:inline" [hidden]="!prepared">&#9989;</span>
       <span style="display:inline" [hidden]="!error_prepare">&#10060;</span>
     </li>
+    <li>
+      <p style="display:inline"> waiting for start flag from server </p>
+      <span style="display:inline" [hidden]="!prepared">&#9989;</span>
+      <span style="display:inline" [hidden]="!error_prepare">&#10060;</span>
+    </li>
 
   </ul>
   <button (click)='customClose(simulate_modal_id)' [hidden]="hide_modal_close_btn"> Close</button>

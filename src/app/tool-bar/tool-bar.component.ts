@@ -317,13 +317,14 @@ export class ToolBarComponent {
                     this.LocalCommService.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
                       this.local_connected = false
                       this.error_local_connected = true
-                      // this.closeSimulationMode()
+                      this.closeSimulationMode()
                     })
 
                     //socket with server to start and end sim
                     this.simComm.initSocket(this.file_id)
                     this.simComm.onEvent(SocketEvent.CONNECT).subscribe(() => {
                       this.connected = true
+                      this.error_connected = false
                       try {
                         //prepare outputs in the design
                         this.PrepareDiagramForOutput();
@@ -344,12 +345,13 @@ export class ToolBarComponent {
                       this.connected = false
 
                       //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
-                      if (this.sim_mode) {
-                        this.closeSimulationMode();
-                      } else {
-                        this.simComm.close()
-                      }
+                      // if (this.sim_mode) {
+                      this.closeSimulationMode();
+                      // } else {
+                      // this.simComm.close()
+                      // }
                     })
+                    //TODO: wait for start simulaion in websocket
                   }, error => {
                     this.error_send_connections = true
                     this.send_connections = false;
