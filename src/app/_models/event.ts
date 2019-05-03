@@ -8,5 +8,6 @@ export enum Action {
 export enum SocketEvent {
     CONNECT = 'connect',
     DISCONNECT = 'disconnect',
-    CONNECTION_ERROR = 'connect_error'
+    CONNECTION_ERROR = 'connect_error',
+    SUCCESSFULL = 'successful'
 }

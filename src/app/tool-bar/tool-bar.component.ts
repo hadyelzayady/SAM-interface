@@ -74,7 +74,13 @@ export class ToolBarComponent {
   constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService, private simComm: SimCommunicationService, private LocalCommService: LocalWebSocketService) {
 
   }
-
+  ngOnInit(): void {
+    this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
+      console.log("sim mode change to ", sim_mode)
+      this.sim_mode = sim_mode;
+      this.setOneBoardActionButtonsVisibility(false)
+    });
+  }
   fileInputChange(event) {
     let board_id = this.sharedData.diagram.selectedItems.nodes[0].id
     let file = event.target.files[0]
@@ -82,8 +88,11 @@ export class ToolBarComponent {
     this.selected_file = file.name
   }
   setOneBoardActionButtonsVisibility(visibility: boolean) {
-    this.simToolbar.hideItem(4, !visibility)
+    if (this.simToolbar.items.length > 4)
+      this.simToolbar.hideItem(4, !visibility)
   }
+
+
   selected_board;
   boardSelected(args: ISelectionChangeEventArgs) {
     let nodes = this.sharedData.diagram.selectedItems.nodes
@@ -247,8 +256,7 @@ export class ToolBarComponent {
   }
   closeSimulationMode() {
 
-    this.sim_mode = false
-    this.sharedData.changeMode(this.sim_mode)
+    this.sharedData.changeMode(false)
     this.unsubscribe.next()
     this.unsubscribe.complete();
     this.simComm.close()
@@ -321,15 +329,16 @@ export class ToolBarComponent {
                     })
 
                     //socket with server to start and end sim
+
                     this.simComm.initSocket(this.file_id)
-                    this.simComm.onEvent(SocketEvent.CONNECT).subscribe(() => {
+                    this.simComm.onEvent(SocketEvent.SUCCESSFULL).subscribe(() => {
                       this.connected = true
                       this.error_connected = false
                       try {
                         //prepare outputs in the design
                         this.PrepareDiagramForOutput();
                         this.sim_mode = true
-                        this.sharedData.changeMode(this.sim_mode)
+                        this.sharedData.changeMode(true)
                         this.sharedData.diagram.clearSelection();
                         this.prepared = true
 
