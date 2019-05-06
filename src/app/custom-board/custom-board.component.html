@@ -1,0 +1,27 @@
+<div class="row " style="background-color:lightgray">
+  <div class="col-12">
+    <ejs-toolbar #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
+      <e-items>
+        <e-item [id]="add_pin" tooltipText='add pin' prefixIcon='e-undo-icon'></e-item>
+        <e-item [id]="save_pin" tooltipText='save pin' prefixIcon='e-undo-icon'></e-item>
+      </e-items>
+    </ejs-toolbar>
+  </div>
+</div>
+<div class="row nopadding">
+  <!-- <div class="col-3 nopadding">
+    <ejs-symbolpalette #sidebar id="symbolpalette" style="border: solid 1px lavender;" width="100%" height="100%"
+      expandMode="Multiple" [symbolHeight]=50 [symbolWidth]=50 [palettes]="palettes">
+    </ejs-symbolpalette>
+  </div> -->
+  <div class="col-9 w-80 nopadding">
+    <ejs-diagram #diagram id="diagram" width="100%" height="568px" (created)='diagramCreated()'>
+      <e-nodes>
+        <e-node id='board' [offsetX]=150 [offsetY]=150 [shape]='shape' [height]=100 [width]=100 [style]='style'>
+        </e-node>
+      </e-nodes>
+    </ejs-diagram>
+  </div>
+</div>
+
+<router-outlet></router-outlet>

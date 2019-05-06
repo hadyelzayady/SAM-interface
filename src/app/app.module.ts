@@ -28,6 +28,7 @@ import { HomeComponent } from './home/home.component';
 import { LoadingModalComponent } from './loading-modal/loading-modal.component';
 import { WebSocketService } from './_services/web-socket.service';
 import { SimCommunicationService } from './_services/sim-communication.service';
+import { CustomBoardComponent } from './custom-board/custom-board.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -41,7 +42,8 @@ import { SimCommunicationService } from './_services/sim-communication.service';
     RegisterComponent,
     DesignComponent,
     HomeComponent,
-    LoadingModalComponent
+    LoadingModalComponent,
+    CustomBoardComponent
   ],
   imports: [
     BrowserModule,

@@ -6,9 +6,10 @@ import { AuthGuard } from './_guards/auth.guard';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { DesignComponent } from './design/design.component';
+import { CustomBoardComponent } from './custom-board/custom-board.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent, canActivate: [AuthGuard] },
+  { path: '', component: CustomBoardComponent },
   { path: 'login', component: LoginComponent },
 
   { path: 'register', component: RegisterComponent },
