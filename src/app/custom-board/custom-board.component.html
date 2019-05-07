@@ -3,7 +3,13 @@
     <ejs-toolbar #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
       <e-items>
         <e-item [id]="add_pin" tooltipText='add pin' prefixIcon='e-undo-icon'></e-item>
-        <e-item [id]="save_pin" tooltipText='save pin' prefixIcon='e-undo-icon'></e-item>
+        <e-item [id]="save_board" tooltipText='save pin' prefixIcon='e-undo-icon'></e-item>
+        <e-item>
+          <ng-template #template>
+            <label [for]="fileupload_id" class="button">upload board image</label>
+            <input #fileinput type="file" [id]="fileupload_id" (change)='fileInputChange($event)'>
+          </ng-template>
+        </e-item>
       </e-items>
     </ejs-toolbar>
   </div>
@@ -16,12 +22,15 @@
   </div> -->
   <div class="col-9 w-80 nopadding">
     <ejs-diagram #diagram id="diagram" width="100%" height="568px" (created)='diagramCreated()'>
-      <e-nodes>
-        <e-node id='board' [offsetX]=150 [offsetY]=150 [shape]='shape' [height]=100 [width]=100 [style]='style'>
-        </e-node>
-      </e-nodes>
+
     </ejs-diagram>
   </div>
 </div>
+<jw-modal id="{{save_custom_board_modal_id}}">
+  <h1>saving board</h1>
+  <span style="display:inline" [hidden]="!parsed">&#9989;</span>
+  <span style="display:inline" [hidden]="!error_parsed">&#10060;</span>
+  <button (click)='customClose(reserve_modal_id)' [hidden]="hide_modal_close_btn"> Close</button>
 
+</jw-modal>
 <router-outlet></router-outlet>
