@@ -86,6 +86,11 @@ export class SideBarComponent implements OnInit {
         iconCss: 'e-ddb-icons e-basic'
       },
       {
+        id: 'user-boards',
+        expanded: true,
+        title: 'User Boards'
+      },
+      {
         id: 'connectors',
         expanded: true,
         symbols: this.getConnectors(),

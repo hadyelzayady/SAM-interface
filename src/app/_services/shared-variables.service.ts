@@ -48,6 +48,8 @@ export class SharedVariablesService {
   }
   //////////////////
   baseurl = "http://localhost:3000/api"
+  imageUrl = `${this.baseurl}/design/images/1`
+
 
 
 }

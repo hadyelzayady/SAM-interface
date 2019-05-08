@@ -69,7 +69,7 @@ export class UtilsService {
     return components;
 
   }
-  // readingEnded = (e): string => { return e.target.result }
+  // // readingEnded = (e): string => { return e.target.result }
   // readFile(file: File) {
   //   let reader = new FileReader()
   //   reader.onloadend = this.readingEnded;

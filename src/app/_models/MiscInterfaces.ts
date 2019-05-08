@@ -5,3 +5,13 @@ export interface ReserveComponentsResponse {
     IP: string,
     port: number
 }
+
+export interface CustomBoard {
+    id: number,
+    ports: [],
+    name: string,
+    code_required: boolean,
+    image_path: string
+
+
+}

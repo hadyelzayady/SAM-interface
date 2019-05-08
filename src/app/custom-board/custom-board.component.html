@@ -6,8 +6,9 @@
         <e-item [id]="save_board" tooltipText='save pin' prefixIcon='e-undo-icon'></e-item>
         <e-item>
           <ng-template #template>
-            <label [for]="fileupload_id" class="button">upload board image</label>
-            <input #fileinput type="file" [id]="fileupload_id" (change)='fileInputChange($event)'>
+            <label [for]="image_upload" class="button">upload board image</label>
+            <input #fileinput type="file" [id]="image_upload" (change)='fileInputChange($event)'
+              accept="image/png, image/jpeg">
           </ng-template>
         </e-item>
       </e-items>
@@ -28,9 +29,9 @@
 </div>
 <jw-modal id="{{save_custom_board_modal_id}}">
   <h1>saving board</h1>
-  <span style="display:inline" [hidden]="!parsed">&#9989;</span>
-  <span style="display:inline" [hidden]="!error_parsed">&#10060;</span>
-  <button (click)='customClose(reserve_modal_id)' [hidden]="hide_modal_close_btn"> Close</button>
+  <span style="display:inline" [hidden]="!saved">&#9989;</span>
+  <span style="display:inline" [hidden]="!error_saved">&#10060;</span>
+  <button (click)='customClose(save_custom_board_modal_id)' [hidden]="hide_modal_close_btn"> Close</button>
 
 </jw-modal>
 <router-outlet></router-outlet>
