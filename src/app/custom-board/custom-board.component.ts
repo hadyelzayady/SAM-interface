@@ -171,7 +171,7 @@ export class CustomBoardComponent implements OnInit {
         //add board
         this.board_props.shape = {
           type: "Image",
-          source: this.sharedData.imageUrl + data.image_path
+          source: this.sharedData.imageUrl + this.board_id + "/image"
         };
         this.board_props.annotations[0].content = data.name
         this.board_props.addInfo[addInfo_componentId] = data.id

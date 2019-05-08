@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { User, DesignFile } from '../_models';
+import { User, DesignFile, UserBoards } from '../_models';
 import { SharedVariablesService } from './shared-variables.service';
 
 @Injectable()
@@ -31,7 +31,10 @@ export class UserService {
 
         return this.http.get<DesignFile[]>(`${this.baseurl}/users/designfiles`)
     }
+    getUserBoards() {
 
+        return this.http.get<UserBoards[]>(`${this.baseurl}/users/customboards`)
+    }
     createDesignFile(filename: string) {
         return this.http.post<DesignFile>(`${this.baseurl}/users/designfile`, { filename: filename })
     }

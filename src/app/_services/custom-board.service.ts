@@ -27,6 +27,6 @@ export class CustomBoardService {
   }
 
   getBoard(board_id) {
-    return this.http.get<CustomBoard>(`${this.baseurl}/${board_id}`)
+    return this.http.get<CustomBoard>(`${this.baseurl}?board_id=${board_id}`)
   }
 }

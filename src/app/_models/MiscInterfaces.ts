@@ -15,3 +15,7 @@ export interface CustomBoard {
 
 
 }
+export interface UserBoards {
+    id: number,
+    name: string
+}

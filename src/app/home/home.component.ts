@@ -5,6 +5,7 @@ import { first } from 'rxjs/operators';
 import { FilenameDialogComponent } from '../filename-dialog/filename-dialog.component';
 import { SimpleModalService } from 'ngx-simple-modal';
 import { Router } from '@angular/router';
+import { UserBoards } from '../_models/MiscInterfaces';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +15,7 @@ import { Router } from '@angular/router';
 
 export class HomeComponent implements OnInit {
   design_files: DesignFile[];
+  user_boards: UserBoards[];
   constructor(private userService: UserService, private designService: DesignService, private simpleModalService: SimpleModalService, private router: Router) { }
 
   ngOnInit() {
@@ -23,8 +25,13 @@ export class HomeComponent implements OnInit {
     this.userService.getDesignFiles().pipe(first()).subscribe(files => {
       this.design_files = files;
     });
+    this.userService.getUserBoards().pipe(first()).subscribe(boards => {
+      this.user_boards = boards;
+    });
   }
-
+  customBoardDesign() {
+    this.router.navigateByUrl('/customboard');
+  }
   createNewFile() {
     let disposable = this.simpleModalService.addModal(FilenameDialogComponent, {
       title: 'Download Digram as file',
