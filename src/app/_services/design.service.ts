@@ -52,7 +52,7 @@ export class DesignService {
                 let node: NodeModel = {};
                 node.id = board.name + i++
                 node.addInfo = { [addInfo_name]: board.name, [addInfo_componentId]: board.id, [addInfo_reserved]: false, [addInfo_type]: ComponentType.Hardware }
-                node.shape = { type: "Image", source: board.image_path }
+                node.shape = { type: "Image", source: `${this.sharedData.imageUrl}${board.id}/image` }
                 node.constraints = nodeDesignConstraints
                 node.ports = board.ports
                 node.ports.forEach(port => {

@@ -30,7 +30,8 @@ export class BoardPort implements PointPortModel {
                 y: this.offset.y
             },
             visibility: this.visibility,
-            constraints: this.constraints
+            constraints: this.constraints,
+
         }
         return {
             id: this.id,
