@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel } from '@syncfusion/ej2-angular-diagrams';
+import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs } from '@syncfusion/ej2-angular-diagrams';
 import { ClickEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { ModalService } from '../modal.service';
 import { CustomBoardService } from '../_services/custom-board.service';
@@ -79,7 +79,8 @@ export class CustomBoardComponent implements OnInit {
       content: `pin${this.pin_number}`
     }],
     addInfo: {
-      type: "pin"
+      type: "pin",
+      pin_type: "I/O"
     }
   }
   private grouper_node: NodeModel //
@@ -87,7 +88,42 @@ export class CustomBoardComponent implements OnInit {
     id: 'group',
     width: this.board_props.width,
     height: this.board_props.height,
+    addInfo: {
+      type: "grouper"
+    }
     // children: []
+  }
+  changePinType(event) {
+    console.log(event.target.value)
+    this.diagram.selectedItems.nodes[0].addInfo["pin_type"] = event.target.value
+  }
+  hide_pin_type = true
+  isVCC = false;
+  isGROUND = false;
+  selectionChangeEvent(args: ISelectionChangeEventArgs) {
+    if (args.state == "Changed") {
+      let nodes = this.diagram.selectedItems.nodes
+      if (nodes.length == 1 && nodes[0].addInfo["type"] == "pin") {
+        this.hide_pin_type = false;
+        if (nodes[0].addInfo["pin_type"] == "GROUND") {
+          this.isGROUND = true;
+          this.isVCC = false;
+        }
+        else if (nodes[0].addInfo["pin_type"] == "VCC") {
+          this.isGROUND = false;
+          this.isVCC = true;
+        }
+        else {
+          this.isGROUND = false;
+          this.isVCC = false;
+        }
+
+
+      }
+      else {
+        this.hide_pin_type = true
+      }
+    }
   }
   add_pin = "add-pin"
   save_board = "save-board"
@@ -103,6 +139,7 @@ export class CustomBoardComponent implements OnInit {
     let x = board_corner_x + port_offsetX_denormalize
     let y = board_corner_y + port_offsety_denormalize
     //
+    let pin_type = port.addInfo ? port.addInfo["pin_type"] : "I/O"
     let pin: NodeModel = {
       id: port.id,
       shape: {
@@ -117,7 +154,8 @@ export class CustomBoardComponent implements OnInit {
         content: port.id
       }],
       addInfo: {
-        type: "pin"
+        type: "pin",
+        pin_type: pin_type
       }
     };
     return pin;
@@ -137,6 +175,7 @@ export class CustomBoardComponent implements OnInit {
         };
         this.board_props.annotations[0].content = data.name
         this.board_props.addInfo[addInfo_componentId] = data.id
+        this.board_props.addInfo["type"] = "board"
         this.addBoard()
 
         data.ports.forEach(port => {
@@ -248,6 +287,9 @@ export class CustomBoardComponent implements OnInit {
             shape: 'Square',
             width: node.width,
             height: node.height,
+            addInfo: {
+              pin_type: node.addInfo["pin_type"]
+            }
           })
         }
         else {

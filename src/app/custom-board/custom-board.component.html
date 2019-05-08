@@ -11,6 +11,20 @@
               accept="image/png, image/jpeg">
           </ng-template>
         </e-item>
+        <e-item>
+          <ng-template #template>
+            <div [hidden]="hide_pin_type">
+              <label [for]="pin_type_id" class="button">pin type</label>
+              <!-- <input #fileinput type="file" [id]="pin_type_id" (change)='changePinType($event)'> -->
+              <input type="radio" name="type" value="I/O" [checked]='! isVCC && ! isGROUND'
+                (change)='changePinType($event)'> I/O
+              <input type="radio" name="type" value="VCC" [checked]='isVCC' (change)='changePinType($event)'> VCC
+              <input type="radio" name="type" value="GROUND" [checked]='isGROUND' (change)='changePinType($event)'>
+              GROUND
+            </div>
+          </ng-template>
+        </e-item>
+
       </e-items>
     </ejs-toolbar>
   </div>
@@ -22,7 +36,8 @@
     </ejs-symbolpalette>
   </div> -->
   <div class="col-9 w-80 nopadding">
-    <ejs-diagram #diagram id="diagram" width="100%" height="568px" (created)='diagramCreated()'>
+    <ejs-diagram #diagram id="diagram" width="100%" height="568px" (created)='diagramCreated()'
+      (selectionChange)='selectionChangeEvent($event)'>
 
     </ejs-diagram>
   </div>
