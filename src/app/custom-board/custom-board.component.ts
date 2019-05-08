@@ -184,7 +184,7 @@ export class CustomBoardComponent implements OnInit {
         })
         this.diagram.refresh()
       }, error => {
-        this.router.navigate([''])
+        this.router.navigate([this.router.url])
       })
     }
   }
@@ -306,7 +306,10 @@ export class CustomBoardComponent implements OnInit {
   error_saved = false
   customClose(id) {
     this.modalService.close(id)
-    this.router.navigate([''], { queryParams: { board_id: this.board_id } });
+    if (!this.error_saved && this.saved)
+      this.router.navigate([this.router.url], { queryParams: { board_id: this.board_id } });
+    this.saved = false;
+    this.error_saved = false
   }
   getPinInitPosition() {
     //random around center of board

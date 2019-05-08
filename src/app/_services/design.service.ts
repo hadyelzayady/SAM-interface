@@ -42,11 +42,13 @@ export class DesignService {
         const endpoint = `${this.baseurl}/${design_id}/connections`;
         return this.http.post(endpoint, connections)
     }
-    getSideBarItems(): Observable<NodeModel[]> {
+    getSideBarItems(): Observable<NodeModel[][]> {
         return this.http.get(`${this.baseurl}/components`).pipe(map(response => {
             let components = response as Components;
             let i = 0;
-            let boards = components.boards.map(board => {
+            let builtin_boards = [] as NodeModel[]
+            let user_boards = [] as NodeModel[]
+            components.boards.forEach(board => {
                 let node: NodeModel = {};
                 node.id = board.name + i++
                 node.addInfo = { [addInfo_name]: board.name, [addInfo_componentId]: board.id, [addInfo_reserved]: false, [addInfo_type]: ComponentType.Hardware }
@@ -56,9 +58,14 @@ export class DesignService {
                 node.ports.forEach(port => {
                     port.constraints = connectorDesignConstraints;
                 })
-                return node;
+                if (board.UserId == null) {
+                    builtin_boards.push(node)
+                }
+                else {
+                    user_boards.push(node)
+                }
             });
-            return boards;
+            return [builtin_boards, user_boards];
         }))
     }
 

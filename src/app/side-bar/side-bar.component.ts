@@ -121,12 +121,15 @@ export class SideBarComponent implements OnInit {
         //Action to be executed always after subscribe
         this.sidebar.palettes = this.palettes
       }
-      )).subscribe(data => {
+      )).subscribe(([builtin_boards, user_boards]) => {
         //TODO: needs optimization as we can set properties of boards as default values but how?
         // this.boards = this.parseBoards(data["boards"])
-        this.palettes[0].symbols = data
+        console.log(builtin_boards, user_boards)
+        this.palettes[0].symbols = builtin_boards
+        this.palettes[1].symbols = user_boards
 
       }, error => {
+        console.log(error)
         alert("error in loading sidebar items")
       });
   }

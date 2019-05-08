@@ -9,7 +9,9 @@ import { DesignComponent } from './design/design.component';
 import { CustomBoardComponent } from './custom-board/custom-board.component';
 
 const routes: Routes = [
-  { path: '', component: CustomBoardComponent },
+  { path: 'customboard', component: CustomBoardComponent, canActivate: [AuthGuard] },
+  { path: '', component: HomeComponent, canActivate: [AuthGuard] },
+
   { path: 'login', component: LoginComponent },
 
   { path: 'register', component: RegisterComponent },
