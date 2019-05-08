@@ -9,6 +9,7 @@ import { Board } from '../_models/board';
 import { SharedVariablesService } from '../_services';
 import { addInfo_name, addInfo_componentId } from '../utils';
 import { TouchSequence } from 'selenium-webdriver';
+import { queryParams } from '@syncfusion/ej2-base';
 
 @Component({
   selector: 'app-custom-board',
@@ -201,6 +202,7 @@ export class CustomBoardComponent implements OnInit {
     this.diagram.refresh()
   }
   //after reading image file ,set the board node to this image after clearning the whole diagram
+  new_image = true // if changed image then we should send the new image else just update props
   readingEnded = (e) => {
 
     localStorage.setItem("board", e.target.result);
@@ -210,6 +212,7 @@ export class CustomBoardComponent implements OnInit {
       type: "Image",
       source: localStorage.getItem("board")
     }
+    this.new_image = true
     this.addBoard()
   }
   image: File;
@@ -306,8 +309,6 @@ export class CustomBoardComponent implements OnInit {
   error_saved = false
   customClose(id) {
     this.modalService.close(id)
-    if (!this.error_saved && this.saved)
-      this.router.navigate([this.router.url], { queryParams: { board_id: this.board_id } });
     this.saved = false;
     this.error_saved = false
   }
@@ -341,19 +342,21 @@ export class CustomBoardComponent implements OnInit {
         this.modalService.open(this.save_custom_board_modal_id)
         try {
           let board_with_ports = this.create_board()
-          this.customBoardService.createCustomBoard(this.image, board_with_ports).pipe(finalize(() => {
+          this.customBoardService.createCustomBoard(this.image, this.new_image, board_with_ports).pipe(finalize(() => {
             this.hide_modal_close_btn = false
           })).subscribe(data => {
             this.saved = true;
             this.error_saved = false;
             console.log("before if board id ", this.board_id)
             this.hide_modal_close_btn = false
-
+            this.new_image = false //only true if uploaded new image
             if (this.board_id == null) {
               console.log(data.id)
               this.board_id = data.id
               this.board_node.addInfo[addInfo_componentId] = data.id
+              this.router.navigate(["customboard"], { queryParams: { board_id: this.board_id } });
             }
+
           }, error => {
             this.saved = false;
             this.error_saved = true
