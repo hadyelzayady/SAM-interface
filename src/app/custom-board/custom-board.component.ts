@@ -1,15 +1,17 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
 import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs } from '@syncfusion/ej2-angular-diagrams';
 import { ClickEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { ModalService } from '../modal.service';
 import { CustomBoardService } from '../_services/custom-board.service';
-import { finalize } from 'rxjs/operators';
+import { finalize, first } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Board } from '../_models/board';
 import { SharedVariablesService } from '../_services';
 import { addInfo_name, addInfo_componentId } from '../utils';
 import { TouchSequence } from 'selenium-webdriver';
 import { queryParams } from '@syncfusion/ej2-base';
+import { WidthTable } from '@syncfusion/ej2-pdf-export';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-custom-board',
@@ -177,13 +179,33 @@ export class CustomBoardComponent implements OnInit {
         this.board_props.annotations[0].content = data.name
         this.board_props.addInfo[addInfo_componentId] = data.id
         this.board_props.addInfo["type"] = "board"
-        this.addBoard()
+        //set dim
 
-        data.ports.forEach(port => {
-          let pin = this.diagram.add(this.convertPortToNode(port))
-          this.grouper_node.children.push(pin.id)
+        let open: EventEmitter<any> = new EventEmitter();
+        var i = new Image();
+
+        open.subscribe(dim => {
+          this.board_props.width = dim["width"]
+          this.board_props.height = dim["height"]
+          this.new_image = true
+          this.addBoard()
+
+          data.ports.forEach(port => {
+            let pin = this.diagram.add(this.convertPortToNode(port))
+            this.grouper_node.children.push(pin.id)
+          })
+          this.diagram.refresh()
         })
-        this.diagram.refresh()
+        i.onload = function () {
+          open.emit({ width: i.width, height: i.height })
+          // image_event.next({ width: i.width, height: i.height })
+          // imaged_loaded.unsubscribe()
+        }
+        i.src = this.board_props.shape.source
+        //end set dim
+        // this.addBoard()
+
+
       }, error => {
         this.router.navigate([this.router.url])
       })
@@ -192,10 +214,13 @@ export class CustomBoardComponent implements OnInit {
 
   addBoard() {
     //add board and grouper to diagram to diagram
+    console.log("add board", this.board_props.width)
     this.diagram.add(this.board_props)
     this.board_node = this.diagram.nodes[0]
+    this.board_node.width = this.board_props.width
+    this.board_node.height = this.board_props.height
+    console.log("node width  ", this.board_node.width)
     this.board_grouper.children = [this.board_node.id]
-    console.log(this.board_grouper)
     this.diagram.add(this.board_grouper)
     this.grouper_node = this.diagram.nodes[1]
     //add board to grouper
@@ -204,24 +229,40 @@ export class CustomBoardComponent implements OnInit {
   //after reading image file ,set the board node to this image after clearning the whole diagram
   new_image = true // if changed image then we should send the new image else just update props
   readingEnded = (e) => {
-
     localStorage.setItem("board", e.target.result);
-
     this.diagram.clear()
     this.board_props.shape = {
       type: "Image",
-      source: localStorage.getItem("board")
+      source: e.target.result
     }
-    this.new_image = true
-    this.addBoard()
-  }
-  image: File;
-  fileInputChange(event) {
 
+    let open: EventEmitter<any> = new EventEmitter();
+    var i = new Image();
+    open.subscribe(data => {
+      this.board_props.width = data["width"]
+      this.board_props.height = data["height"]
+      this.new_image = true
+      this.addBoard()
+    })
+    i.onload = function () {
+      open.emit({ width: i.width, height: i.height })
+      // image_event.next({ width: i.width, height: i.height })
+      // imaged_loaded.unsubscribe()
+    }
+    i.src = e.target.result
+
+
+  }
+
+
+  image: File;
+
+  fileInputChange(event) {
     this.image = event.target.files[0]
     if (this.image != null) {
       let reader = new FileReader()
       reader.onloadend = this.readingEnded;
+      this.new_image = true
       reader.readAsDataURL(this.image)
     }
 
@@ -254,6 +295,7 @@ export class CustomBoardComponent implements OnInit {
       minY,
       maxX,
       maxY)
+
     return this.between({ x: pin_down_right_x, y: pin_down_right_y }, minX, maxX, minY, maxY) && this.between({ x: pin_upper_left_x, y: pin_upper_left_y }, minX, maxX, minY, maxY)
   }
   getPinOffset(board: NodeModel, pin_offset_x: number, pin_offset_y: number) {
@@ -314,6 +356,7 @@ export class CustomBoardComponent implements OnInit {
   }
   getPinInitPosition() {
     //random around center of board
+    console.log("get random", this.board_node.width)
     let x = this.board_node.offsetX + Math.random() * this.board_node.width / 2
     let y = this.board_node.offsetY + Math.random() * this.board_node.height / 2
     return [x, y]
