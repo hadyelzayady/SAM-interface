@@ -67,6 +67,21 @@ export class CustomBoardComponent implements OnInit {
       [addInfo_componentId]: null
     },
   }
+  board_props_default: NodeModel = {
+    id: "board",
+    offsetX: 300,
+    offsetY: 300,
+    width: 300,
+    height: 300,
+    annotations: [{
+      content: 'board name'
+    }],
+    ports: [],
+    addInfo: {
+      type: "board",
+      [addInfo_componentId]: null
+    },
+  }
   private pin_number = 1
 
   private pin: NodeModel = {
@@ -214,6 +229,7 @@ export class CustomBoardComponent implements OnInit {
 
   addBoard() {
     //add board and grouper to diagram to diagram
+    console.log(this.board_props)
     console.log("add board", this.board_props.width)
     this.diagram.add(this.board_props)
     this.board_node = this.diagram.nodes[0]
@@ -230,7 +246,7 @@ export class CustomBoardComponent implements OnInit {
   new_image = true // if changed image then we should send the new image else just update props
   readingEnded = (e) => {
     localStorage.setItem("board", e.target.result);
-    this.diagram.clear()
+    this.board_props = JSON.parse(JSON.stringify(this.board_props_default))
     this.board_props.shape = {
       type: "Image",
       source: e.target.result
@@ -241,6 +257,7 @@ export class CustomBoardComponent implements OnInit {
     open.subscribe(data => {
       this.board_props.width = data["width"]
       this.board_props.height = data["height"]
+      this.board_props.ports = []
       this.new_image = true
       this.addBoard()
     })
