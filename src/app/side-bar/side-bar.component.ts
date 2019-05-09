@@ -1,13 +1,14 @@
-import { Component, OnInit, ViewEncapsulation, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ViewChild, EventEmitter } from '@angular/core';
 import { PaletteModel, NodeModel, ConnectorModel, PointPortModel, PortVisibility, NodeConstraints, PortConstraints, SymbolPaletteComponent } from '@syncfusion/ej2-angular-diagrams';
 import { Arduino } from '../_models/arduino';
 import { Battery } from '../_models/Battery';
 import { Led } from '../_models/Led';
 import { SharedVariablesService, DesignService } from '../_services';
 import { Board } from '../_models/board';
-import { finalize, takeUntil } from 'rxjs/operators';
-import { nodeDesignConstraints, connectorDesignConstraints } from '../utils';
+import { finalize, takeUntil, first } from 'rxjs/operators';
+import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId } from '../utils';
 import { Components } from '../_models/Components';
+import { BehaviorSubject } from 'rxjs';
 @Component({
   selector: 'app-side-bar',
   templateUrl: './side-bar.component.html',
@@ -125,8 +126,9 @@ export class SideBarComponent implements OnInit {
         //TODO: needs optimization as we can set properties of boards as default values but how?
         // this.boards = this.parseBoards(data["boards"])
         console.log(builtin_boards, user_boards)
-        this.palettes[0].symbols = builtin_boards
-        this.palettes[1].symbols = user_boards
+        this.builtin_boards = builtin_boards
+        this.user_boards = user_boards
+        this.setBoards()
 
       }, error => {
         console.log(error)
@@ -134,6 +136,49 @@ export class SideBarComponent implements OnInit {
       });
   }
 
+  addBoardsToPallete() {
+    this.sidebar.palettes[0].symbols = this.builtin_boards
+    this.sidebar.palettes[1].symbols = this.user_boards
+    this.sidebar.refresh()
+
+  }
+  builtin_boards = []
+  user_boards = []
+  setImage(board: NodeModel, type_index: number) {
+    this.designService.getImage(board.addInfo[addInfo_componentId]).subscribe(image => {
+      let open: EventEmitter<any> = new EventEmitter();
+
+      open.pipe(first()).subscribe(() => {
+        //check if all boards have image setted to add these boards to pallete
+        this.added_count += 1
+        if (this.added_count == this.total_boards_count)
+          this.addBoardsToPallete()
+      })
+
+      let reader = new FileReader();
+      reader.onloadend = (e) => {
+        board.shape["source"] = e.target["result"]
+        open.emit()
+      }
+
+      reader.readAsDataURL(image)
+    }, error => {
+      console.log("error in getting image", error)
+    })
+  }
+
+  total_boards_count = 0;
+  added_count = 0
+  setBoards() {
+    this.total_boards_count = this.builtin_boards.length + this.user_boards.length;
+    this.added_count = 0
+    this.builtin_boards.forEach(board => {
+      this.setImage(board, 0)
+    })
+    this.user_boards.forEach(board => {
+      this.setImage(board, 1)
+    })
+  }
   parseBoards(boards: NodeModel[]): NodeModel[] {
     boards.forEach(board => {
       board.constraints = nodeDesignConstraints,

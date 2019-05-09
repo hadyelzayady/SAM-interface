@@ -8,10 +8,9 @@ import { Observable } from 'rxjs';
 import { filter, map, flatMap, timestamp } from 'rxjs/operators';
 import { Board } from '../_models/board';
 import { NodeModel, PortModel, PortVisibility } from '@syncfusion/ej2-angular-diagrams';
-import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType } from '../utils';
+import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType, setImageSize } from '../utils';
 @Injectable()
 export class DesignService {
-
 
     constructor(private http: HttpClient, private sharedData: SharedVariablesService) { }
     private baseurl = this.sharedData.baseurl + '/design'
@@ -19,6 +18,11 @@ export class DesignService {
         return this.http.get<User[]>(`/api/users`);
     }
 
+    getImage(board_id) {
+        return this.http.get(`${this.sharedData.imageUrl}${board_id}/image`, {
+            responseType: "blob"
+        });
+    }
 
     reserve(reservecomps: {}, fileid: number) {
         return this.http.post<ReserveComponentsResponse[]>(`${this.baseurl}/${fileid}/reserve`, reservecomps)
@@ -57,6 +61,7 @@ export class DesignService {
                 node.ports = board.ports
                 node.ports.forEach(port => {
                     port.constraints = connectorDesignConstraints;
+                    port.visibility = PortVisibility.Visible;
                 })
                 if (board.UserId == null) {
                     builtin_boards.push(node)
