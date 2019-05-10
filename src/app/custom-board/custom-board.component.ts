@@ -219,7 +219,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
             let pin = this.diagram.add(this.convertPortToNode(port))
             this.grouper_node.children.push(pin.id)
           })
-          this.diagram.refresh()
+          this.diagram.refreshDiagram()
         })
         i.onload = function () {
           open.emit({ width: i.width, height: i.height })
@@ -250,7 +250,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     this.diagram.add(this.board_grouper)
     this.grouper_node = this.diagram.nodes[1]
     //add board to grouper
-    this.diagram.refresh()
+    this.diagram.refreshDiagram()
   }
   //after reading image file ,set the board node to this image after clearning the whole diagram
   // new_image = true // if changed image then we should send the new image else just update props
@@ -287,6 +287,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   fileInputChange(event) {
     this.saved_design = false
     this.image = event.target.files[0]
+    // this.diagram.nodes = []
     this.diagram.clear()
     if (this.image != null) {
       let reader = new FileReader()
@@ -339,7 +340,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   create_board() {
     // board.ports = []
     // this.board.ports = []
-    let board = { id: this.board_props.addInfo[addInfo_componentId], name: this.board_node.annotations[0].content, ports: [], code_required: true }
+    console.log(this.board_node)
+    let board = { id: this.board_id, name: this.board_node.annotations[0].content, ports: [], code_required: true }
     let ports = []
     let pin_ids = []
     this.diagram.nodes.forEach(node => {

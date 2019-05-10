@@ -20,6 +20,7 @@ export class CustomBoardService {
     formData.append("board", JSON.stringify(board))
     let param = ''
     console.log("addinfo component id", board)
+    // console.log("board id ", board.id)
     if (board.id != null) {
       param = `?board_id=${board.id}`
     }
