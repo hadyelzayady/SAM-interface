@@ -116,7 +116,6 @@ export class SideBarComponent implements OnInit {
       }
     ];
 
-
     this.designService.getSideBarItems().pipe(
       finalize(() => {
         //Action to be executed always after subscribe
@@ -163,6 +162,7 @@ export class SideBarComponent implements OnInit {
 
       reader.readAsDataURL(image)
     }, error => {
+      this.added_count += 1
       console.log("error in getting image", error)
     })
   }

@@ -54,8 +54,8 @@ export class DesignService {
             let user_boards = [] as NodeModel[]
             components.boards.forEach(board => {
                 let node: NodeModel = {};
-                node.id = board.name + i++
-                node.addInfo = { [addInfo_name]: board.name, [addInfo_componentId]: board.id, [addInfo_reserved]: false, [addInfo_type]: ComponentType.Hardware }
+                node.id = `${board.name}_` + i++
+                node.addInfo = { [addInfo_name]: `${board.name}`, [addInfo_componentId]: board.id, [addInfo_reserved]: false, [addInfo_type]: ComponentType.Hardware }
                 node.shape = { type: "Image", source: `${this.sharedData.imageUrl}${board.id}/image` }
                 node.constraints = nodeDesignConstraints
                 node.ports = board.ports
@@ -63,6 +63,9 @@ export class DesignService {
                     port.constraints = connectorDesignConstraints;
                     port.visibility = PortVisibility.Visible;
                 })
+                node.annotations = [{
+                    content: node.id,
+                }]
                 if (board.UserId == null) {
                     builtin_boards.push(node)
                 }

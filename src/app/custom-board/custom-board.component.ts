@@ -84,7 +84,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     width: 300,
     height: 300,
     annotations: [{
-      content: 'board name'
+      content: 'boardname'
     }],
     ports: [],
     addInfo: {
@@ -384,6 +384,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     this.modalService.close(id)
     this.saved = false;
     this.error_saved = false
+    this.error_message = null
   }
   getPinInitPosition() {
     //random around center of board
@@ -392,6 +393,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     let y = this.board_node.offsetY + Math.random() * this.board_node.height / 2
     return [x, y]
   }
+  error_message = null
   toolbarClick(args: ClickEventArgs) {
     switch (args.item.id) {
       case this.add_pin: {
@@ -435,6 +437,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
           }, error => {
             this.saved = false;
             this.error_saved = true
+            this.error_message = error
           })
         } catch (error) {
           alert(error)
