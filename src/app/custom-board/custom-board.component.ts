@@ -212,7 +212,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
         open.subscribe(dim => {
           this.board_props.width = dim["width"]
           this.board_props.height = dim["height"]
-          this.new_image = true
+          // this.new_image = true
           this.addBoard()
 
           data.ports.forEach(port => {
@@ -253,7 +253,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     this.diagram.refresh()
   }
   //after reading image file ,set the board node to this image after clearning the whole diagram
-  new_image = true // if changed image then we should send the new image else just update props
+  // new_image = true // if changed image then we should send the new image else just update props
   readingEnded = (e) => {
     localStorage.setItem("board", e.target.result);
     this.board_props = JSON.parse(JSON.stringify(this.board_props_default))
@@ -268,7 +268,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       this.board_props.width = data["width"]
       this.board_props.height = data["height"]
       this.board_props.ports = []
-      this.new_image = true
+      // this.new_image = true
       this.addBoard()
     })
     i.onload = function () {
@@ -290,7 +290,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     if (this.image != null) {
       let reader = new FileReader()
       reader.onloadend = this.readingEnded;
-      this.new_image = true
+      // this.new_image = true
       reader.readAsDataURL(this.image)
     }
 
@@ -413,14 +413,14 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
         this.modalService.open(this.save_custom_board_modal_id)
         try {
           let board_with_ports = this.create_board()
-          this.customBoardService.createCustomBoard(this.image, this.new_image, board_with_ports).pipe(finalize(() => {
+          this.customBoardService.createCustomBoard(this.image, board_with_ports).pipe(finalize(() => {
             this.hide_modal_close_btn = false
           })).subscribe(data => {
             this.saved = true;
             this.error_saved = false;
             console.log("before if board id ", this.board_id)
             this.hide_modal_close_btn = false
-            this.new_image = false //only true if uploaded new image
+            // this.new_image = false //only true if uploaded new image
             if (this.board_id == null) {
               console.log(data.id)
               this.board_id = data.id
