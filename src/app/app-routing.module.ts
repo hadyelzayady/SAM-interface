@@ -7,6 +7,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { DesignComponent } from './design/design.component';
 import { CustomBoardComponent } from './custom-board/custom-board.component';
+import { CanDeactivateGuard } from './can-deactivate/can-deactivate.guard';
 
 const routes: Routes = [
   { path: 'customboard', component: CustomBoardComponent, canActivate: [AuthGuard] },
@@ -15,7 +16,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
 
   { path: 'register', component: RegisterComponent },
-  { path: 'design/:id', component: DesignComponent, canActivate: [AuthGuard] },
+  { path: 'design/:id', component: DesignComponent, canActivate: [AuthGuard], canDeactivate: [CanDeactivateGuard] },
 
   // otherwise redirect to home
   { path: '**', redirectTo: '' }

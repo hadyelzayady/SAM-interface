@@ -170,6 +170,8 @@ export class DesignComponent {
 
   diagramCreated() {
     this.loadDesignFile();
+    console.log(this.sharedData.diagram.historyManager.currentEntry)
+
   }
 
   selectionChangeEvent(args: ISelectionChangeEventArgs) {

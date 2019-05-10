@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
-import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs } from '@syncfusion/ej2-angular-diagrams';
+import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs, IHistoryChangeArgs } from '@syncfusion/ej2-angular-diagrams';
 import { ClickEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { ModalService } from '../modal.service';
 import { CustomBoardService } from '../_services/custom-board.service';
@@ -12,15 +12,17 @@ import { TouchSequence } from 'selenium-webdriver';
 import { queryParams } from '@syncfusion/ej2-base';
 import { WidthTable } from '@syncfusion/ej2-pdf-export';
 import { BehaviorSubject } from 'rxjs';
+import { CanDeactivateComponent } from '../can-deactivate/can-deactivate.component';
 
 @Component({
   selector: 'app-custom-board',
   templateUrl: './custom-board.component.html',
   styleUrls: ['./custom-board.component.css']
 })
-export class CustomBoardComponent implements OnInit {
+export class CustomBoardComponent extends CanDeactivateComponent implements OnInit {
 
   constructor(private modalService: ModalService, private sharedData: SharedVariablesService, private customBoardService: CustomBoardService, private Activatedroute: ActivatedRoute, private router: Router) {
+    super()
   }
   sub
   board_id = null
@@ -42,6 +44,14 @@ export class CustomBoardComponent implements OnInit {
     //   })
     // }
 
+  }
+  saved_design = true
+  canDeactivate(): boolean {
+    return this.saved_design
+  }
+
+  historyChanged(args: IHistoryChangeArgs) {
+    this.saved_design = false
   }
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
@@ -275,6 +285,7 @@ export class CustomBoardComponent implements OnInit {
   image: File;
 
   fileInputChange(event) {
+    this.saved_design = false
     this.image = event.target.files[0]
     if (this.image != null) {
       let reader = new FileReader()

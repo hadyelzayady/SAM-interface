@@ -29,6 +29,7 @@ import { LoadingModalComponent } from './loading-modal/loading-modal.component';
 import { WebSocketService } from './_services/web-socket.service';
 import { SimCommunicationService } from './_services/sim-communication.service';
 import { CustomBoardComponent } from './custom-board/custom-board.component';
+import { CanDeactivateGuard } from './can-deactivate/can-deactivate.guard';
 @NgModule({
   declarations: [
     AppComponent,
@@ -43,7 +44,7 @@ import { CustomBoardComponent } from './custom-board/custom-board.component';
     DesignComponent,
     HomeComponent,
     LoadingModalComponent,
-    CustomBoardComponent
+    CustomBoardComponent,
   ],
   imports: [
     BrowserModule,
@@ -67,6 +68,7 @@ import { CustomBoardComponent } from './custom-board/custom-board.component';
     UndoRedoService, UtilsService,
     DiagramContextMenuService,
     AuthGuard,
+    CanDeactivateGuard,
     AlertService, UserService, DesignService
     , AuthenticationService, WebSocketService, SimCommunicationService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

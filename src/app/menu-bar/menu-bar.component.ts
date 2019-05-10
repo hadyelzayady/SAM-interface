@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { MenuItemModel, MenuEventArgs } from '@syncfusion/ej2-angular-navigations';
+import { Component, OnInit, ViewChild, Input, HostListener } from '@angular/core';
+import { MenuItemModel, MenuEventArgs, MenuComponent } from '@syncfusion/ej2-angular-navigations';
 import { enableRipple } from '@syncfusion/ej2-base';
 import { FilenameDialogComponent } from '../filename-dialog/filename-dialog.component';
 import { SimpleModalService } from 'ngx-simple-modal';
@@ -7,20 +7,28 @@ import { SharedVariablesService } from '../_services/shared-variables.service';
 import { LoadFileComponent } from '../load-file/load-file.component';
 import { DesignService } from '../_services';
 import { first } from 'rxjs/operators';
+import { Router } from '@angular/router';
+import { CanDeactivateComponent } from '../can-deactivate/can-deactivate.component';
 
 @Component({
   selector: 'app-menu-bar',
   templateUrl: './menu-bar.component.html',
   styleUrls: ['./menu-bar.component.css']
 })
-export class MenuBarComponent implements OnInit {
+export class MenuBarComponent extends CanDeactivateComponent implements OnInit {
   animal: string;
   name: string;
   open_id = "open";
   save_id = "save"
   download_id = "download"
   load_id = "load";
-  private menuItems: MenuItemModel[] = [
+  @ViewChild("menu") menubar: MenuComponent
+
+  //
+  canDeactivate(): boolean {
+    return this.saved_design
+  }
+  menuItems: MenuItemModel[] = [
     {
       text: 'File',
       iconCss: 'em-icons e-file',
@@ -30,15 +38,40 @@ export class MenuBarComponent implements OnInit {
         { id: this.download_id, text: 'Download diagram on your computer', iconCss: 'e-icons e-save' },
         { id: this.load_id, text: 'Load Diagram from your computer', iconCss: 'e-icons e-load' },
       ]
+    },
+    {
+      text: 'Saved',
+      iconCss: 'em-icons e-check-mark',
     }
   ];
   @Input() file_id: number;
 
-  constructor(private simpleModalService: SimpleModalService, public sharedData: SharedVariablesService, private designService: DesignService) { }
+  constructor(private simpleModalService: SimpleModalService, public sharedData: SharedVariablesService, private designService: DesignService, private router: Router) {
+    super()
 
-  ngOnInit() {
   }
-
+  saved_undo_stack_length = 0
+  ngOnInit() {
+    this.sharedData.diagram.historyChange.subscribe(() => {
+      console.log(this.sharedData.diagram.historyManager.undoStack, this.saved_undo_stack_length)
+      if (this.saved_undo_stack_length == this.sharedData.diagram.historyManager.undoStack.length)
+        this.setSaveStatus(true)
+      else
+        this.setSaveStatus(false)
+      console.log("h")
+    })
+  }
+  saved_design: boolean = true
+  setSaveStatus(saved: boolean) {
+    this.saved_design = saved
+    if (saved) {
+      this.saved_undo_stack_length = this.sharedData.diagram.historyManager.undoStack.length
+      this.menubar.items[1].iconCss = "em-icons e-check-mark"
+    }
+    else {
+      this.menubar.items[1].iconCss = "em-icons e-cross-mark"
+    }
+  }
   //openadd file dialoge
   private select(args: MenuEventArgs): void {
 
@@ -46,6 +79,7 @@ export class MenuBarComponent implements OnInit {
       case this.save_id:
         {
           this.designService.saveDesign(this.sharedData.diagram.saveDiagram(), this.file_id).subscribe(() => {
+            this.setSaveStatus(true)
             alert("file edited")
           }, error => {
           });
