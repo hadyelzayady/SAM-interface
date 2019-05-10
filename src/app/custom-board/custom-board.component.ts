@@ -287,6 +287,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   fileInputChange(event) {
     this.saved_design = false
     this.image = event.target.files[0]
+    this.diagram.clear()
     if (this.image != null) {
       let reader = new FileReader()
       reader.onloadend = this.readingEnded;
@@ -418,6 +419,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
           })).subscribe(data => {
             this.saved = true;
             this.error_saved = false;
+            this.saved_design = true
             console.log("before if board id ", this.board_id)
             this.hide_modal_close_btn = false
             // this.new_image = false //only true if uploaded new image
