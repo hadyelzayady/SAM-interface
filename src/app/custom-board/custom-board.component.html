@@ -30,15 +30,24 @@
   </div>
 </div>
 <div class="row nopadding">
-  <!-- <div class="col-3 nopadding">
-    <ejs-symbolpalette #sidebar id="symbolpalette" style="border: solid 1px lavender;" width="100%" height="100%"
-      expandMode="Multiple" [symbolHeight]=50 [symbolWidth]=50 [palettes]="palettes">
-    </ejs-symbolpalette>
-  </div> -->
+  <div class="col-3 nopadding">
+    <table>
+      <tr>
+        <th>Sam pin name</th>
+        <th>Board pin name</th>
+      </tr>
+      <tr *ngFor="let pin of SAM_pins let i=index" [attr.data-index]="i">
+        <td>SAM pin:{{i}}</td>
+        <td><input type="text" size="4" [(ngModel)]="SAMPin_BoardPin[i]"></td>
+      </tr>
+
+    </table>
+  </div>
   <div class="col-9 w-80 nopadding">
     <ejs-diagram #diagram id="diagram" width="100%" height="568px" (created)='diagramCreated()'
-      (selectionChange)='selectionChangeEvent($event)' (historyChange)='historyChanged($event)'>
-
+      (selectionChange)='selectionChangeEvent($event)' (historyChange)='historyChanged($event)'
+      (textEdit)='EditBoardNameEvent($event)'>
+      <!-- (textEdit)='EditBoardNameEvent($event)' -->
     </ejs-diagram>
   </div>
 </div>

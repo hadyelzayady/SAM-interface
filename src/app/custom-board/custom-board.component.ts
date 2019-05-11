@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
-import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs, IHistoryChangeArgs } from '@syncfusion/ej2-angular-diagrams';
+import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs, IHistoryChangeArgs, ITextEditEventArgs } from '@syncfusion/ej2-angular-diagrams';
 import { ClickEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { ModalService } from '../modal.service';
 import { CustomBoardService } from '../_services/custom-board.service';
@@ -26,7 +26,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   }
   sub
   board_id = null
-
+  map_table_rows_count = 10
+  SAM_pins = Array(8)
   ngOnInit() {
     // this.router.navigate(['design', file.id])
     // console.log(this.Activatedroute.queryParamMap)
@@ -218,6 +219,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
           data.ports.forEach(port => {
             let pin = this.diagram.add(this.convertPortToNode(port))
             this.grouper_node.children.push(pin.id)
+            this.pin_number += 1
           })
           this.diagram.refreshDiagram()
         })
@@ -243,8 +245,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     console.log("add board", this.board_props.width)
     this.diagram.add(this.board_props)
     this.board_node = this.diagram.nodes[0]
-    this.board_node.width = this.board_props.width
-    this.board_node.height = this.board_props.height
+    // this.board_node.width = this.board_props.width
+    // this.board_node.height = this.board_props.height
     console.log("node width  ", this.board_node.width)
     this.board_grouper.children = [this.board_node.id]
     this.diagram.add(this.board_grouper)
@@ -336,7 +338,12 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     let y = (pin_offset_y - board_corner_y) / this.board_node.height
     return [x, y]
   }
-
+  BoardPin_SAMPin: { [key: string]: string } = {}
+  setBoardPin_SAMPin() {
+    Object.keys(this.SAMPin_BoardPin).forEach(SAM_pin_number => {
+      this.BoardPin_SAMPin[this.SAMPin_BoardPin[SAM_pin_number]] = SAM_pin_number
+    })
+  }
   create_board() {
     // board.ports = []
     // this.board.ports = []
@@ -353,9 +360,13 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
             throw Error("pins should have unique name,more than one pin have the same name")
           else
             pin_ids.push(node.annotations[0].content)
+          let pin_id = node.annotations[0].content
+          let SAM_pin = this.BoardPin_SAMPin[pin_id]
+          if (SAM_pin == null)
+            throw Error("SAM pin map not assigned")
           let [x, y] = this.getPinOffset(this.board_node, node.offsetX, node.offsetY)
           ports.push({
-            id: node.annotations[0].content,
+            id: this.BoardPin_SAMPin[pin_id],
             offset: {
               x: x,
               y: y
@@ -377,6 +388,9 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     board.ports = ports
     return board
   }
+  EditBoardNameEvent(args) {
+    console.log(args)
+  }
   hide_modal_close_btn = false;
   saved = false;
   error_saved = false
@@ -386,6 +400,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     this.error_saved = false
     this.error_message = null
   }
+  SAMPin_BoardPin: { [key: string]: string } = {}
+
   getPinInitPosition() {
     //random around center of board
     console.log("get random", this.board_node.width)
@@ -394,6 +410,10 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     return [x, y]
   }
   error_message = null
+
+  addMapInTable(node) {
+
+  }
   toolbarClick(args: ClickEventArgs) {
     switch (args.item.id) {
       case this.add_pin: {
@@ -402,9 +422,10 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
           let [x, y] = this.getPinInitPosition()
           this.pin.offsetX = x
           this.pin.offsetY = y
-          let node = this.diagram.add(this.pin)
-          this.pin_number += 1;
           this.pin.annotations[0].content = `pin${this.pin_number}`
+          let node = this.diagram.add(this.pin)
+          this.addMapInTable(node)
+          this.pin_number += 1;
 
           this.grouper_node.children.push(node.id)
           this.diagram.refresh()
@@ -417,8 +438,9 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       case this.save_board: {
         this.modalService.open(this.save_custom_board_modal_id)
         try {
+          this.setBoardPin_SAMPin()
           let board_with_ports = this.create_board()
-          this.customBoardService.createCustomBoard(this.image, board_with_ports).pipe(finalize(() => {
+          this.customBoardService.createCustomBoard(this.image, board_with_ports, this.SAMPin_BoardPin).pipe(finalize(() => {
             this.hide_modal_close_btn = false
           })).subscribe(data => {
             this.saved = true;
@@ -439,11 +461,14 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
             this.error_saved = true
             this.error_message = error
           })
+
+
         } catch (error) {
           alert(error)
           this.modalService.close(this.save_custom_board_modal_id)
 
         }
+
         // this.board.ports = []
         // let ports = []
         break;

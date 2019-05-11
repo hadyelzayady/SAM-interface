@@ -9,6 +9,7 @@ import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, con
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
+import { RoutingStateService } from '../_services/routing-state.service';
 //TODO enable context menu 
 interface ConnectorEnd {
   nodeId: string,
@@ -32,12 +33,15 @@ export class DesignComponent {
   private file_id: number;
   public contextMenuSettings: ContextMenuSettingsModel;
   title = 'SAM-interface';
-  constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, private designService: DesignService, private approute: Router, private localSocketService: LocalWebSocketService) {
+  constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, private designService: DesignService, private approute: Router, private localSocketService: LocalWebSocketService, private routingState: RoutingStateService) {
   }
 
 
 
+  previousRoute: string;
   ngOnInit(): void {
+    this.previousRoute = this.routingState.getPreviousUrl();
+    console.log(this.previousRoute)
     this.sharedData.diagram = this.diagram;
     // this.contextMenuSettings = {
     //   show: true,

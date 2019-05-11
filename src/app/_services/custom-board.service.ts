@@ -13,11 +13,12 @@ export class CustomBoardService {
 
   constructor(private http: HttpClient, private sharedData: SharedVariablesService) { }
   private baseurl = this.sharedData.baseurl + '/customboard'
-  createCustomBoard(image: File, board: NodeModel) {
+  createCustomBoard(image: File, board: NodeModel, map) {
     const formData: FormData = new FormData();
     // console.log(isNewImage)
     formData.append("image", image)
     formData.append("board", JSON.stringify(board))
+    formData.append("pinmap", JSON.stringify(map))
     let param = ''
     console.log("addinfo component id", board)
     // console.log("board id ", board.id)
