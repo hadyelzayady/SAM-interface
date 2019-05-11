@@ -9,7 +9,7 @@ import { Board } from '../_models/board';
 import { SharedVariablesService } from '../_services';
 import { addInfo_name, addInfo_componentId } from '../utils';
 import { TouchSequence } from 'selenium-webdriver';
-import { queryParams } from '@syncfusion/ej2-base';
+import { queryParams, select } from '@syncfusion/ej2-base';
 import { WidthTable } from '@syncfusion/ej2-pdf-export';
 import { BehaviorSubject } from 'rxjs';
 import { CanDeactivateComponent } from '../can-deactivate/can-deactivate.component';
@@ -38,7 +38,14 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     // })
 
     this.board_id = +this.Activatedroute.snapshot.queryParamMap.get('board_id') || null;
-    console.log("bo:", this.board_id)
+    console.log("bo:", this.SAM_pins)
+
+
+    //init sampin_boardPin for table to show none always
+    for (let index = 0; index < this.SAM_pins.length; index++) {
+      this.SAMPin_BoardPin[index] = ""
+
+    }
     // if (this.board_id != null) {
     //   this.customBoardService.getBoard(this.board_id).subscribe(data => {
     //     console.log(data)
@@ -90,7 +97,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     ports: [],
     addInfo: {
       type: "board",
-      [addInfo_componentId]: null
+      [addInfo_componentId]: null,
+      selected: false
     },
   }
   private pin_number = 1
@@ -153,6 +161,31 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
         this.hide_pin_type = true
       }
     }
+  }
+  getPins() {
+    return this.diagram.nodes.filter(node => {
+      return node.addInfo["type"] == "pin"
+    })
+  }
+
+  boardPin_selected: { [key: string]: boolean } = {}
+  PinSelectedEvent(sam_pin_index, pin_id: string) {
+    if (pin_id == "") {
+      console.log("pin is null")
+      let oldBoardPin_id = this.SAMPin_BoardPin[sam_pin_index] || null
+      console.log("old pin_id", oldBoardPin_id)
+      if (oldBoardPin_id != null)
+        this.boardPin_selected[oldBoardPin_id] = false
+      this.SAMPin_BoardPin[sam_pin_index] = ''
+      console.log(this.SAMPin_BoardPin[sam_pin_index])
+      // this.SAMPin_BoardPin[sam_pin_index] = "none"
+    }
+    else {
+      this.boardPin_selected[pin_id] = true
+      this.SAMPin_BoardPin[sam_pin_index] = pin_id
+
+    }
+    console.log(this.boardPin_selected, this.SAMPin_BoardPin)
   }
   add_pin = "add-pin"
   save_board = "save-board"
@@ -405,8 +438,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   getPinInitPosition() {
     //random around center of board
     console.log("get random", this.board_node.width)
-    let x = this.board_node.offsetX + Math.random() * this.board_node.width / 2
-    let y = this.board_node.offsetY + Math.random() * this.board_node.height / 2
+    let x = this.board_node.offsetX //+ Math.random() * this.board_node.width / 2
+    let y = this.board_node.offsetY //+ Math.random() * this.board_node.height / 2
     return [x, y]
   }
   error_message = null
@@ -428,7 +461,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
           this.pin_number += 1;
 
           this.grouper_node.children.push(node.id)
-          this.diagram.refresh()
+          this.diagram.refreshDiagram()
         } else {
           alert("upload board image first")
           this.modalService.close(this.save_custom_board_modal_id)
