@@ -15,7 +15,6 @@ import { ngFileSaver } from 'angular-file-saver'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoadFileComponent } from './load-file/load-file.component';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap'
-import { UploaderModule } from '@syncfusion/ej2-angular-inputs';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoginComponent } from './login/login.component';
 import { AlertComponent } from './_directives/alert.component';
@@ -53,7 +52,6 @@ import { CanDeactivateGuard } from './can-deactivate/can-deactivate.guard';
     DiagramModule,
     GridModule,
     ToolbarModule,
-    UploaderModule,
     SymbolPaletteModule,
     MenuModule,
     SimpleModalModule,

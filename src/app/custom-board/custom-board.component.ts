@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
-import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs, IHistoryChangeArgs, ITextEditEventArgs } from '@syncfusion/ej2-angular-diagrams';
+import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs, IHistoryChangeArgs, ITextEditEventArgs, CommandManager } from '@syncfusion/ej2-angular-diagrams';
 import { ClickEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { ModalService } from '../modal.service';
 import { CustomBoardService } from '../_services/custom-board.service';
@@ -29,6 +29,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   board_id = null
   map_table_rows_count = 10
   SAM_pins = Array(8)
+  public commandManager: CommandManager;
   ngOnInit() {
     // this.router.navigate(['design', file.id])
     // console.log(this.Activatedroute.queryParamMap)
@@ -41,12 +42,10 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     this.board_id = +this.Activatedroute.snapshot.queryParamMap.get('board_id') || null;
     console.log("bo:", this.SAM_pins)
 
+    this.setCommandManager()
 
     //init sampin_boardPin for table to show none always
-    for (let index = 0; index < this.SAM_pins.length; index++) {
-      this.SAMPin_BoardPin[index] = ""
-
-    }
+    this.resetTable()
     // if (this.board_id != null) {
     //   this.customBoardService.getBoard(this.board_id).subscribe(data => {
     //     console.log(data)
@@ -54,13 +53,87 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     // }
 
   }
+  setCommandManager() {
+    let diagram = this.diagram
+    let resetTable = this.resetTable
+    let mythis = this
+    this.diagram.commandManager = {
+      commands: [
+        {
+          name: 'copy',
+          canExecute: function () {
+            console.log("canExecute", diagram.selectedItems.nodes)
+            if (diagram.selectedItems.nodes.length == 1 && diagram.selectedItems.nodes[0].addInfo["type"] == "pin")
+              return true;
+            return false
+          },
+          execute: (): void => {
+            diagram.copy()
+          },
+        },
+        {
+          name: 'cut',
+          canExecute: function () {
+            console.log("canExecute", diagram.selectedItems.nodes)
+            if (diagram.selectedItems.nodes.length == 1 && diagram.selectedItems.nodes[0].addInfo["type"] == "pin")
+              return true;
+            return false
+          },
+
+        },
+        {
+          name: 'cut',
+          canExecute: function () {
+            console.log("canExecute", diagram.selectedItems.nodes)
+            if (diagram.selectedItems.nodes.length == 1 && diagram.selectedItems.nodes[0].addInfo["type"] == "pin")
+              return true;
+            return false
+          },
+
+        },
+        {
+          name: 'delete',
+          execute: function () {
+            if (diagram.selectedItems.nodes.length == 1 && diagram.selectedItems.nodes[0].addInfo["type"] != "pin") {
+              // diagram.removeNode(mythis.board_node)
+              if (confirm("are you sure all changed will be removed")) {
+                diagram.clear()
+                mythis.resetTable()
+              }
+              else { }
+            }
+          }
+        },
+        {
+          name: "undo",
+          canExecute: () => {
+            return false
+          }
+        },
+        {
+          name: "redo",
+          canExecute: () => {
+            return false
+          }
+        }
+
+
+      ]
+    }
+  }
+  resetTable() {
+    for (let index = 0; index < this.SAM_pins.length; index++) {
+      this.SAMPin_BoardPin[index] = ""
+    }
+    this.boardPin_selected = {}
+    this.BoardPin_SAMPin = {}
+  }
   saved_design = true
   canDeactivate(): boolean {
     return this.saved_design
   }
 
   historyChanged(args) {
-    console.log("args", args)
     // if(args.change)
     this.saved_design = false
     let isRemove = args.change["Remove"] || false
@@ -73,7 +146,6 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
         let sam_pin = this.BoardPin_SAMPin[board_pin]
         this.SAMPin_BoardPin[sam_pin] = ""
         delete this.BoardPin_SAMPin[board_pin]
-        console.log(source)
       })
     }
     else if (isPropertyChaned) {
@@ -131,7 +203,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     height: 300,
     annotations: [{
       content: 'boardname',
-
+      width: 100,
+      height: 100
     }],
     ports: [],
     addInfo: {
@@ -376,7 +449,9 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     this.saved_design = false
     this.image = event.target.files[0]
     // this.diagram.nodes = []
+    // this.diagram.removeNode(this.board_node) // this more convenient to remove only the board and keep pins
     this.diagram.clear()
+    this.resetTable()
     if (this.image != null) {
       let reader = new FileReader()
       reader.onloadend = this.readingEnded;
@@ -524,7 +599,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
           this.pin_number += 1;
 
           this.grouper_node.children.push(node.id)
-          this.diagram.refreshDiagram()
+          this.diagram.refresh()
         } else {
           alert("upload board image first")
           this.modalService.close(this.save_custom_board_modal_id)

@@ -7,7 +7,6 @@ import { ItemModel, ToolbarComponent, ClickEventArgs, Item } from '@syncfusion/e
 import { ToolbarItem } from '@syncfusion/ej2-grids';
 import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
 import { DiagramApiService } from '../_services/diagram-api.service';
-import { FilesDirective } from '@syncfusion/ej2-angular-inputs';
 import { ReserveComponentsResponse } from '../_models';
 import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port } from '../utils';
 import { ModalService } from '../modal.service';

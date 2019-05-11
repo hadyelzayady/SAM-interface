@@ -46,6 +46,7 @@ export class DesignComponent {
     // this.contextMenuSettings = {
     //   show: true,
     // }
+    this.setCommandManager()
     this.file_id = +this.route.snapshot.paramMap.get('id');
     this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
       this.sim_mode = sim_mode;
@@ -53,13 +54,52 @@ export class DesignComponent {
     });
 
   }
+  setCommandManager() {
+    let diagram = this.diagram
+    let mythis = this
+    this.diagram.commandManager = {
+      commands: [{
+        name: "paste",
+        canExecute: function () {
+          return !mythis.sim_mode
+        }
+      },
+      {
+        name: "cut",
+        canExecute: function () {
+          return !mythis.sim_mode
+        }
+      },
+      {
+        name: 'copy',
+        canExecute: function () {
+          console.log("canExute", mythis.sim_mode)
+          return !mythis.sim_mode
+        }
 
+      },
+      {
+        name: "undo",
+        canExecute: function () {
+          return !mythis.sim_mode
+        }
+      },
+      {
+        name: "redo",
+        canExecute: function () {
+          return !mythis.sim_mode
+        }
+      }
+      ]
+    }
+  }
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
     this.sharedData
   }
   historyChange(args: IHistoryChangeArgs) {
+    console.log(args)
   }
 
   setSimContextMenu() {
@@ -83,29 +123,7 @@ export class DesignComponent {
         this.sharedData.changePortValue(msg.value, msg.port_id, this.sharedData.connected_component_id_index[msg.connected_component_id])
       })
       // command manager for shortcuts
-      this.diagram.commandManager = {
-        commands: [{
-          "name": "paste",
-          "canExecute": "false"
-        },
-        {
-          "name": "cut",
-          "canExecute": "false"
-        },
-        {
-          "name": "copy",
-          "canExecute": "false"
-        },
-        {
-          "name": "undo",
-          "canExecute": "false"
-        },
-        {
-          "name": "redo",
-          "canExecute": "false"
-        }
-        ]
-      }
+
       this.setSimContextMenu()
       //this should be the last line
       // this.diagram.refresh()
@@ -119,29 +137,6 @@ export class DesignComponent {
       this.diagram.connectors.forEach(connector => {
         connector.constraints = connectorDesignConstraints;
       });
-      this.diagram.commandManager = {
-        commands: [{
-          "name": "paste",
-          "canExecute": "true"
-        },
-        {
-          "name": "cut",
-          "canExecute": "true"
-        },
-        {
-          "name": "copy",
-          "canExecute": "true"
-        },
-        {
-          "name": "undo",
-          "canExecute": "true"
-        },
-        {
-          "name": "redo",
-          "canExecute": "true"
-        }
-        ]
-      }
       // this.contextMenuSettings = {
       //   show: true
       // }
@@ -159,10 +154,16 @@ export class DesignComponent {
       .subscribe(file => {
         try {
           // console.log(JSON.stringify(file))
-          if (file != null)
+          if (file != null) {
             this.diagram.loadDiagram(JSON.stringify(file))
-          else
+            this.diagram.dataBind()
+          }
+
+          else {
             this.diagram.reset();
+            this.diagram.dataBind()
+
+          }
         } catch (error) {
           this.approute.navigate(["home"])
           alert("error on loading design ,fie reseted")
