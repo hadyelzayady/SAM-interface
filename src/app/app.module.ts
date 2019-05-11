@@ -29,6 +29,7 @@ import { WebSocketService } from './_services/web-socket.service';
 import { SimCommunicationService } from './_services/sim-communication.service';
 import { CustomBoardComponent } from './custom-board/custom-board.component';
 import { CanDeactivateGuard } from './can-deactivate/can-deactivate.guard';
+import { ConfigureSamComponent } from './configure-sam/configure-sam.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -44,6 +45,7 @@ import { CanDeactivateGuard } from './can-deactivate/can-deactivate.guard';
     HomeComponent,
     LoadingModalComponent,
     CustomBoardComponent,
+    ConfigureSamComponent,
   ],
   imports: [
     BrowserModule,

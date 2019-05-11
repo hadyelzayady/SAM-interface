@@ -1,0 +1,92 @@
+<div class="container">
+    <div class="row welcome_title">
+        <div class="col-xl-12">
+          <h1 >welcome to SAM configuration menu</h1>
+        </div>
+    </div>
+    <div class="row mainSection">
+        <div class="portForwarding col-md-4">
+            <h2 class="sectionTitle">Intsructions</h2>
+            <br>
+            <nav>
+                <ul class="Intsruction-Set">
+                    <li>
+                        <span class="badge">1</span> 
+                        <span >Plug your SAM with USB Cable</span>
+                        <img class ="boardimg"src='https://i.stack.imgur.com/Bnx0H.gif'>
+                      </li>
+                      <li>
+                          <span class="badge">2</span> 
+                          <span >Enter your port After port forwarding Process </span>
+                          <a href='https://www.lifewire.com/how-to-port-forward-4163829'>How to Port Forward</a>
+                          <img class ="boardimg"src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Internet_port_forwarding.png/1200px-Internet_port_forwarding.png'>
+                          <span>Port</span>
+                          <input type="text" class="form-control" placeholder="Port" aria-label="Port" aria-describedby="basic-addon1">
+
+                          <br>                      
+                      </li>              
+                  </ul>
+            </nav>
+
+           </div>  
+        <div class="connection col-md-4">
+            <h2 class="sectionTitle">How does your SAM connect to the internet?</h2>
+            <nav>
+                <ul class="connection-type">
+                    <li>
+                        <span class="badge">1</span> 
+                        <span >Ethernet</span>
+                        <img class ="boardimg"src='https://4.imimg.com/data4/YN/EM/MY-11004280/cat-5-cable-500x500.jpg'>
+                      </li>
+                      <li>
+                          <span class="badge">2</span> 
+                          <span >Wifi</span>
+                          <img class ="boardimg"src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTime7aH4loQkjXri7Ybz9-Xfqkn7zZCLL7-ZAVPOY5txDhjbvB1A'>
+                          <span>Wifi Name :</span>
+                          <input type="text" class="form-control" placeholder="Wifi Name" aria-label="Wifi Name" aria-describedby="basic-addon1">    
+                          <br>                      
+                          <span>Wifi Password</span>
+                          <input type="password" class="form-control" placeholder="Wifi password" aria-label="Wifi password" aria-describedby="basic-addon1">    
+                          <br>   
+                        </li>              
+                  </ul>
+            </nav>
+
+        </div>
+        <div class="connectedTo col-md-4">
+            <h2 class="sectionTitle">What will you connect the SAM to ?</h2>
+            <nav>
+              <ul class="boards">
+                  <li *ngFor="let board of boards"
+                  [class.selected]="board === selectedBoard"
+                  (click)="onSelect(board)">
+                  <span class="badge">{{board.id}}</span> 
+                  <span >{{board.name}}</span>
+                  <img class ="boardimg"src={{board.imgurl}}>
+                </li>
+              </ul>
+            </nav>
+        </div>
+    </div>
+   
+</div>
+
+
+
+<!-- <div class="configuration-section">   
+  <div class="boardselection">
+  
+  </div>
+</div> -->
+<div *ngIf="selectedBoard">
+
+  <h2>{{selectedBoard.name | uppercase}} Details</h2>
+  <div><span>id: </span>{{selectedBoard.id}}</div>
+  <div>
+    <label>name:
+      <input [(ngModel)]="selectedBoard.name" placeholder="name"/>
+    </label>
+  </div>
+
+</div>
+
