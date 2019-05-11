@@ -19,6 +19,12 @@
     padding: 0;
    
   }
+  .Intsruction-Set{
+    right: 0;
+    list-style-type: none;
+    padding: 0;
+   
+  }
   .boards li {
     
     /* cursor: pointer;
