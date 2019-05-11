@@ -12,7 +12,7 @@ export interface CustomBoard {
     name: string,
     code_required: boolean,
     image_path: string,
-    pin_map: string[]
+    pin_map: { [key: string]: string }
 
 
 }

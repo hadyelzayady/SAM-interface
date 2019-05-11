@@ -18,7 +18,7 @@ export class CustomBoardService {
     // console.log(isNewImage)
     formData.append("image", image)
     formData.append("board", JSON.stringify(board))
-    formData.append("pinmap[]", map)
+    formData.append("pinmap", JSON.stringify(map))
     let param = ''
     console.log("addinfo component id", board)
     // console.log("board id ", board.id)

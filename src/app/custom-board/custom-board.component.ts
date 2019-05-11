@@ -25,6 +25,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     super()
   }
   sub
+  board_name_regex = /^[A-Za-z][a-zA-Z0-9]*$/
   board_id = null
   map_table_rows_count = 10
   SAM_pins = Array(8)
@@ -58,8 +59,45 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     return this.saved_design
   }
 
-  historyChanged(args: IHistoryChangeArgs) {
+  historyChanged(args) {
+    console.log("args", args)
+    // if(args.change)
     this.saved_design = false
+    let isRemove = args.change["Remove"] || false
+    let isInsert = args.change["Insert"] || false
+    let isPropertyChaned = args.change["type"] == "PropertyChanged" || false
+    if (isRemove) {
+      let source = args.source
+      source.forEach(node => {
+        let board_pin = node.annotations[0].content
+        let sam_pin = this.BoardPin_SAMPin[board_pin]
+        this.SAMPin_BoardPin[sam_pin] = ""
+        delete this.BoardPin_SAMPin[board_pin]
+        console.log(source)
+      })
+    }
+    else if (isPropertyChaned) {
+      //check if board name not matched to regex
+      console.log("source 0", args.source[0])
+      //!board has key 0 in nodes ,but sure if t works all the time
+      if (args.source[0].nodes[0] != undefined) {
+        let annotations = args.source[0]["nodes"][0]["annotations"] || null
+        if (annotations != null) {
+          console.log("annotaionts", annotations[0].id)
+          //shoudl use this in below condition annotations["id"] == "boardname" && but id is not set!
+          if (!this.board_name_regex.test(annotations[0].content)) {
+            alert("invalid name")
+            this.board_node.annotations[0].content = this.board_props_default.annotations[0].content
+            return;
+          } else {
+            this.board_props_default.annotations[0].content = annotations[0].content
+          }
+        }
+      }
+
+    }
+    console.log(args)
+    console.log(isRemove)
   }
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
@@ -77,7 +115,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     width: 300,
     height: 300,
     annotations: [{
-      content: 'board name'
+      content: 'board name',
     }],
     ports: [],
     addInfo: {
@@ -92,7 +130,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     width: 300,
     height: 300,
     annotations: [{
-      content: 'boardname'
+      content: 'boardname',
+
     }],
     ports: [],
     addInfo: {
@@ -170,6 +209,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
 
   boardPin_selected: { [key: string]: boolean } = {}
   PinSelectedEvent(sam_pin_index, pin_id: string) {
+    console.log("change sele", sam_pin_index)
     if (pin_id == "") {
       console.log("pin is null")
       let oldBoardPin_id = this.SAMPin_BoardPin[sam_pin_index] || null
@@ -194,7 +234,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   save_board = "save-board"
   image_upload = "image-upload"
   save_custom_board_modal_id = "custom-board-modal"
-  convertPortToNode(port: PointPortModel) {
+  convertPortToNode(port: PointPortModel, pinmap) {
     //get port offset from left corner
     let port_offsetX_denormalize = port.offset.x * this.board_node.width
     let port_offsety_denormalize = port.offset.y * this.board_node.height
@@ -215,7 +255,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       width: port.width,
       height: port.height,
       annotations: [{
-        content: port.id
+        content: pinmap[port.id]
       }],
       addInfo: {
         type: "pin",
@@ -223,6 +263,15 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       }
     };
     return pin;
+  }
+  initTable(pin_map: { [key: string]: string }) {
+    //set pins map
+    Object.keys(pin_map).forEach(sam_pin => {
+      this.SAMPin_BoardPin[sam_pin] = pin_map[sam_pin]
+      this.BoardPin_SAMPin[pin_map[sam_pin]] = parseInt(sam_pin)
+      this.boardPin_selected[pin_map[sam_pin]] = true
+    })
+    //set
   }
   diagramCreated() {
     // this.diagram.add(this.board_props)
@@ -240,7 +289,6 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
         this.board_props.annotations[0].content = data.name
         this.board_props.addInfo[addInfo_componentId] = data.id
         this.board_props.addInfo["type"] = "board"
-        this.SAMPin_BoardPin = data.pin_map
         console.log(data.pin_map)
         //set dim
 
@@ -254,10 +302,11 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
           this.addBoard()
 
           data.ports.forEach(port => {
-            let pin = this.diagram.add(this.convertPortToNode(port))
+            let pin = this.diagram.add(this.convertPortToNode(port, data.pin_map))
             this.grouper_node.children.push(pin.id)
             this.pin_number += 1
           })
+          this.initTable(data.pin_map)
           this.diagram.refreshDiagram()
         })
         i.onload = function () {
@@ -418,12 +467,13 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     })
     // let board: NodeModel = JSON.parse(JSON.stringify(this.board_node));
     board.ports = ports
-    if (! /^[A-Za-z][a-zA-Z0-9]*$/.test(this.board_node.annotations[0].content))
+    if (!this.board_name_regex.test(this.board_node.annotations[0].content))
       throw Error("name should start with letter then containt only letter or digits or _ ")
     return board
   }
-  EditBoardNameEvent(args) {
-    console.log(args)
+  EditBoardNameEvent(args: ITextEditEventArgs) {
+
+    // args.newValue
   }
   hide_modal_close_btn = false;
   saved = false;
@@ -445,6 +495,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   error_message = null
 
   checkAllPinMapped() {
+    console.log("board pn sele", this.boardPin_selected)
     return Object.keys(this.boardPin_selected).filter(pin_id => {
       return this.boardPin_selected[pin_id] == true
     }).length
@@ -452,7 +503,14 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
         return node.addInfo["type"] == "pin"
       }).length
   }
-
+  getSAMMapping() {
+    let map = {}
+    this.SAMPin_BoardPin.forEach((board_pin, sam_pin) => {
+      if (board_pin != "")
+        map["" + sam_pin] = board_pin
+    })
+    return map
+  }
   toolbarClick(args: ClickEventArgs) {
     switch (args.item.id) {
       case this.add_pin: {
@@ -482,8 +540,9 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
           try {
 
             let board_with_ports = this.create_board()
+            let sam_maps = this.getSAMMapping()
             console.log("sent board", board_with_ports)
-            this.customBoardService.createCustomBoard(this.image, board_with_ports, this.SAMPin_BoardPin).pipe(finalize(() => {
+            this.customBoardService.createCustomBoard(this.image, board_with_ports, sam_maps).pipe(finalize(() => {
               this.hide_modal_close_btn = false
             })).subscribe(data => {
               this.saved = true;
