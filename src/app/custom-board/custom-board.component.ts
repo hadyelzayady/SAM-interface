@@ -53,6 +53,18 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     // }
 
   }
+  myPaste(pin) {
+    //also sets default pin configuration
+    this.pin.annotations[0].content = `pin${this.pin_number}`
+    this.pin.width = pin["width"]
+    this.pin.height = pin["height"]
+    this.pin.offsetX = pin["offsetX"] + .5 * pin["width"]
+    this.pin.offsetY = pin["offsetY"] + .5 * pin["height"]
+    let node = this.diagram.add(this.pin)
+    this.pin_number += 1;
+    this.grouper_node.children.push(node.id)
+    this.diagram.dataBind()
+  }
   setCommandManager() {
     let diagram = this.diagram
     let resetTable = this.resetTable
@@ -68,9 +80,11 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
             return false
           },
           execute: (): void => {
-            diagram.copy()
+            let node = diagram.copy()
+            mythis.myPaste(node[0])
           },
         },
+
         {
           name: 'cut',
           canExecute: function () {
@@ -82,11 +96,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
 
         },
         {
-          name: 'cut',
+          name: 'paste',
           canExecute: function () {
-            console.log("canExecute", diagram.selectedItems.nodes)
-            if (diagram.selectedItems.nodes.length == 1 && diagram.selectedItems.nodes[0].addInfo["type"] == "pin")
-              return true;
             return false
           },
 
