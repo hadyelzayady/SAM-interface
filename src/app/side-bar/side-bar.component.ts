@@ -30,10 +30,6 @@ export class SideBarComponent implements OnInit {
     let boards: NodeModel[] = [Led.getObj()];
     return boards;
   };
-  public getBattery(): NodeModel[] {
-    let boards: NodeModel[] = [Battery.getObj()];
-    return boards;
-  };
 
   public getConnectors(): ConnectorModel[] {
     let connectorSymbols: ConnectorModel[] = [{
@@ -44,8 +40,8 @@ export class SideBarComponent implements OnInit {
         y: 0
       },
       targetPoint: {
-        x: 40,
-        y: 40
+        x: 30,
+        y: 30
       },
       targetDecorator: {
         shape: 'Arrow'
@@ -97,16 +93,7 @@ export class SideBarComponent implements OnInit {
         symbols: this.getConnectors(),
         title: 'Connectors',
         iconCss: 'e-ddb-icons e-connector'
-      }
-      ,
-      {
-        id: 'voltage_src',
-        expanded: true,
-        symbols: this.getBattery(),
-        title: 'Battery',
-        iconCss: 'e-ddb-icons e-basic'
-      }
-      ,
+      },
       {
         id: 'Leds',
         expanded: true,

@@ -194,6 +194,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       type: "board",
       [addInfo_componentId]: null
     },
+    zIndex: -1
+
   }
   board_props_default: NodeModel = {
     id: "board",
@@ -212,6 +214,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       [addInfo_componentId]: null,
       selected: false
     },
+    zIndex: -1
+
   }
   private pin_number = 1
 
@@ -230,7 +234,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     addInfo: {
       type: "pin",
       pin_type: "I/O"
-    }
+    },
+    zIndex: 50
   }
   private grouper_node: NodeModel //
   public board_grouper: NodeModel = {
@@ -239,7 +244,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     height: this.board_props.height,
     addInfo: {
       type: "grouper"
-    }
+    },
     // children: []
   }
   changePinType(event) {
@@ -404,6 +409,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     console.log("add board", this.board_props.width)
     this.diagram.add(this.board_props)
     this.board_node = this.diagram.nodes[0]
+
     // this.board_node.width = this.board_props.width
     // this.board_node.height = this.board_props.height
     console.log("node width  ", this.board_node.width)
@@ -411,6 +417,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     this.diagram.add(this.board_grouper)
     this.grouper_node = this.diagram.nodes[1]
     //add board to grouper
+    this.diagram.dataBind()
     this.diagram.refreshDiagram()
   }
   //after reading image file ,set the board node to this image after clearning the whole diagram
