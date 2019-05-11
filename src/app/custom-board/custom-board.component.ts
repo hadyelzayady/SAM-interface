@@ -174,13 +174,16 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       console.log("pin is null")
       let oldBoardPin_id = this.SAMPin_BoardPin[sam_pin_index] || null
       console.log("old pin_id", oldBoardPin_id)
-      if (oldBoardPin_id != null)
+      if (oldBoardPin_id != null) {
+        delete this.BoardPin_SAMPin[sam_pin_index]
         this.boardPin_selected[oldBoardPin_id] = false
+      }
       this.SAMPin_BoardPin[sam_pin_index] = ''
       console.log(this.SAMPin_BoardPin[sam_pin_index])
       // this.SAMPin_BoardPin[sam_pin_index] = "none"
     }
     else {
+      this.BoardPin_SAMPin[pin_id] = sam_pin_index
       this.boardPin_selected[pin_id] = true
       this.SAMPin_BoardPin[sam_pin_index] = pin_id
 
@@ -203,7 +206,6 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     //
     let pin_type = port.addInfo ? port.addInfo["pin_type"] : "I/O"
     let pin: NodeModel = {
-      id: port.id,
       shape: {
         shape: 'Rectangle',
         type: 'Basic',
@@ -238,6 +240,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
         this.board_props.annotations[0].content = data.name
         this.board_props.addInfo[addInfo_componentId] = data.id
         this.board_props.addInfo["type"] = "board"
+        this.SAMPin_BoardPin = data.pin_map
+        console.log(data.pin_map)
         //set dim
 
         let open: EventEmitter<any> = new EventEmitter();
@@ -335,9 +339,6 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   public children: string[]
 
 
-  addPin(x: number, y: number) {
-
-  }
   between(point, x1, x2, y1, y2) {
     return point.x > x1 && point.x < x2 && point.y > y1 && point.y < y2
   }
@@ -371,12 +372,10 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     let y = (pin_offset_y - board_corner_y) / this.board_node.height
     return [x, y]
   }
-  BoardPin_SAMPin: { [key: string]: string } = {}
-  setBoardPin_SAMPin() {
-    Object.keys(this.SAMPin_BoardPin).forEach(SAM_pin_number => {
-      this.BoardPin_SAMPin[this.SAMPin_BoardPin[SAM_pin_number]] = SAM_pin_number
-    })
-  }
+  BoardPin_SAMPin: { [key: string]: number } = {}
+  SAMPin_BoardPin: Array<string> = []
+
+
   create_board() {
     // board.ports = []
     // this.board.ports = []
@@ -419,6 +418,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     })
     // let board: NodeModel = JSON.parse(JSON.stringify(this.board_node));
     board.ports = ports
+    if (! /^[A-Za-z][a-zA-Z0-9]*$/.test(this.board_node.annotations[0].content))
+      throw Error("name should start with letter then containt only letter or digits or _ ")
     return board
   }
   EditBoardNameEvent(args) {
@@ -433,7 +434,6 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     this.error_saved = false
     this.error_message = null
   }
-  SAMPin_BoardPin: { [key: string]: string } = {}
 
   getPinInitPosition() {
     //random around center of board
@@ -444,9 +444,15 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   }
   error_message = null
 
-  addMapInTable(node) {
-
+  checkAllPinMapped() {
+    return Object.keys(this.boardPin_selected).filter(pin_id => {
+      return this.boardPin_selected[pin_id] == true
+    }).length
+      == this.diagram.nodes.filter(node => {
+        return node.addInfo["type"] == "pin"
+      }).length
   }
+
   toolbarClick(args: ClickEventArgs) {
     switch (args.item.id) {
       case this.add_pin: {
@@ -457,7 +463,6 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
           this.pin.offsetY = y
           this.pin.annotations[0].content = `pin${this.pin_number}`
           let node = this.diagram.add(this.pin)
-          this.addMapInTable(node)
           this.pin_number += 1;
 
           this.grouper_node.children.push(node.id)
@@ -469,39 +474,44 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
         break;
       }
       case this.save_board: {
-        this.modalService.open(this.save_custom_board_modal_id)
-        try {
-          this.setBoardPin_SAMPin()
-          let board_with_ports = this.create_board()
-          this.customBoardService.createCustomBoard(this.image, board_with_ports, this.SAMPin_BoardPin).pipe(finalize(() => {
-            this.hide_modal_close_btn = false
-          })).subscribe(data => {
-            this.saved = true;
-            this.error_saved = false;
-            this.saved_design = true
-            console.log("before if board id ", this.board_id)
-            this.hide_modal_close_btn = false
-            // this.new_image = false //only true if uploaded new image
-            if (this.board_id == null) {
-              console.log(data.id)
-              this.board_id = data.id
-              this.board_node.addInfo[addInfo_componentId] = data.id
-              this.router.navigate(["customboard"], { queryParams: { board_id: this.board_id } });
-            }
+        console.log("boardpin sampin:", this.BoardPin_SAMPin)
+        if (!this.checkAllPinMapped()) {
+          alert("please set mapping pins for each pin in board to SAM pin number")
+        } else {
+          this.modalService.open(this.save_custom_board_modal_id)
+          try {
 
-          }, error => {
-            this.saved = false;
-            this.error_saved = true
-            this.error_message = error
-          })
+            let board_with_ports = this.create_board()
+            console.log("sent board", board_with_ports)
+            this.customBoardService.createCustomBoard(this.image, board_with_ports, this.SAMPin_BoardPin).pipe(finalize(() => {
+              this.hide_modal_close_btn = false
+            })).subscribe(data => {
+              this.saved = true;
+              this.error_saved = false;
+              this.saved_design = true
+              console.log("before if board id ", this.board_id)
+              this.hide_modal_close_btn = false
+              // this.new_image = false //only true if uploaded new image
+              if (this.board_id == null) {
+                console.log(data.id)
+                this.board_id = data.id
+                this.board_node.addInfo[addInfo_componentId] = data.id
+                this.router.navigate(["customboard"], { queryParams: { board_id: this.board_id } });
+              }
+
+            }, error => {
+              this.saved = false;
+              this.error_saved = true
+              this.error_message = error
+            })
 
 
-        } catch (error) {
-          alert(error)
-          this.modalService.close(this.save_custom_board_modal_id)
+          } catch (error) {
+            alert(error)
+            this.modalService.close(this.save_custom_board_modal_id)
 
+          }
         }
-
         // this.board.ports = []
         // let ports = []
         break;

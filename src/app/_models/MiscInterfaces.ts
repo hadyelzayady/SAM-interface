@@ -11,7 +11,8 @@ export interface CustomBoard {
     ports: [],
     name: string,
     code_required: boolean,
-    image_path: string
+    image_path: string,
+    pin_map: string[]
 
 
 }
