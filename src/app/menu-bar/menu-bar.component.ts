@@ -6,7 +6,7 @@ import { SimpleModalService } from 'ngx-simple-modal';
 import { SharedVariablesService } from '../_services/shared-variables.service';
 import { LoadFileComponent } from '../load-file/load-file.component';
 import { DesignService } from '../_services';
-import { first } from 'rxjs/operators';
+import { first, takeUntil } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { CanDeactivateComponent } from '../can-deactivate/can-deactivate.component';
 
@@ -51,15 +51,18 @@ export class MenuBarComponent extends CanDeactivateComponent implements OnInit {
 
   }
   saved_undo_stack_length = 0
+  sim_mode = false
+
   ngOnInit() {
     this.sharedData.diagram.historyChange.subscribe(() => {
-      console.log(this.sharedData.diagram.historyManager.undoStack, this.saved_undo_stack_length)
       if (this.saved_undo_stack_length == this.sharedData.diagram.historyManager.undoStack.length)
         this.setSaveStatus(true)
       else
         this.setSaveStatus(false)
-      console.log("h")
     })
+    this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
+      this.sim_mode = sim_mode;
+    });
   }
   saved_design: boolean = true
   setSaveStatus(saved: boolean) {
@@ -74,61 +77,62 @@ export class MenuBarComponent extends CanDeactivateComponent implements OnInit {
   }
   //openadd file dialoge
   private select(args: MenuEventArgs): void {
-
-    switch (args.item.id) {
-      case this.save_id:
-        {
-          this.designService.saveDesign(this.sharedData.diagram.saveDiagram(), this.file_id).subscribe(() => {
-            this.setSaveStatus(true)
-            alert("file edited")
-          }, error => {
-          });
-          break;
-        }
-      case this.download_id:
-        {
-          let disposable = this.simpleModalService.addModal(FilenameDialogComponent, {
-            title: 'Download Digram as file',
-            question: 'File name',
-            file_content: this.sharedData.diagram.saveDiagram(),
-            isdownload: true
-          })
-            .subscribe((filename) => {
-              //We get modal result
-              if (filename != "") {//isconfirmed has the value of this.result which is in filename-dialog
-                // alert('accepted');
-              }
-              else {
-                //nothing
-              }
+    if (!this.sim_mode) {
+      switch (args.item.id) {
+        case this.save_id:
+          {
+            this.designService.saveDesign(this.sharedData.diagram.saveDiagram(), this.file_id).subscribe(() => {
+              this.setSaveStatus(true)
+              alert("file edited")
+            }, error => {
             });
-          //We can close modal calling disposable.unsubscribe();
-          //If modal was not closed manually close it by timeout
-          // setTimeout(() => {
-          //   disposable.unsubscribe();
-          // }, 10000);
-          break;
-        }
-      case this.load_id:
-        {
-          let disposable = this.simpleModalService.addModal(LoadFileComponent)
-            .subscribe((data) => {
-              //We get modal result
-              if (data) {//isconfirmed has the value of this.result which is in filename-dialog
-                try {
-                  let x = this.sharedData.diagram.loadDiagram(data)
+            break;
+          }
+        case this.download_id:
+          {
+            let disposable = this.simpleModalService.addModal(FilenameDialogComponent, {
+              title: 'Download Digram as file',
+              question: 'File name',
+              file_content: this.sharedData.diagram.saveDiagram(),
+              isdownload: true
+            })
+              .subscribe((filename) => {
+                //We get modal result
+                if (filename != "") {//isconfirmed has the value of this.result which is in filename-dialog
+                  // alert('accepted');
                 }
-                catch (e) {
-                  alert("corrupted file")
-                  this.sharedData.diagram.reset();
+                else {
+                  //nothing
                 }
-              }
-              else {
-                //nothing
-              }
-            });
-          break;
-        }
+              });
+            //We can close modal calling disposable.unsubscribe();
+            //If modal was not closed manually close it by timeout
+            // setTimeout(() => {
+            //   disposable.unsubscribe();
+            // }, 10000);
+            break;
+          }
+        case this.load_id:
+          {
+            let disposable = this.simpleModalService.addModal(LoadFileComponent)
+              .subscribe((data) => {
+                //We get modal result
+                if (data) {//isconfirmed has the value of this.result which is in filename-dialog
+                  try {
+                    let x = this.sharedData.diagram.loadDiagram(data)
+                  }
+                  catch (e) {
+                    alert("corrupted file")
+                    this.sharedData.diagram.reset();
+                  }
+                }
+                else {
+                  //nothing
+                }
+              });
+            break;
+          }
+      }
     }
 
   }

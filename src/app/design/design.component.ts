@@ -43,9 +43,9 @@ export class DesignComponent {
     this.previousRoute = this.routingState.getPreviousUrl();
     console.log(this.previousRoute)
     this.sharedData.diagram = this.diagram;
-    // this.contextMenuSettings = {
-    //   show: true,
-    // }
+    this.contextMenuSettings = {
+      show: true,
+    }
     this.setCommandManager()
     this.file_id = +this.route.snapshot.paramMap.get('id');
     this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {

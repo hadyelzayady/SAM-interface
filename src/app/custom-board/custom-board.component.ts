@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
-import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs, IHistoryChangeArgs, ITextEditEventArgs, CommandManager } from '@syncfusion/ej2-angular-diagrams';
+import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs, IHistoryChangeArgs, ITextEditEventArgs, CommandManager, ContextMenuSettingsModel } from '@syncfusion/ej2-angular-diagrams';
 import { ClickEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { ModalService } from '../modal.service';
 import { CustomBoardService } from '../_services/custom-board.service';
@@ -29,6 +29,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   board_id = null
   map_table_rows_count = 10
   SAM_pins = Array(8)
+  public contextMenuSettings: ContextMenuSettingsModel;
   public commandManager: CommandManager;
   ngOnInit() {
     // this.router.navigate(['design', file.id])
@@ -38,7 +39,9 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     //   console.log(params)
 
     // })
-
+    this.contextMenuSettings = {
+      show: true,
+    }
     this.board_id = +this.Activatedroute.snapshot.queryParamMap.get('board_id') || null;
     console.log("bo:", this.SAM_pins)
 
@@ -292,7 +295,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   }
   getPins() {
     return this.diagram.nodes.filter(node => {
-      return node.addInfo["type"] == "pin"
+      let type = node.addInfo["type"] || null
+      return type == "pin"
     })
   }
 
