@@ -59,17 +59,11 @@ export class SideBarComponent implements OnInit {
     this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
       this.sim_mode = sim_mode;
       if (sim_mode) {
-        // this.sidebar.palettes = [{}]
         console.log("sim,", sim_mode)
-        // this.sidebar.allowDrag = false
-        this.sidebar.symbolTable = {}
-        // this.sidebar.refresh()
+        this.sidebar.allowDrag = false
       }
       else if (this.palettes) {
-        this.sidebar.palettes = this.palettes
-        // this.sidebar.allowDrag = true;
-        // this.sidebar.width = 0
-        // this.sidebar.refresh()
+        this.sidebar.allowDrag = true
       }
 
 

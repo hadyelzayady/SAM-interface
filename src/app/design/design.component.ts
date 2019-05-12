@@ -118,12 +118,11 @@ export class DesignComponent {
         connector.constraints = connectorSimConstraints;
       });
       this.localSocketService.onMessage().subscribe(msg => {
-        console.log(msg.port_id)
+        console.log("received mesage", msg.port_id)
         console.log(this.sharedData.connected_component_id_index)
         this.sharedData.changePortValue(msg.value, msg.port_id, this.sharedData.connected_component_id_index[msg.connected_component_id])
       })
       // command manager for shortcuts
-
       this.setSimContextMenu()
       //this should be the last line
       // this.diagram.refresh()

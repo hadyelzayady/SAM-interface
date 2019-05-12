@@ -182,22 +182,27 @@ export class ToolBarComponent {
     // console.log("table:", this.sharedData.diagram.node)
     this.sharedData.diagram.connectors.forEach((connector) => {
       let targetID = connector.targetID
+      console.log("tagetiport id")
       if (targetID.includes(Led.name)) {
+        console.log(`add targetid for sim ${targetID}`)
         //! only works if source is connected to one target
-        this.sharedData.addOutputEvent(connector.sourcePortID, this.sharedData.nodeid_index[connector.sourceID]).pipe(takeUntil(this.unsubscribe)).subscribe((val) => {
-          let source;
-          if (val)
-            source = "../assets/redLED_on.jpg"
-          else
-            source = "../assets/redLED_off.jpg"
-          try {
-            this.sharedData.diagram.nodes[this.sharedData.nodeid_index[targetID]].shape = {
-              type: 'Image',
-              source: source
-            }
+        this.sharedData.addOutputEvent(connector.sourcePortID, this.sharedData.nodeid_index[connector.sourceID], connector.targetPortID, this.sharedData.nodeid_index[connector.targetID]).pipe(takeUntil(this.unsubscribe)).subscribe((led_event) => {
+          console.log("subscribe event led target id", led_event.target_port_id)
+          if (led_event.led_node_index != undefined) {
+            let source;
+            if (led_event.value)
+              source = "../assets/redLED_on.jpg"
+            else
+              source = "../assets/redLED_off.jpg"
+            try {
+              this.sharedData.diagram.nodes[led_event.led_node_index].shape = {
+                type: 'Image',
+                source: source
+              }
 
-          } catch (error) {
-            console.log(error)
+            } catch (error) {
+              console.log(error)
+            }
           }
         }, error => {
           console.log(error)

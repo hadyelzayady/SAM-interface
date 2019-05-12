@@ -20,3 +20,9 @@ export interface UserBoards {
     id: number,
     name: string
 }
+
+export interface LedEvent {
+    value: boolean,
+    led_node_index: string,
+    target_port_id: string
+}
