@@ -41,6 +41,11 @@ export class DesignService {
     createDesignFile(filename: string) {
         return this.http.post<DesignFile>(`${this.baseurl}/designfile`, { filename: filename })
     }
+    deleteDesignFile(file_id: number) {
+        console.log("sendig delete file")
+        return this.http.delete(`${this.baseurl}/designfile/${file_id}`)
+    }
+
     sendDesignConnections(connections: any, design_id) {
 
         const endpoint = `${this.baseurl}/${design_id}/connections`;

@@ -27,7 +27,9 @@ export class CustomBoardService {
     }
     return this.http.post<CustomBoard>(`${this.baseurl}${param}`, formData)
   }
-
+  deleteBoard(board_id: number) {
+    return this.http.delete(`${this.baseurl}/${board_id}`)
+  }
   getBoard(board_id) {
     return this.http.get<CustomBoard>(`${this.baseurl}?board_id=${board_id}`)
   }

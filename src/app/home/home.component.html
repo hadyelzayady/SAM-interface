@@ -8,6 +8,9 @@
             <li *ngFor="let file of design_files">
                 <hr>
                 <a routerLink="/design/{{file.id}}"> {{file.original_file_name}}</a>
+                <br><small>id: {{file.id}}</small>
+                <button type="button" (click)='deleteDesignFile(file.id,file.original_file_name)' style="float: right;"
+                    class="btn-outline-danger">Delete</button>
             </li>
         </ul>
     </div>
@@ -18,6 +21,10 @@
             <li *ngFor="let board of user_boards">
                 <hr>
                 <a [routerLink]="['/customboard']" [queryParams]="{board_id:board.id}"> {{board.name}}</a>
+                <br><small>id: {{board.id}}</small>
+                <button type="button" (click)='deleteBoard(board.id,board.name)' style="float: right;"
+                    class="btn-outline-danger">Delete</button>
+
             </li>
         </ul>
     </div>

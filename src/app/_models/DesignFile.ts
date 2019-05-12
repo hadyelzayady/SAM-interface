@@ -1,5 +1,5 @@
 export interface DesignFile {
-    id: string,
+    id: number,
     original_file_name: string
 
 }
