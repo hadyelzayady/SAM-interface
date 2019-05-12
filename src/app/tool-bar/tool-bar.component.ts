@@ -189,19 +189,23 @@ export class ToolBarComponent {
         this.sharedData.addOutputEvent(connector.sourcePortID, source_node_index, connector.targetPortID, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((led_event) => {
           console.log("subscribe event led target id", led_event.target_port_id)
           if (led_event.led_node_index != undefined) {
-            let source;
-            if (led_event.value)
-              source = "../assets/redLED_on.jpg"
-            else
-              source = "../assets/redLED_off.jpg"
-            try {
-              this.sharedData.diagram.nodes[led_event.led_node_index].shape = {
-                type: 'Image',
-                source: source
+            let target_node = this.sharedData.diagram.nodes[led_event.led_node_index] || null
+            if (target_node != null && target_node.addInfo[addInfo_name] == Led.name) {
+              let source;
+              if (led_event.value)
+                source = "../assets/redLED_on.jpg"
+              else
+                source = "../assets/redLED_off.jpg"
+              try {
+                this.sharedData.diagram.nodes[led_event.led_node_index].shape = {
+                  type: 'Image',
+                  source: source
+                }
+
+              } catch (error) {
+                console.log(error)
               }
 
-            } catch (error) {
-              console.log(error)
             }
           }
         }, error => {
@@ -260,8 +264,11 @@ export class ToolBarComponent {
   }
   resetLeds() {
     this.sharedData.diagram.nodes.forEach(node => {
-
+      if (node.addInfo[addInfo_name] == Led.name) {
+        node.shape = Led.shape
+      }
     })
+    this.sharedData.diagram.dataBind()
   }
   closeSimulationMode() {
 

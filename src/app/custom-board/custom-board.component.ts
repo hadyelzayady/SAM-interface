@@ -357,7 +357,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     //set pins map
     Object.keys(pin_map).forEach(sam_pin => {
       this.SAMPin_BoardPin[sam_pin] = pin_map[sam_pin]
-      this.BoardPin_SAMPin[pin_map[sam_pin]] = parseInt(sam_pin)
+      this.BoardPin_SAMPin[pin_map[sam_pin]] = sam_pin
       this.boardPin_selected[pin_map[sam_pin]] = true
     })
     //set
@@ -514,7 +514,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     let y = (pin_offset_y - board_corner_y) / this.board_node.height
     return [x, y]
   }
-  BoardPin_SAMPin: { [key: string]: number } = {}
+  BoardPin_SAMPin: { [key: string]: string } = {}
   SAMPin_BoardPin: Array<string> = []
 
 

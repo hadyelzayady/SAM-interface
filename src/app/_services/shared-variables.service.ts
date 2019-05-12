@@ -11,7 +11,7 @@ export class SharedVariablesService {
 
   diagram: DiagramComponent;
   dialog: DialogComponent;
-  connected_component_id_index = {};
+  connected_component_id_index = {};//connected_component_id : index of node in diagram with this id
   nodeid_index = {} // settd in simulation button before get_desin_conections
   // sim_mode: boolean = false;
   /////////////
@@ -31,12 +31,16 @@ export class SharedVariablesService {
   changePortValue(value: boolean, port_id, component_index) {
     console.log("port value table", this.port_value_table)
     console.log("params", component_index, port_id, value)
-    if (component_index in this.port_value_table && port_id in this.port_value_table[component_index]) {
+    if (component_index in this.port_value_table) {
       Object.keys(this.port_value_table[component_index]).forEach(target_component_index => {
         // console.log("targets", target_port_id)
-        Object.keys(this.port_value_table[component_index][target_component_index][port_id]).forEach(target_port_id => {
-          this.port_value_table[component_index][target_component_index][port_id][target_port_id].next({ value: value, led_node_index: target_component_index, target_port_id: target_port_id })
-        })
+        console.log("target component index", target_component_index)
+        let target_ports = this.port_value_table[component_index][target_component_index][port_id] || null
+        if (target_ports != null) {
+          Object.keys(target_ports).forEach(target_port_id => {
+            target_ports[target_port_id].next({ value: value, led_node_index: target_component_index, target_port_id: target_port_id })
+          })
+        }
 
       })
 
