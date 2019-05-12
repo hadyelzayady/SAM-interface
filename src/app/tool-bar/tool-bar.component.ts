@@ -181,12 +181,12 @@ export class ToolBarComponent {
     //TODO: should be merged with getconnections
     // console.log("table:", this.sharedData.diagram.node)
     this.sharedData.diagram.connectors.forEach((connector) => {
-      let targetID = connector.targetID
+      let source_node_index = this.sharedData.nodeid_index[connector.sourceID]
+      let target_node_index = this.sharedData.nodeid_index[connector.targetID]
       console.log("tagetiport id")
-      if (targetID.includes(Led.name)) {
-        console.log(`add targetid for sim ${targetID}`)
+      if (this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name] == Led.name) {
         //! only works if source is connected to one target
-        this.sharedData.addOutputEvent(connector.sourcePortID, this.sharedData.nodeid_index[connector.sourceID], connector.targetPortID, this.sharedData.nodeid_index[connector.targetID]).pipe(takeUntil(this.unsubscribe)).subscribe((led_event) => {
+        this.sharedData.addOutputEvent(connector.sourcePortID, source_node_index, connector.targetPortID, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((led_event) => {
           console.log("subscribe event led target id", led_event.target_port_id)
           if (led_event.led_node_index != undefined) {
             let source;
@@ -258,11 +258,17 @@ export class ToolBarComponent {
       nodeid_index[node.id] = index
     })
   }
+  resetLeds() {
+    this.sharedData.diagram.nodes.forEach(node => {
+
+    })
+  }
   closeSimulationMode() {
 
     this.sharedData.changeMode(false)
     this.unsubscribe.next()
     this.unsubscribe.complete();
+    this.resetLeds()
     this.simComm.close()
     this.LocalCommService.close()
   }
