@@ -15,7 +15,8 @@
   <div class="col-9 w-80 nopadding">
     <ejs-diagram #diagram id="diagram" width="100%" height="100%" (connectionChange)='connectorEvent($event)'
       (selectionChange)='selectionChangeEvent($event)' [contextMenuSettings]="contextMenuSettings"
-      (created)='diagramCreated()' (historyChange)='historyChange($event)' [commandManager]="commandManager">
+      (contextMenuClick)='contextClick($event)' (created)='diagramCreated()' (historyChange)='historyChange($event)'
+      [commandManager]="commandManager">
 
     </ejs-diagram>
   </div>

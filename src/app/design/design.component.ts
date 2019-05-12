@@ -1,5 +1,5 @@
 import { Component, ViewChild, EventEmitter, Output, OnInit, AfterViewInit } from '@angular/core';
-import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuSettingsModel, ContextMenuItemModel, IHistoryChangeArgs, UndoRedo, ConnectorConstraints, NodeConstraints, DiagramConstraints, Keys, CommandManager, KeyModifiers, ContextMenuSettings } from '@syncfusion/ej2-angular-diagrams';
+import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuItemModel, IHistoryChangeArgs, UndoRedo, ConnectorConstraints, NodeConstraints, DiagramConstraints, Keys, CommandManager, KeyModifiers, ContextMenuSettings, ContextMenuSettingsModel } from '@syncfusion/ej2-angular-diagrams';
 import { ClickEventArgs, ToolbarComponent, ContextMenu, MenuEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
@@ -10,6 +10,8 @@ import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
 import { RoutingStateService } from '../_services/routing-state.service';
+import { select } from '@syncfusion/ej2-base';
+import { ContextMenuClickEventArgs } from '@syncfusion/ej2-grids';
 //TODO enable context menu 
 interface ConnectorEnd {
   nodeId: string,
@@ -46,6 +48,7 @@ export class DesignComponent {
     this.contextMenuSettings = {
       show: true,
     }
+
     this.setCommandManager()
     this.file_id = +this.route.snapshot.paramMap.get('id');
     this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
@@ -55,7 +58,6 @@ export class DesignComponent {
 
   }
   setCommandManager() {
-    let diagram = this.diagram
     let mythis = this
     this.diagram.commandManager = {
       commands: [{
@@ -106,8 +108,15 @@ export class DesignComponent {
     //TODO: show send to front/back/..
     // this.contextMenuSettings = {
     //   show: true,
-    //   items: []
+    //   items: [{
+    //     text: "Cut",
+    //     id: "Cut"
+    //   }],
+    //   showCustomMenuOnly: true
     // }
+  }
+  contextClick(args: ContextMenuClickEventArgs) {
+    console.log("context menu click", args)
   }
   setConstraints(sim_mode: boolean) {
     if (sim_mode) {
@@ -122,8 +131,9 @@ export class DesignComponent {
         console.log(this.sharedData.connected_component_id_index)
         this.sharedData.changePortValue(msg.value, msg.port_id, this.sharedData.connected_component_id_index[msg.connected_component_id])
       })
+
       // command manager for shortcuts
-      this.setSimContextMenu()
+      // this.setSimContextMenu()
       //this should be the last line
       // this.diagram.refresh()
 
@@ -175,7 +185,6 @@ export class DesignComponent {
   diagramCreated() {
     this.loadDesignFile();
     console.log(this.sharedData.diagram.historyManager.currentEntry)
-
   }
 
   selectionChangeEvent(args: ISelectionChangeEventArgs) {
