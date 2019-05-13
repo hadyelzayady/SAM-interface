@@ -36,6 +36,7 @@ export class SharedVariablesService {
         // console.log("targets", target_port_id)
         console.log("target component index", target_component_index)
         let target_ports = this.port_value_table[component_index][target_component_index][port_id] || null
+        console.log("target ports", target_ports)
         if (target_ports != null) {
           Object.keys(target_ports).forEach(target_port_id => {
             target_ports[target_port_id].next({ value: value, target_node_index: target_component_index, target_port_id: target_port_id })

@@ -1,17 +1,18 @@
 import { Component, ViewChild, EventEmitter, Output, OnInit, AfterViewInit } from '@angular/core';
-import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuItemModel, IHistoryChangeArgs, UndoRedo, ConnectorConstraints, NodeConstraints, DiagramConstraints, Keys, CommandManager, KeyModifiers, ContextMenuSettings, ContextMenuSettingsModel } from '@syncfusion/ej2-angular-diagrams';
+import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuItemModel, IHistoryChangeArgs, UndoRedo, ConnectorConstraints, NodeConstraints, DiagramConstraints, Keys, CommandManager, KeyModifiers, ContextMenuSettings, ContextMenuSettingsModel, IDoubleClickEventArgs } from '@syncfusion/ej2-angular-diagrams';
 import { ClickEventArgs, ToolbarComponent, ContextMenu, MenuEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DesignService } from '../_services';
-import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints } from '../utils';
+import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue } from '../utils';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
 import { RoutingStateService } from '../_services/routing-state.service';
 import { select } from '@syncfusion/ej2-base';
 import { ContextMenuClickEventArgs } from '@syncfusion/ej2-grids';
+import { Switch } from '../_models/Switch';
 //TODO enable context menu 
 interface ConnectorEnd {
   nodeId: string,
@@ -118,6 +119,16 @@ export class DesignComponent {
   contextClick(args: ContextMenuClickEventArgs) {
     // console.log("context menu click", args)
   }
+  doubleClick(args: IDoubleClickEventArgs) {
+    // console.log("double click", args)
+    // // if (args.count == 1) {
+    // let clicked_node = args.source.nodes || null
+    // if (clicked_node[0].addInfo[addInfo_name] == Switch.name && this.sim_mode) {
+    //   Switch.Toggle(clicked_node[0])
+    //   this.diagram.dataBind()
+    // }
+    // }
+  }
   setConstraints(sim_mode: boolean) {
     if (sim_mode) {
       this.diagram.nodes.forEach(node => {
@@ -129,7 +140,16 @@ export class DesignComponent {
       this.localSocketService.onMessage().subscribe(msg => {
         console.log("received mesage", msg.port_id)
         console.log(this.sharedData.connected_component_id_index)
-        this.sharedData.changePortValue(msg.value, msg.port_id, this.sharedData.connected_component_id_index[msg.connected_component_id])
+        let component_index = this.sharedData.connected_component_id_index[msg.connected_component_id]
+        let source_node = this.diagram.nodes[component_index]
+        let port_index = source_node.ports.findIndex(port => {
+          return port.id == "" + msg.port_id
+        })
+        if (port_index > -1) {
+
+          source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
+          this.sharedData.changePortValue(msg.value, msg.port_id, component_index)
+        }
       })
 
       // command manager for shortcuts

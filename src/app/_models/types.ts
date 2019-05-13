@@ -1,8 +1,8 @@
-export interface SwitchSourcesTargetsType {
-    [key: number]: { sourceNodeIndex: number, targetNodeIndex: number, sourcePortId: string, targetPortId: string } | {}
+
+
+export interface SwitchSourceNodes {
+    [key: number]: { sourceNodeIndex: number, sourcePortId: string, switchInputPortId: string } | {}
 }
-
-
 export interface AddInfo {
 
 }

@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { filter, map, flatMap, timestamp } from 'rxjs/operators';
 import { Board } from '../_models/board';
 import { NodeModel, PortModel, PortVisibility, PortConstraints } from '@syncfusion/ej2-angular-diagrams';
-import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType, setImageSize } from '../utils';
+import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType, setImageSize, addInfo_simValue } from '../utils';
 @Injectable()
 export class DesignService {
 
@@ -62,6 +62,9 @@ export class DesignService {
                 node.ports.forEach(port => {
                     port.constraints = PortConstraints.InConnect | PortConstraints.OutConnect;
                     port.visibility = PortVisibility.Visible;
+                    port.addInfo = {
+                        [addInfo_simValue]: false
+                    }
                 })
                 node.annotations = [{
                     content: node.id,
