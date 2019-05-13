@@ -13,7 +13,9 @@ export const addInfo_name = "name";
 export const addInfo_type = "type";
 export const addInfo_reserved = "reserved";
 export const addInfo_connectedComponentId = "connectedComponentId";
+export const addInfo_simValue = "sim_value";
 export enum ComponentType { Hardware, Software }
+export enum SwitchValue { ON, OFF }
 export const local_udp_server_port = "3003"
 
 export function setImageSize(width, height) {

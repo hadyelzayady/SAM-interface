@@ -3,7 +3,7 @@ import { DiagramComponent } from '@syncfusion/ej2-angular-diagrams';
 import { FilenameDialogComponent } from '../filename-dialog/filename-dialog.component';
 import { DialogComponent } from '@syncfusion/ej2-angular-popups';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { LedEvent } from '../_models';
+import { OutputEvent } from '../_models';
 
 
 @Injectable()
@@ -25,7 +25,7 @@ export class SharedVariablesService {
   }
   /////////////
   ////////////////
-  port_value_table: { [source_component_index: string]: { [target_component_index: string]: { [source_port_id: string]: { [target_port_id: string]: BehaviorSubject<LedEvent> } } } } = {};
+  port_value_table: { [source_component_index: string]: { [target_component_index: number]: { [source_port_id: string]: { [target_port_id: string]: BehaviorSubject<OutputEvent> } } } } = {};
   port_observables_table: { [k: string]: any } = {}
 
   changePortValue(value: boolean, port_id, component_index) {
@@ -38,7 +38,7 @@ export class SharedVariablesService {
         let target_ports = this.port_value_table[component_index][target_component_index][port_id] || null
         if (target_ports != null) {
           Object.keys(target_ports).forEach(target_port_id => {
-            target_ports[target_port_id].next({ value: value, led_node_index: target_component_index, target_port_id: target_port_id })
+            target_ports[target_port_id].next({ value: value, target_node_index: target_component_index, target_port_id: target_port_id })
           })
         }
 
@@ -47,7 +47,7 @@ export class SharedVariablesService {
     }
   }
 
-  addOutputEvent(source_port_id, source_component_index, target_port_id, target_component_index): Observable<LedEvent> {
+  addOutputEvent(source_port_id, source_component_index, target_port_id, target_component_index): Observable<OutputEvent> {
     //init
     this.port_value_table[source_component_index] = this.port_value_table[source_component_index] || {}
     this.port_observables_table[source_component_index] = this.port_observables_table[source_component_index] || {}
@@ -59,7 +59,7 @@ export class SharedVariablesService {
     this.port_observables_table[source_component_index][target_component_index][source_port_id] = this.port_observables_table[source_component_index][target_component_index][source_port_id] || {}
     //end init
     //create event of connector target and source,as when source port changes ,change all target ports binded to this source
-    this.port_value_table[source_component_index][target_component_index][source_port_id][target_port_id] = new BehaviorSubject(<LedEvent>{ value: false, target_port_id: target_port_id })
+    this.port_value_table[source_component_index][target_component_index][source_port_id][target_port_id] = new BehaviorSubject(<OutputEvent>{ value: false, target_port_id: target_port_id })
     this.port_observables_table[source_component_index][target_component_index][source_port_id][target_port_id] = this.port_value_table[source_component_index][target_component_index][source_port_id][target_port_id].asObservable();
     console.log("add output:", this.port_observables_table[source_component_index][target_component_index][source_port_id][target_port_id])
     return this.port_observables_table[source_component_index][target_component_index][source_port_id][target_port_id];

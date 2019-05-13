@@ -2,13 +2,13 @@ import { Component, ViewEncapsulation, Inject, ViewChild, AfterViewInit, Input }
 import { cssClass } from '@syncfusion/ej2-lists';
 import { AppComponent } from '../app.component';
 import { SharedVariablesService, UtilsService, DesignService } from '../_services';
-import { DiagramTools, ConnectorConstraints, ConnectorModel, NodeConstraints, ISelectionChangeEventArgs, EventState, ChangeType, NodeModel } from '@syncfusion/ej2-angular-diagrams';
+import { DiagramTools, ConnectorConstraints, ConnectorModel, NodeConstraints, ISelectionChangeEventArgs, EventState, ChangeType, NodeModel, PointPortModel } from '@syncfusion/ej2-angular-diagrams';
 import { ItemModel, ToolbarComponent, ClickEventArgs, Item } from '@syncfusion/ej2-angular-navigations';
 import { ToolbarItem } from '@syncfusion/ej2-grids';
 import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
 import { DiagramApiService } from '../_services/diagram-api.service';
-import { ReserveComponentsResponse } from '../_models';
-import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port } from '../utils';
+import { ReserveComponentsResponse, OutputEvent } from '../_models';
+import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue } from '../utils';
 import { ModalService } from '../modal.service';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { WebSocketService } from '../_services/web-socket.service';
@@ -17,6 +17,8 @@ import { Led } from '../_models/Led';
 import { Subject } from 'rxjs';
 import { SocketEvent } from '../_models/event';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
+import { SwitchSourcesTargetsType } from '../_models/types';
+import { nextContext } from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-tool-bar',
@@ -180,6 +182,7 @@ export class ToolBarComponent {
   PrepareDiagramForOutput() {
     //TODO: should be merged with getconnections
     // console.log("table:", this.sharedData.diagram.node)
+    let switch_sources_targets: SwitchSourcesTargetsType = {} //contains both connectors of source and target pin of switch
     this.sharedData.diagram.connectors.forEach((connector) => {
       let source_node_index = this.sharedData.nodeid_index[connector.sourceID]
       let target_node_index = this.sharedData.nodeid_index[connector.targetID]
@@ -188,8 +191,8 @@ export class ToolBarComponent {
         //! only works if source is connected to one target
         this.sharedData.addOutputEvent(connector.sourcePortID, source_node_index, connector.targetPortID, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((led_event) => {
           console.log("subscribe event led target id", led_event.target_port_id)
-          if (led_event.led_node_index != undefined) {
-            let target_node = this.sharedData.diagram.nodes[led_event.led_node_index] || null
+          if (led_event.target_node_index != undefined) {
+            let target_node = this.sharedData.diagram.nodes[led_event.target_node_index] || null
             if (target_node != null && target_node.addInfo[addInfo_name] == Led.name) {
               let source;
               if (led_event.value)
@@ -197,7 +200,7 @@ export class ToolBarComponent {
               else
                 source = "../assets/redLED_off.jpg"
               try {
-                this.sharedData.diagram.nodes[led_event.led_node_index].shape = {
+                this.sharedData.diagram.nodes[led_event.target_node_index].shape = {
                   type: 'Image',
                   source: source
                 }
@@ -212,8 +215,27 @@ export class ToolBarComponent {
           console.log(error)
         })
       }
+      else if (this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name] == "switch") {
+        //if target  is switch (first pin of switch(left)) then bind source of this connector to the target of the connector of the second pin (right pin).ex: the code converts (board1_port1(src1)--> switch_left_pin(target1) ,switch_right_pin(src2)--> board2_port3(target2))  to (board1_port1){src1} --> board2_port3{target2} and condition on behave based on switch value
+        //add index of src1
+        switch_sources_targets[target_node_index] = switch_sources_targets[target_node_index] || {}
+        switch_sources_targets[target_node_index]["sourceNodeIndex"] = source_node_index
+        switch_sources_targets[target_node_index]["sourcePortId"] = connector.sourcePortID
+        // let switch_node = this.sharedData.diagram.nodes[target_node_index]
+        // let source_input_pin_node = this.sharedData.diagram.nodes[source_node_index]
+        // let switch_output_port = switch_node.ports.filter(port => {
+        //   return port.id != connector.targetPortID
+        // })[0] || null // the switch port (src2)
+
+      } else if (this.sharedData.diagram.nodes[source_node_index].addInfo[addInfo_name] == "switch") {
+        //add index of target2 
+        switch_sources_targets[source_node_index] = switch_sources_targets[target_node_index] || {}
+        switch_sources_targets[source_node_index]["targetNodeIndex"] = target_node_index
+        switch_sources_targets[source_node_index]["targetPortId"] = connector.targetPortID
+      }
     })
 
+    this.setSwitchSimConfigs(switch_sources_targets)
     // this.sharedData.ports_values.subscribe((val) => {
     //   console.log("event in sim to chag eled")
     //   this.sharedData.diagram.nodes[0].shape = {
@@ -222,6 +244,32 @@ export class ToolBarComponent {
     //   }
     // })
 
+  }
+  setSwitchSimConfigs(switch_sources_targets: SwitchSourcesTargetsType) {
+    Object.keys(switch_sources_targets).forEach(switch_node_index => {
+      let switch_props = switch_sources_targets[switch_node_index]
+      let source_node_index = switch_props["sourceNodeIndex"]
+      let target_node_index = switch_props["targetNodeIndex"]
+      let source_port_id = switch_props["sourcePortId"]
+      let target_port_id = switch_props["targetPortId"]
+      this.sharedData.addOutputEvent(source_port_id, source_node_index, target_port_id, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((event: OutputEvent) => {
+        let target_node = this.sharedData.diagram.nodes[event.target_node_index]
+        if (target_node.addInfo[addInfo_simValue] == SwitchValue.ON) {
+          //switch is on
+          let source_port = this.sharedData.diagram.nodes[source_node_index].ports.find(source_port_id) as PointPortModel
+          //TODO: set simValue in node in changeportvalue 
+          let forwarded_value = source_port.addInfo[addInfo_simValue]
+          if (target_node.addInfo[addInfo_type] == ComponentType.Hardware) {
+            //TODO: send value to the board over ip
+
+          } else {
+            //forward this value to target port and event this change in target port
+            this.sharedData.changePortValue(forwarded_value, target_port_id, target_node_index)
+          }
+
+        }
+      })
+    })
   }
   customClose(id: string) {
     this.parsed = false;

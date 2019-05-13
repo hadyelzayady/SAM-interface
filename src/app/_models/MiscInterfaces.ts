@@ -21,8 +21,8 @@ export interface UserBoards {
     name: string
 }
 
-export interface LedEvent {
+export interface OutputEvent {
     value: boolean,
-    led_node_index: string,
+    target_node_index: number,
     target_port_id: string
 }
