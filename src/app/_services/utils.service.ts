@@ -32,22 +32,21 @@ export class UtilsService {
         let source_pin = connector.sourcePortID
         let destination_pin = connector.sourcePortID
         let destination_ip_port = I_Component.addInfo[addinfo_IP] + ":" + I_Component.addInfo[addinfo_port]
-        if (!(O_Component.addInfo[addInfo_connectedComponentId] in connections)) {
-          connections[O_Component.addInfo[addInfo_connectedComponentId]] = ''
+        if (O_Component.addInfo[addInfo_type] == ComponentType.Hardware) {
+          //output  not from switch
+          if (!(O_Component.addInfo[addInfo_connectedComponentId] in connections)) {
+            connections[O_Component.addInfo[addInfo_connectedComponentId]] = ''
+          }
+          connections[O_Component.addInfo[addInfo_connectedComponentId]] += `"O":${source_pin}:${destination_ip_port}:${destination_pin},`
         }
         if (I_Component.addInfo[addInfo_type] == ComponentType.Hardware) {
-          //so led for example won't be sent to the server
+          //so led for example won't be sent to the server,target not let or switch input pin
           if (!(I_Component.addInfo[addInfo_connectedComponentId] in connections)) {
             connections[I_Component.addInfo[addInfo_connectedComponentId]] = ''
           }
           connections[I_Component.addInfo[addInfo_connectedComponentId]] += `"I":${destination_pin},`
 
         }
-
-
-        connections[O_Component.addInfo[addInfo_connectedComponentId]] += `"O":${source_pin}:${destination_ip_port}:${destination_pin},`
-
-
       }
     });
     return connections;

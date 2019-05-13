@@ -43,7 +43,7 @@ export class DesignComponent {
   previousRoute: string;
   ngOnInit(): void {
     this.previousRoute = this.routingState.getPreviousUrl();
-    console.log(this.previousRoute)
+    // console.log(this.previousRoute)
     this.sharedData.diagram = this.diagram;
     this.contextMenuSettings = {
       show: true,
@@ -101,7 +101,7 @@ export class DesignComponent {
     this.sharedData
   }
   historyChange(args: IHistoryChangeArgs) {
-    console.log(args)
+    // console.log(args)
   }
 
   setSimContextMenu() {
@@ -116,7 +116,7 @@ export class DesignComponent {
     // }
   }
   contextClick(args: ContextMenuClickEventArgs) {
-    console.log("context menu click", args)
+    // console.log("context menu click", args)
   }
   setConstraints(sim_mode: boolean) {
     if (sim_mode) {
@@ -184,7 +184,7 @@ export class DesignComponent {
 
   diagramCreated() {
     this.loadDesignFile();
-    console.log(this.sharedData.diagram.historyManager.currentEntry)
+    // console.log(this.sharedData.diagram.historyManager.currentEntry)
   }
 
   selectionChangeEvent(args: ISelectionChangeEventArgs) {

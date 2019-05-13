@@ -4,6 +4,22 @@ import { Board } from './board';
 import { addInfo_name, addInfo_type, ComponentType, local_udp_server_port, addinfo_IP, addinfo_port } from '../utils';
 
 export class Led extends Board {
+    static simBehaviour(value: boolean, led_node: NodeModel) {
+        let source;
+        if (value)
+            source = "../assets/redLED_on.jpg"
+        else
+            source = "../assets/redLED_off.jpg"
+        try {
+            led_node.shape = {
+                type: 'Image',
+                source: source
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
     static ports: PointPortModel[] = [new BoardPort(470 / 960, 620 / 680, "2").toJSON(), new BoardPort(560 / 960, 620 / 680, "3").toJSON()];
 
     static id = "Led";

@@ -9,6 +9,7 @@ import { finalize, takeUntil, first } from 'rxjs/operators';
 import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId } from '../utils';
 import { Components } from '../_models/Components';
 import { BehaviorSubject } from 'rxjs';
+import { Switch } from '../_models/Switch';
 @Component({
   selector: 'app-side-bar',
   templateUrl: './side-bar.component.html',
@@ -26,8 +27,8 @@ export class SideBarComponent implements OnInit {
 
 
 
-  public getLeds(): NodeModel[] {
-    let boards: NodeModel[] = [Led.getObj()];
+  public getSimulaionComponents(): NodeModel[] {
+    let boards: NodeModel[] = [Led.getObj(), Switch.getObj()];
     return boards;
   };
 
@@ -89,10 +90,10 @@ export class SideBarComponent implements OnInit {
         iconCss: 'e-ddb-icons e-connector'
       },
       {
-        id: 'Leds',
+        id: 'Simulation-components',
         expanded: true,
-        symbols: this.getLeds(),
-        title: 'Leds',
+        symbols: this.getSimulaionComponents(),
+        title: 'Simulation Components',
         iconCss: 'e-ddb-icons e-basic',
       }
     ];

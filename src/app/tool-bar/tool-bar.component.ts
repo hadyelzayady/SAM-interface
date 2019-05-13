@@ -19,6 +19,7 @@ import { SocketEvent } from '../_models/event';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
 import { SwitchSourcesTargetsType } from '../_models/types';
 import { nextContext } from '@angular/core/src/render3';
+import { Switch } from '../_models/Switch';
 
 @Component({
   selector: 'app-tool-bar',
@@ -186,38 +187,32 @@ export class ToolBarComponent {
     this.sharedData.diagram.connectors.forEach((connector) => {
       let source_node_index = this.sharedData.nodeid_index[connector.sourceID]
       let target_node_index = this.sharedData.nodeid_index[connector.targetID]
-      console.log("tagetiport id")
+      console.log("tageti node name,", this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name])
       if (this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name] == Led.name) {
-        //! only works if source is connected to one target
-        this.sharedData.addOutputEvent(connector.sourcePortID, source_node_index, connector.targetPortID, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((led_event) => {
-          console.log("subscribe event led target id", led_event.target_port_id)
-          if (led_event.target_node_index != undefined) {
-            let target_node = this.sharedData.diagram.nodes[led_event.target_node_index] || null
-            if (target_node != null && target_node.addInfo[addInfo_name] == Led.name) {
-              let source;
-              if (led_event.value)
-                source = "../assets/redLED_on.jpg"
-              else
-                source = "../assets/redLED_off.jpg"
-              try {
-                this.sharedData.diagram.nodes[led_event.target_node_index].shape = {
-                  type: 'Image',
-                  source: source
-                }
+        this.sharedData.addOutputEvent(connector.sourcePortID, source_node_index, connector.targetPortID, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((output_event) => {
+          console.log("subscribe event led target id", output_event.target_port_id, output_event.target_node_index)
+          let target_node = this.sharedData.diagram.nodes[output_event.target_node_index] || null
+          if (target_node != null) {
+            if (target_node.addInfo[addInfo_name] == Led.name) {
+              Led.simBehaviour(output_event.value, this.sharedData.diagram.nodes[output_event.target_node_index])
+              this.sharedData.diagram.dataBind()
 
-              } catch (error) {
-                console.log(error)
-              }
-
+            }
+            else if (target_node.addInfo[addInfo_name] == Switch.name) {
+              // bind
+              Switch.SimBehaviour()
             }
           }
         }, error => {
           console.log(error)
         })
       }
-      else if (this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name] == "switch") {
+      else if (this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name] == Switch.name) {
         //if target  is switch (first pin of switch(left)) then bind source of this connector to the target of the connector of the second pin (right pin).ex: the code converts (board1_port1(src1)--> switch_left_pin(target1) ,switch_right_pin(src2)--> board2_port3(target2))  to (board1_port1){src1} --> board2_port3{target2} and condition on behave based on switch value
         //add index of src1
+        //target node index is the switch index
+        //so the source node to the switch is the switch value  
+        // her we set the source node of switch and the following elseif sets the target node from the switch
         switch_sources_targets[target_node_index] = switch_sources_targets[target_node_index] || {}
         switch_sources_targets[target_node_index]["sourceNodeIndex"] = source_node_index
         switch_sources_targets[target_node_index]["sourcePortId"] = connector.sourcePortID
@@ -227,14 +222,19 @@ export class ToolBarComponent {
         //   return port.id != connector.targetPortID
         // })[0] || null // the switch port (src2)
 
-      } else if (this.sharedData.diagram.nodes[source_node_index].addInfo[addInfo_name] == "switch") {
-        //add index of target2 
-        switch_sources_targets[source_node_index] = switch_sources_targets[target_node_index] || {}
+      }
+      if (this.sharedData.diagram.nodes[source_node_index].addInfo[addInfo_name] == Switch.name) {
+        //add index of target2
+        //if source is switch then bind (source if the target port if swutch to the target if output port if the swutch)
+        //source node index is the switch index
+        console.log("elseif2 switch index", source_node_index)
+        switch_sources_targets[source_node_index] = switch_sources_targets[source_node_index] || {}
         switch_sources_targets[source_node_index]["targetNodeIndex"] = target_node_index
         switch_sources_targets[source_node_index]["targetPortId"] = connector.targetPortID
       }
     })
-
+    console.log("switch sources target,", switch_sources_targets)
+    console.log("port value table,", this.sharedData.port_value_table)
     this.setSwitchSimConfigs(switch_sources_targets)
     // this.sharedData.ports_values.subscribe((val) => {
     //   console.log("event in sim to chag eled")
@@ -254,20 +254,24 @@ export class ToolBarComponent {
       let target_port_id = switch_props["targetPortId"]
       this.sharedData.addOutputEvent(source_port_id, source_node_index, target_port_id, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((event: OutputEvent) => {
         let target_node = this.sharedData.diagram.nodes[event.target_node_index]
-        if (target_node.addInfo[addInfo_simValue] == SwitchValue.ON) {
-          //switch is on
-          let source_port = this.sharedData.diagram.nodes[source_node_index].ports.find(source_port_id) as PointPortModel
-          //TODO: set simValue in node in changeportvalue 
-          let forwarded_value = source_port.addInfo[addInfo_simValue]
-          if (target_node.addInfo[addInfo_type] == ComponentType.Hardware) {
-            //TODO: send value to the board over ip
+        // if (target_node.addInfo[addInfo_simValue] == SwitchValue.ON) {
+        //switch is on
+        let source_port = this.sharedData.diagram.nodes[source_node_index].ports.find((port) => {
+          return port.id == source_port_id
+        }) as PointPortModel
+        console.log("source port id,source")
+        //TODO: set simValue in node in changeportvalue 
+        let forwarded_value = true//source_port.addInfo[addInfo_simValue]
+        if (target_node.addInfo[addInfo_type] == ComponentType.Hardware) {
+          //TODO: send value to the board over ip
 
-          } else {
-            //forward this value to target port and event this change in target port
-            this.sharedData.changePortValue(forwarded_value, target_port_id, target_node_index)
-          }
-
+        } else {
+          console.log("value,target_port_id,target_node_index", forwarded_value, target_port_id, target_node_index)
+          //forward this value to target port and event this change in target port
+          this.sharedData.changePortValue(forwarded_value, target_port_id, target_node_index)
         }
+
+        // }
       })
     })
   }

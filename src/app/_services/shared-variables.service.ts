@@ -25,7 +25,7 @@ export class SharedVariablesService {
   }
   /////////////
   ////////////////
-  port_value_table: { [source_component_index: string]: { [target_component_index: number]: { [source_port_id: string]: { [target_port_id: string]: BehaviorSubject<OutputEvent> } } } } = {};
+  port_value_table: { [source_component_index: string]: { [target_component_index: number]: { [source_port_id: string]: { [target_port_id: string]: Subject<OutputEvent> } } } } = {};
   port_observables_table: { [k: string]: any } = {}
 
   changePortValue(value: boolean, port_id, component_index) {
@@ -49,6 +49,7 @@ export class SharedVariablesService {
 
   addOutputEvent(source_port_id, source_component_index, target_port_id, target_component_index): Observable<OutputEvent> {
     //init
+    console.log("add output event ", source_component_index)
     this.port_value_table[source_component_index] = this.port_value_table[source_component_index] || {}
     this.port_observables_table[source_component_index] = this.port_observables_table[source_component_index] || {}
     //
@@ -59,7 +60,7 @@ export class SharedVariablesService {
     this.port_observables_table[source_component_index][target_component_index][source_port_id] = this.port_observables_table[source_component_index][target_component_index][source_port_id] || {}
     //end init
     //create event of connector target and source,as when source port changes ,change all target ports binded to this source
-    this.port_value_table[source_component_index][target_component_index][source_port_id][target_port_id] = new BehaviorSubject(<OutputEvent>{ value: false, target_port_id: target_port_id })
+    this.port_value_table[source_component_index][target_component_index][source_port_id][target_port_id] = new Subject()
     this.port_observables_table[source_component_index][target_component_index][source_port_id][target_port_id] = this.port_value_table[source_component_index][target_component_index][source_port_id][target_port_id].asObservable();
     console.log("add output:", this.port_observables_table[source_component_index][target_component_index][source_port_id][target_port_id])
     return this.port_observables_table[source_component_index][target_component_index][source_port_id][target_port_id];
