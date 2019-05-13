@@ -12,8 +12,8 @@
   <div class="col-3 nopadding">
     <app-side-bar></app-side-bar>
   </div>
-  <div class="col-9 w-80 nopadding">
-    <ejs-diagram #diagram id="diagram" width="100%" height="100%" (connectionChange)='connectorEvent($event)'
+  <div class="col-9 w-80 nopadding main-wrapper">
+    <ejs-diagram #diagram id="diagram" width="100%" height="600px" (connectionChange)='connectorEvent($event)'
       (selectionChange)='selectionChangeEvent($event)' [contextMenuSettings]="contextMenuSettings"
       (contextMenuClick)='contextClick($event)' (created)='diagramCreated()' (historyChange)='historyChange($event)'
       [commandManager]="commandManager" (doubleClick)='doubleClick($event)'>

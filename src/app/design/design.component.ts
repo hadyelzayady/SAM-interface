@@ -138,7 +138,7 @@ export class DesignComponent {
         connector.constraints = connectorSimConstraints;
       });
       this.localSocketService.onMessage().subscribe(msg => {
-        console.log("received mesage", msg.port_id)
+        console.log("received mesage", msg)
         console.log(this.sharedData.connected_component_id_index)
         let component_index = this.sharedData.connected_component_id_index[msg.connected_component_id]
         let source_node = this.diagram.nodes[component_index]

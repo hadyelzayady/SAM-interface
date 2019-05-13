@@ -2,8 +2,11 @@ import { NodeModel, PointPortModel, PortVisibility, NodeConstraints, ShapeModel,
 import { BoardPort } from './BoardPort';
 import { Board } from './board';
 import { addInfo_name, addInfo_type, ComponentType, local_udp_server_port, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue } from '../utils';
+import { SharedVariablesService } from '../_services';
+import { switch_on_source, switch_off_source } from './image_sources';
 
 export class Switch extends Board {
+
     static Toggle(switch_node: NodeModel, sim_mode: boolean = true) {
         if (switch_node.addInfo[addInfo_simValue] || !sim_mode) {
             //on
@@ -28,11 +31,11 @@ export class Switch extends Board {
     static id = "Switch";
     static shape_on = <ShapeModel>{
         type: 'Image',
-        source: "../assets/switch_on.svg"
+        source: switch_on_source
     }
     static shape_off = <ShapeModel>{
         type: 'Image',
-        source: "../assets/switch_off.svg"
+        source: switch_off_source
     }
     static getObj(): NodeModel {
         return {

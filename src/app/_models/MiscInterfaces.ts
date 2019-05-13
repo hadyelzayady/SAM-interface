@@ -24,5 +24,7 @@ export interface UserBoards {
 export interface OutputEvent {
     value: boolean,
     target_node_index: number,
-    target_port_id: string
+    target_port_id: string,
+    source_node_index: number,
+    source_port_id: string
 }

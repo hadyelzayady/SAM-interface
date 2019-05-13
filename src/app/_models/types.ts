@@ -1,7 +1,7 @@
 
 
 export interface SwitchSourceNodes {
-    [key: number]: { sourceNodeIndex: number, sourcePortId: string, switchInputPortId: string } | {}
+    [switch_node_index: number]: { sourceNodeIndex: number, sourcePortId: string, switchInputPortId: string } | {}
 }
 export interface AddInfo {
 

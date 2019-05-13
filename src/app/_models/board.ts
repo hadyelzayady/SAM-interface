@@ -6,7 +6,9 @@ import { NodeConstraints } from '@syncfusion/ej2-angular-diagrams';
 export abstract class Board {
 
     static constraints = NodeConstraints.Default & ~NodeConstraints.InConnect & ~NodeConstraints.OutConnect
-    constructor(private sharedVariables: SharedVariablesService) {
+    public sharedData
+    constructor(public sharedVariables: SharedVariablesService) {
+        this.sharedData = sharedVariables
     }
     hell(): void {
 
