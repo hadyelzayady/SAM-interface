@@ -13,9 +13,9 @@ export class Switch extends Board {
             console.log("swtch off")
             switch_node.shape = this.shape_off
             switch_node.addInfo[addInfo_simValue] = false
-            switch_node.ports.forEach(port => {
-                port.addInfo[addInfo_simValue] = false
-            })
+            // switch_node.ports.forEach(port => {
+            //     port.addInfo[addInfo_simValue] = false
+            // })
         }
         else {
             console.log("switch on")

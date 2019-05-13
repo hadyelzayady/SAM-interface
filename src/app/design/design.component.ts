@@ -147,8 +147,8 @@ export class DesignComponent {
         })
         if (port_index > -1) {
 
-          source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
-          this.sharedData.changePortValue(msg.value, msg.port_id, component_index)
+          // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
+          this.sharedData.changePortValue(msg.value, port_index, component_index)
         }
       })
 

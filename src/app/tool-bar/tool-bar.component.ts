@@ -221,11 +221,14 @@ export class ToolBarComponent {
     this.sharedData.diagram.connectors.forEach((connector) => {
       let source_node_index = this.sharedData.nodeid_index[connector.sourceID]
       let target_node_index = this.sharedData.nodeid_index[connector.targetID]
+      let source_port_index = this.sharedData.diagram.nodes[source_node_index].ports.findIndex(port => { return port.id == connector.sourcePortID })
+      let target_port_index = this.sharedData.diagram.nodes[target_node_index].ports.findIndex(port => { return port.id == connector.targetPortID })
       //TODO: if board pin is input from switch we should bind event from switch output pin to send the value
       console.log("tageti node name,", this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name])
       if (this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name] == Led.name) {
-        this.sharedData.addOutputEvent(connector.sourcePortID, source_node_index, connector.targetPortID, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((output_event) => {
-          console.log("subscribe event led target id", output_event.target_port_id, output_event.target_node_index)
+
+        this.sharedData.addOutputEvent(source_port_index, source_node_index, target_port_index, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((output_event) => {
+          console.log("subscribe event led target id", output_event.target_port_index, output_event.target_node_index)
           let target_node = this.sharedData.diagram.nodes[output_event.target_node_index]
           Led.simBehaviour(output_event.value, target_node)
           this.sharedData.diagram.dataBind()
@@ -246,8 +249,8 @@ export class ToolBarComponent {
         ///***************** */
         this.switch_source_nodes[target_node_index] = this.switch_source_nodes[target_node_index] || {}
         this.switch_source_nodes[target_node_index]["sourceNodeIndex"] = source_node_index
-        this.switch_source_nodes[target_node_index]["sourcePortId"] = connector.sourcePortID
-        this.switch_source_nodes[target_node_index]["switchInputPortId"] = connector.targetPortID
+        this.switch_source_nodes[target_node_index]["sourcePortIndex"] = source_port_index
+        this.switch_source_nodes[target_node_index]["switchInputPortIndex"] = target_port_index
         // let switch_node = this.sharedData.diagram.nodes[target_node_index]
         // let source_input_pin_node = this.sharedData.diagram.nodes[source_node_index]
         // let switch_output_port = switch_node.ports.filter(port => {
@@ -275,13 +278,11 @@ export class ToolBarComponent {
       let switch_props = this.switch_source_nodes[switch_index]
       let switch_node = this.sharedData.diagram.nodes[switch_index]
       let source_node_index = switch_props["sourceNodeIndex"]
-      let source_port_id = switch_props["sourcePortId"]
-      let switch_input_port_id = switch_props["switchInputPortId"]
-      let switch_output_port = switch_node.ports.find((port) => {
-        return port.id != switch_input_port_id
-      })
+      let source_port_index = switch_props["sourcePortIndex"]
+      let switch_input_port_index = switch_props["switchInputPortIndex"]
+      let switch_output_port_index = Math.abs(1 - switch_input_port_index)
       //bind source node port of switch input to output port if the switch
-      this.sharedData.addOutputEvent(source_port_id, source_node_index, switch_output_port.id, switch_index).pipe(takeUntil(this.unsubscribe)).subscribe((event: OutputEvent) => {
+      this.sharedData.addOutputEvent(source_port_index, source_node_index, switch_output_port_index, switch_index).pipe(takeUntil(this.unsubscribe)).subscribe((event: OutputEvent) => {
         this.switchSimBehaviour(event)
       })
     })
@@ -297,10 +298,8 @@ export class ToolBarComponent {
     if (switch_node.addInfo[addInfo_simValue] || switch_is_off) {
       console.log("switch is on")
       //switch is on
-      let source_port = this.sharedData.diagram.nodes[event.source_node_index].ports.find((port) => {
-        return port.id == event.source_port_id
-      }) as PointPortModel
-      console.log("source_port_id,source node,source port", event.source_port_id, this.sharedData.diagram.nodes[event.source_node_index])
+      let source_port = this.sharedData.diagram.nodes[event.source_node_index].ports[event.source_port_index]
+      console.log("source_port_id,source node,source port", event.source_port_index, this.sharedData.diagram.nodes[event.source_node_index])
       //TODO: set simValue in node in changeportvalue 
       console.log("switch is off", switch_is_off)
       let forwarded_value = !switch_is_off ? source_port.addInfo[addInfo_simValue] : false
@@ -311,13 +310,12 @@ export class ToolBarComponent {
       //   return port.id != switch_input_port_id
       // })
       // switch_output_port.addInfo[addInfo_simValue] = forwarded_value
-      switch_node.ports[0].addInfo[addInfo_simValue] = forwarded_value
-      switch_node.ports[1].addInfo[addInfo_simValue] = forwarded_value
+
       // } else {
-      console.log("value,target_port_id,target_node_index", forwarded_value, event.target_port_id, event.target_node_index)
+      console.log("value,target_port_id,target_node_index", forwarded_value, event.target_port_index, event.target_node_index)
       //forward this value to target port and event this change in target port
       //target port id is the id of switch port that output to target ,(switch output port)
-      this.sharedData.changePortValue(forwarded_value, event.target_port_id, event.target_node_index)
+      this.sharedData.changePortValue(forwarded_value, event.target_port_index, event.target_node_index)
       this.sharedData.diagram.dataBind()
       // 
 
@@ -582,16 +580,14 @@ export class ToolBarComponent {
     let switch_node_index = this.sharedData.nodeid_index[switch_node.id]
     let switch_props = this.switch_source_nodes[switch_node_index]
     let source_node_index: number = switch_props["sourceNodeIndex"]
-    let source_port_id = switch_props["sourcePortId"]
-    let switch_input_port_id = switch_props["switchInputPortId"]
-    let switch_output_port = switch_node.ports.find((port) => {
-      return port.id != switch_input_port_id
-    })
+    let source_port_index = switch_props["sourcePortIndex"]
+    let switch_input_port_index = switch_props["switchInputPortIndex"]
+    let switch_output_port_index = Math.abs(1 - switch_input_port_index)
     //TODO: bind input pin of switch to source pin
     //TODO: bind output pin of switch to multiple source pins (use array)
     //TODO: use bits so each suscriber has the index of its bit in switch port, in each event or the bits of the pin to get the value of the pin
-    console.log("set old value: ", source_node_index, switch_node, source_port_id)
-    this.switchSimBehaviour({ source_node_index: source_node_index, target_node_index: switch_node_index, target_port_id: switch_output_port.id, value: true, source_port_id: source_port_id }, !isOn)// value not used in switch so choose anything
+    console.log("set old value: ", source_node_index, switch_node, source_port_index)
+    this.switchSimBehaviour({ source_node_index: source_node_index, target_node_index: switch_node_index, target_port_index: switch_output_port_index, value: true, source_port_index: source_port_index }, !isOn)// value not used in switch so choose anything
     // let sources_ports=
     //if no on then switch is turned off so we send 0 to all output pin connected to switch ouptut pin
   }

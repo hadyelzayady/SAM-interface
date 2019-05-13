@@ -4,6 +4,7 @@ import { FilenameDialogComponent } from '../filename-dialog/filename-dialog.comp
 import { DialogComponent } from '@syncfusion/ej2-angular-popups';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { OutputEvent } from '../_models';
+import { addInfo_simValue } from '../utils';
 
 
 @Injectable()
@@ -25,21 +26,26 @@ export class SharedVariablesService {
   }
   /////////////
   ////////////////
-  port_value_table: { [source_component_index: string]: { [target_component_index: number]: { [source_port_id: string]: { [target_port_id: string]: Subject<OutputEvent> } } } } = {};
+  port_value_table: { [source_component_index: string]: { [target_component_index: number]: { [source_port_index: number]: { [target_port_index: number]: Subject<OutputEvent> } } } } = {};
   port_observables_table: { [k: string]: any } = {}
 
-  changePortValue(value: boolean, port_id, component_index) {
+  changePortValue(value: boolean, port_index, component_index) {
     console.log("port value table", this.port_value_table)
-    console.log("params", component_index, port_id, value)
+    console.log("params", component_index, port_index, value)
     if (component_index in this.port_value_table) {
+      //change port value in node
+      let source_node = this.diagram.nodes[component_index]
+      let port = source_node.ports[port_index]
+      port.addInfo[addInfo_simValue] = value
+      //
       Object.keys(this.port_value_table[component_index]).forEach(target_component_index => {
         // console.log("targets", target_port_id)
         console.log("target component index", target_component_index)
-        let target_ports = this.port_value_table[component_index][target_component_index][port_id] || null
+        let target_ports = this.port_value_table[component_index][target_component_index][port_index] || null
         console.log("target ports", target_ports)
         if (target_ports != null) {
-          Object.keys(target_ports).forEach(target_port_id => {
-            target_ports[target_port_id].next({ value: value, target_node_index: target_component_index, target_port_id: target_port_id, source_node_index: component_index, source_port_id: port_id })
+          Object.keys(target_ports).forEach(target_port_index => {
+            target_ports[target_port_index].next({ value: value, target_node_index: target_component_index, target_port_index: target_port_index, source_node_index: component_index, source_port_index: port_index })
           })
         }
 
@@ -48,7 +54,7 @@ export class SharedVariablesService {
     }
   }
 
-  addOutputEvent(source_port_id, source_component_index, target_port_id, target_component_index): Observable<OutputEvent> {
+  addOutputEvent(source_port_index: number, source_component_index: number, target_port_index: number, target_component_index: number): Observable<OutputEvent> {
     //init
     console.log("add output event ", source_component_index)
     this.port_value_table[source_component_index] = this.port_value_table[source_component_index] || {}
@@ -57,14 +63,14 @@ export class SharedVariablesService {
     this.port_value_table[source_component_index][target_component_index] = this.port_value_table[source_component_index][target_component_index] || {}
     this.port_observables_table[source_component_index][target_component_index] = this.port_observables_table[source_component_index][target_component_index] || {}
     //
-    this.port_value_table[source_component_index][target_component_index][source_port_id] = this.port_value_table[source_component_index][target_component_index][source_port_id] || {}
-    this.port_observables_table[source_component_index][target_component_index][source_port_id] = this.port_observables_table[source_component_index][target_component_index][source_port_id] || {}
+    this.port_value_table[source_component_index][target_component_index][source_port_index] = this.port_value_table[source_component_index][target_component_index][source_port_index] || {}
+    this.port_observables_table[source_component_index][target_component_index][source_port_index] = this.port_observables_table[source_component_index][target_component_index][source_port_index] || {}
     //end init
     //create event of connector target and source,as when source port changes ,change all target ports binded to this source
-    this.port_value_table[source_component_index][target_component_index][source_port_id][target_port_id] = new Subject()
-    this.port_observables_table[source_component_index][target_component_index][source_port_id][target_port_id] = this.port_value_table[source_component_index][target_component_index][source_port_id][target_port_id].asObservable();
-    console.log("add output:", this.port_observables_table[source_component_index][target_component_index][source_port_id][target_port_id])
-    return this.port_observables_table[source_component_index][target_component_index][source_port_id][target_port_id];
+    this.port_value_table[source_component_index][target_component_index][source_port_index][target_port_index] = new Subject()
+    this.port_observables_table[source_component_index][target_component_index][source_port_index][target_port_index] = this.port_value_table[source_component_index][target_component_index][source_port_index][target_port_index].asObservable();
+    console.log("add output:", this.port_observables_table[source_component_index][target_component_index][source_port_index][target_port_index])
+    return this.port_observables_table[source_component_index][target_component_index][source_port_index][target_port_index];
 
   }
   //////////////////
