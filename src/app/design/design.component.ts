@@ -13,6 +13,7 @@ import { RoutingStateService } from '../_services/routing-state.service';
 import { select } from '@syncfusion/ej2-base';
 import { ContextMenuClickEventArgs } from '@syncfusion/ej2-grids';
 import { Switch } from '../_models/Switch';
+import { SocketEvent } from '../_models/event';
 //TODO enable context menu 
 interface ConnectorEnd {
   nodeId: string,
@@ -148,10 +149,14 @@ export class DesignComponent {
         if (port_index > -1) {
 
           // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
-          this.sharedData.changePortValue(msg.value, port_index, component_index)
+          console.log("received change port", port_index)
+          this.sharedData.changePortValue(msg.value, port_index, component_index, component_index, port_index)
         }
       })
+      this.localSocketService.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
 
+        alert("local socket disconnected")
+      })
       // command manager for shortcuts
       // this.setSimContextMenu()
       //this should be the last line

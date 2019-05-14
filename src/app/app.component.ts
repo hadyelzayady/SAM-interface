@@ -8,6 +8,7 @@ import { RoutingStateService } from './_services/routing-state.service';
 })
 export class AppComponent {
   constructor(private chatService: SimCommunicationService, routingState: RoutingStateService) {
+
   }
   ngOnInit() {
 
