@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 
 import { SharedVariablesService } from './shared-variables.service';
-import { Message } from '../_models/local_message';
+import { Message, BoardMessage } from '../_models/local_message';
 import { SocketEvent } from '../_models/event';
 import { PortVisibility } from '@syncfusion/ej2-angular-diagrams';
 import { Observable } from 'rxjs';
@@ -24,6 +24,10 @@ export class LocalWebSocketService {
   resetBoard(ip: any, port) {
     this.socket.emit('reset', ip, port)
   }
+  public sendToBoard(boardMessage: BoardMessage): void {
+    console.log("send message to board", boardMessage)
+    this.socket.emit('message', boardMessage);
+  }
   public initSocket(): void {
     this.socket = socketIo(SERVER_URL);
     // this.webSocket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
@@ -38,9 +42,7 @@ export class LocalWebSocketService {
     // })
   }
 
-  public send(message: Message): void {
-    this.socket.emit('message', message);
-  }
+
   public close(): void {
     this.socket.close()
   }

@@ -20,6 +20,7 @@ import { LocalWebSocketService } from '../_services/local-web-socket.service';
 import { SwitchSourceNodes } from '../_models/types';
 import { nextContext } from '@angular/core/src/render3';
 import { Switch } from '../_models/Switch';
+import { BoardMessage } from '../_models/local_message';
 
 @Component({
   selector: 'app-tool-bar',
@@ -225,7 +226,9 @@ export class ToolBarComponent {
       let target_port_index = this.sharedData.diagram.nodes[target_node_index].ports.findIndex(port => { return port.id == connector.targetPortID })
       //TODO: if board pin is input from switch we should bind event from switch output pin to send the value
       console.log("tageti node name,", this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name])
-      if (this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name] == Led.name) {
+      let target_node = this.sharedData.diagram.nodes[target_node_index]
+      let source_node = this.sharedData.diagram.nodes[source_node_index]
+      if (target_node.addInfo[addInfo_name] == Led.name) {
 
         this.sharedData.addOutputEvent(source_port_index, source_node_index, target_port_index, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((output_event) => {
           console.log("subscribe event led target id", output_event.target_port_index, output_event.target_node_index)
@@ -236,7 +239,18 @@ export class ToolBarComponent {
           console.log(error)
         })
       }
-      else if (this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name] == Switch.name) {
+      else if (target_node.addInfo[addInfo_type] == ComponentType.Hardware && source_node.addInfo[addInfo_type] == ComponentType.Software) {
+        //board has input pin from software component ,may be from switch of led input pin ,so we forward this value to the board
+        //subscribe to source pin to get its value then forward it to the board
+        this.sharedData.addOutputEvent(source_port_index, source_node_index, target_port_index, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((output_event) => {
+          console.log("subscribe event board target id", output_event.target_port_index, output_event.target_node_index)
+          let target_node = this.sharedData.diagram.nodes[output_event.target_node_index]
+          this.boardSimBehaviour(output_event)
+        }, error => {
+          console.log(error)
+        })
+      }
+      else if (target_node.addInfo[addInfo_name] == Switch.name) {
         //if target  is switch (first pin of switch(left)) then bind source of this connector to the target of the connector of the second pin (right pin).ex: the code converts (board1_port1(src1)--> switch_left_pin(target1) ,switch_right_pin(src2)--> board2_port3(target2))  to (board1_port1){src1} --> board2_port3{target2} and condition on behave based on switch value
         //add index of src1
         //target node index is the switch index
@@ -270,6 +284,14 @@ export class ToolBarComponent {
     //   }
     // })
 
+  }
+  boardSimBehaviour(output_event: OutputEvent) {
+    let value = this.sharedData.diagram.nodes[output_event.source_node_index].addInfo[addInfo_simValue]
+    let target_board = this.sharedData.diagram.nodes[output_event.target_node_index]
+    let target_pin_number = parseInt(target_board.ports[output_event.target_port_index].id)
+    let IP = target_board.addInfo[addinfo_IP]
+    let port = target_board.addInfo[addinfo_port]
+    this.LocalCommService.sendToBoard(<BoardMessage>{ IP: IP, port: port, value: value, pin_id: target_pin_number })
   }
 
   setSwitchSimConfigs() {
