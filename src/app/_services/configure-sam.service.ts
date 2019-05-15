@@ -44,22 +44,22 @@ export class ConfigureSamService {
             })
     }
     setserver(serverurl:String){
-        return this.http.post<String>(`localhost:4000/setserver`, {
+        return this.http.post<String>(`http://localhost:4000/setserver`, {
             "server":serverurl
             })
     }
     setid(id:String){
-        return this.http.post<String>(`localhost:4000/setid`, {
+        return this.http.post<String>(`http://localhost:4000/setid`, {
             "id":id
             })
     }
     sethellomsg(helloMessage:String){
-        return this.http.post<String>(`localhost:4000/sethellomessage`, {
+        return this.http.post<String>(`http://localhost:4000/sethellomessage`, {
             "helloMessage":helloMessage
             })
     }
     Sendhellomsg(){
-        return this.http.get<String>(`localhost:4000/SEND_HELLO_MESSAGE`)
+        return this.http.get<String>(`http://localhost:4000/SEND_HELLO_MESSAGE`)
     }
 }
 
