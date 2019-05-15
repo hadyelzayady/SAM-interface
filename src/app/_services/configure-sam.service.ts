@@ -29,7 +29,7 @@ export class ConfigureSamService {
             })
     }
     setport(port: String) {
-        return this.http.post<String>(`http://localhost:4000/setpublicport`, {
+        return this.http.post(`http://localhost:4000/setpublicport`, {
             "publicPort":port
             })
     }

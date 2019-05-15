@@ -47,7 +47,7 @@ export class SharedVariablesService {
 
   }
   //////////////////
-  domainbaseurl = "http://localhost:3000/"
+  domainbaseurl = "http://192.168.1.113:3000/"
   baseurl = `${this.domainbaseurl}api`
   imageUrl = `${this.domainbaseurl}component/`
 
