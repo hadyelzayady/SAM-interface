@@ -47,7 +47,7 @@ export class SharedVariablesService {
 
   }
   //////////////////
-  domainbaseurl = "https://thesambackend.herokuapp.com/"
+  domainbaseurl = "http://localhost:3000/"
   baseurl = `${this.domainbaseurl}api`
   imageUrl = `${this.domainbaseurl}component/`
 
