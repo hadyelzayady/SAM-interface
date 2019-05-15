@@ -76,15 +76,28 @@
     color:#607D8B;
 
   }
+  .container{
+    border-style: outset;
+    border-width: 10px;
+  }
   .boardimg
   {
     position: relative;
-    width: 100%;
+    float: right;
+    width: 100px;
+    height: 100px;
   }
   nav ul{
     height: 400px;
     overflow:hidden; overflow-y:scroll;
   }
+  li{
+    clear: right;
+  }
+  .btn{
+    float: right;
+  }
+
   /*
   Copyright Google LLC. All Rights Reserved.
   Use of this source code is governed by an MIT-style license that
