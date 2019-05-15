@@ -1,3 +1,4 @@
+<div class="bg">
 <div class="container">
     <div class="row welcome_title">
         <div class="col-xl-12">
@@ -5,8 +6,8 @@
         </div>
     </div>
     <div class="row mainSection">
-        <div class="col-xl-3"></div>
-        <div class="col-xl-6">
+        <div class="col-xl-2"></div>
+        <div class="col-xl-8">
         <div id="carouselExampleControls" class="carousel slide"  data-interval="false"data-ride="carousel">
             <div class="carousel-inner">
               <div class="carousel-item active">
@@ -24,9 +25,11 @@
                                     <span >Enter your port After port forwarding Process </span>
                                     <a href='https://www.lifewire.com/how-to-port-forward-4163829'>How to Port Forward</a>
                                     <img class ="boardimg"src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Internet_port_forwarding.png/1200px-Internet_port_forwarding.png'>
+                                </li>
+                                <li>
+                                    <br>
                                     <span>Port</span>
                                     <input #port type="text" class="form-control" placeholder="Port" [(ngModel)]="portvar" aria-label="Port" aria-describedby="basic-addon1">
-          
                                     <br>   
                                     <button type="button" class="btn" (click)="setport()">Next</button>                   
                                 </li>              
@@ -48,7 +51,10 @@
                                     <span class="badge">2</span> 
                                     <span >Wifi</span>
                                     <img class ="boardimg"src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTime7aH4loQkjXri7Ybz9-Xfqkn7zZCLL7-ZAVPOY5txDhjbvB1A'>
-                                    <span>Wifi Name :</span>
+                                   </li>
+                                   
+                                   <li>
+                                     <span>Wifi Name :</span>
                                     <input type="text" class="form-control" placeholder="Wifi Name"  [(ngModel)]="wifinamevar" aria-label="Wifi Name" aria-describedby="basic-addon1">    
                                     <br>                      
                                     <span>Wifi Password</span>
@@ -77,6 +83,8 @@
                           </li>
                         </ul>
                       <!-- </nav> -->
+                      <button type="button" class="btn" (click)="setwifi()">Next</button>                   
+                             
                   </div>
                   <!-- <div class="col-md-3"></div> -->
               </div>
@@ -91,7 +99,7 @@
             </a>
           </div>
         </div>  
-        <div class="col-xl-3"></div>
+        <div class="col-xl-2"></div>
     </div>
    
 </div>
@@ -110,7 +118,7 @@
   </div>
 
 </div>
-
+</div>
 <!-- 
  <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
     <div class="carousel-inner">

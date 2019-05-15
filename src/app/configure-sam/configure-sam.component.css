@@ -83,6 +83,7 @@
   .boardimg
   {
     position: relative;
+    float: right;
     width: 100px;
     height: 100px;
   }
@@ -90,6 +91,13 @@
     height: 400px;
     overflow:hidden; overflow-y:scroll;
   }
+  li{
+    clear: right;
+  }
+  .btn{
+    float: right;
+  }
+
   /*
   Copyright Google LLC. All Rights Reserved.
   Use of this source code is governed by an MIT-style license that
