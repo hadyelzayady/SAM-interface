@@ -82,7 +82,7 @@ export class ConfigureSamComponent implements OnInit {
     console.log("entered here");
 this.configservice.setport(this.portvar).subscribe(data=>{
   console.log(data);
-  if(data.res=="failed")
+  if(data["res"]=="failed")
   console.log("the data is failed");
   let carousel_next =document.getElementById("carousel_next") as HTMLElement;
   carousel_next.click();
