@@ -93,6 +93,7 @@
   }
   li{
     clear: right;
+    padding: 3px;
   }
   .btn{
     float: right;

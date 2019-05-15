@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { board} from './boards';
-// import { BOARDS } from './boards-mocks';
+import { BOARDS } from './boards-mocks';
 import { ConfigureSamService } from '../_services/configure-sam.service';
 import { element } from '@angular/core/src/render3';
-
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-configure-sam',
@@ -12,13 +12,15 @@ import { element } from '@angular/core/src/render3';
 })
 export class ConfigureSamComponent implements OnInit {
   // @ViewChild("carousel_next") carousel_next:ElementRef;
-
-  boards :board[];
+  serverurl="serverurl.com";
+  boards =BOARDS;
   selectedBoard: board;
-  constructor(private configservice:ConfigureSamService) { }
+  constructor(private configservice:ConfigureSamService,private router: Router,
+    private route: ActivatedRoute) { }
   portvar:string;
   wifinamevar:string;
   wifipassvar:string;
+  returnUrl: string;
 
   ngOnInit() {
     this.configservice.getcomponents().subscribe(data=>{
@@ -31,10 +33,50 @@ export class ConfigureSamComponent implements OnInit {
         alert(error);
       
       })
-
+      // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+      this.returnUrl ="http://www.google.com"
   }
   onSelect(boardx: board): void {
     this.selectedBoard = boardx;
+  }
+  setcomponent(boardid: String): void {
+    console.log("board x is with id:"+boardid);
+    
+    
+     
+      this.configservice.setserver(this.serverurl).subscribe(data=>{
+        console.log("server is set with url:"+this.serverurl);
+        
+        this.configservice.sethellomsg("hello_"+boardid).subscribe(data=>{
+          console.log("hellomsg is set to hello_"+boardid);
+          this.configservice.Sendhellomsg().subscribe(data=>{
+            console.log("hellomsg was sent");
+            this.router.navigate([this.returnUrl]);
+          this.configservice.addcomponent(boardid).subscribe(data=>{
+            console.log("id is set to"+boardid);
+          
+          },error=>{
+            console.log("the error is "+error);
+            alert(error);
+          
+          })
+        },error=>{
+          console.log("the error is "+error);
+          alert(error);
+        
+        })
+    },error=>{
+      console.log("the error is "+error);
+      alert(error);
+    
+    })
+     
+    
+    },error=>{
+      console.log("the error is "+error);
+      alert(error["res"]);
+    
+    })
   }
   setport():void{
     console.log("entered here");
