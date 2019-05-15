@@ -1,6 +1,6 @@
 export class board {
     id: number;
     name: string;
-    imgurl:string;
+    image_path:string;
   }
   

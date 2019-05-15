@@ -76,10 +76,15 @@
     color:#607D8B;
 
   }
+  .container{
+    border-style: outset;
+    border-width: 10px;
+  }
   .boardimg
   {
     position: relative;
-    width: 100%;
+    width: 100px;
+    height: 100px;
   }
   nav ul{
     height: 400px;

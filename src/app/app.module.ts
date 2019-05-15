@@ -12,6 +12,7 @@ import { MenuBarComponent } from './menu-bar/menu-bar.component';
 import { FilenameDialogComponent } from './filename-dialog/filename-dialog.component';
 import { SimpleModalModule } from 'ngx-simple-modal';
 import { ngFileSaver } from 'angular-file-saver'
+import {ConfigureSamService}from './_services/configure-sam.service'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoadFileComponent } from './load-file/load-file.component';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap'
@@ -71,7 +72,7 @@ import { ConfigureSamComponent } from './configure-sam/configure-sam.component';
     DiagramContextMenuService,
     AuthGuard,
     CanDeactivateGuard,
-    AlertService, UserService, DesignService
+    AlertService, UserService, DesignService,ConfigureSamService
     , AuthenticationService, WebSocketService, SimCommunicationService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
