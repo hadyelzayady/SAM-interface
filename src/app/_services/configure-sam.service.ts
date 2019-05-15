@@ -1,6 +1,6 @@
 
 import { Injectable, Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { User, DesignFile, ReserveComponentsResponse } from '../_models';
 import { SharedVariablesService } from './shared-variables.service';
@@ -13,7 +13,15 @@ import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId,
 import { board } from '../configure-sam/boards';
 interface portresp{
     res:string
+    
 }
+const httpOptions = {
+    headers: new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    })
+  }
+
 @Injectable({
   providedIn: 'root'
 })
@@ -31,37 +39,37 @@ export class ConfigureSamService {
             })
     }
     setport(port: String) {
-        return this.http.post(`http://localhost:4000/setpublicport`, {
+        return this.http.post(`${this.sharedData.localhost_trayapp}setpublicport`, {
             "publicPort":port
-            })
+            },httpOptions)
     }
     setwifiname(wifiname: String) {
-        return this.http.post<String>(`http://localhost:4000/setwifiname`, {
+        return this.http.post<String>(`${this.sharedData.localhost_trayapp}setwifiname`, {
             "wifiname":wifiname
-            })
+            },httpOptions)
     }
     setwifipass(wifipass: String) {
-        return this.http.post<String>(`http://localhost:4000/setwifipass`, {
+        return this.http.post<String>(`${this.sharedData.localhost_trayapp}setwifipass`, {
             "wifipass":wifipass
-            })
+            },httpOptions)
     }
     setserver(serverurl:String){
-        return this.http.post<String>(`http://localhost:4000/setserver`, {
+        return this.http.post<String>(`${this.sharedData.localhost_trayapp}setserver`, {
             "server":serverurl
-            })
+            },httpOptions)
     }
     setid(id:String){
-        return this.http.post<String>(`http://localhost:4000/setid`, {
+        return this.http.post<String>(`${this.sharedData.localhost_trayapp}setid`, {
             "id":id
-            })
+            },httpOptions)
     }
     sethellomsg(helloMessage:String){
-        return this.http.post<String>(`http://localhost:4000/sethellomessage`, {
+        return this.http.post<String>(`${this.sharedData.localhost_trayapp}sethellomessage`, {
             "helloMessage":helloMessage
-            })
+            },httpOptions)
     }
     Sendhellomsg(){
-        return this.http.get<String>(`http://localhost:4000/SEND_HELLO_MESSAGE`)
+        return this.http.get<String>(`${this.sharedData.localhost_trayapp}SEND_HELLO_MESSAGE`,httpOptions)
     }
 }
 
