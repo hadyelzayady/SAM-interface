@@ -3,7 +3,7 @@
     <ejs-toolbar #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
       <e-items>
         <e-item [id]="add_pin" tooltipText='add pin' prefixIcon='e-undo-icon'></e-item>
-        <e-item [id]="save_board" tooltipText='save pin' prefixIcon='e-undo-icon'></e-item>
+        <e-item [id]="save_board" tooltipText='save board' prefixIcon='e-save-icon'></e-item>
         <e-item>
           <ng-template #template>
             <label [for]="image_upload" class="button">upload board image</label>
