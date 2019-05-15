@@ -11,7 +11,9 @@ import { Board } from '../_models/board';
 import { NodeModel, PortModel, PortVisibility } from '@syncfusion/ej2-angular-diagrams';
 import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType, setImageSize } from '../utils';
 import { board } from '../configure-sam/boards';
-
+interface portresp{
+    res:string
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -29,7 +31,7 @@ export class ConfigureSamService {
             })
     }
     setport(port: String) {
-        return this.http.post(`http://localhost:4000/setpublicport`, {
+        return this.http.post<portresp>(`http://localhost:4000/setpublicport`, {
             "publicPort":port
             })
     }
