@@ -3,10 +3,10 @@ import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConne
 import { ClickEventArgs, ToolbarComponent, ContextMenu, MenuEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { DesignService } from '../_services';
 import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue } from '../utils';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, filter } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
 import { RoutingStateService } from '../_services/routing-state.service';
@@ -14,6 +14,8 @@ import { select } from '@syncfusion/ej2-base';
 import { ContextMenuClickEventArgs } from '@syncfusion/ej2-grids';
 import { Switch } from '../_models/Switch';
 import { SocketEvent } from '../_models/event';
+import { Event as NavigationEvent } from "@angular/router";
+import { CanDeactivateComponent } from '../can-deactivate/can-deactivate.component';
 //TODO enable context menu 
 interface ConnectorEnd {
   nodeId: string,
@@ -24,7 +26,7 @@ interface ConnectorEnd {
   templateUrl: './design.component.html',
   styleUrls: ['./design.component.css']
 })
-export class DesignComponent {
+export class DesignComponent extends CanDeactivateComponent {
 
 
   sim_mode = false;
@@ -38,12 +40,16 @@ export class DesignComponent {
   public contextMenuSettings: ContextMenuSettingsModel;
   title = 'SAM-interface';
   constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, private designService: DesignService, private approute: Router, private localSocketService: LocalWebSocketService, private routingState: RoutingStateService) {
+    super()
+
   }
 
 
 
   previousRoute: string;
   ngOnInit(): void {
+
+
     this.previousRoute = this.routingState.getPreviousUrl();
     // console.log(this.previousRoute)
     this.sharedData.diagram = this.diagram;
@@ -58,6 +64,9 @@ export class DesignComponent {
       this.setConstraints(sim_mode)
     });
 
+  }
+  canDeactivate(): boolean {
+    return this.sharedData.saved_design
   }
   setCommandManager() {
     let mythis = this
