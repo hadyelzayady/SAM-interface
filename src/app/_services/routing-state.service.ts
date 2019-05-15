@@ -14,6 +14,7 @@ export class RoutingStateService {
   ) { }
 
   public loadRouting(): void {
+    alert("rerouting")
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(({ urlAfterRedirects }: NavigationEnd) => {
@@ -22,10 +23,12 @@ export class RoutingStateService {
   }
 
   public getHistory(): string[] {
+    console.log()
     return this.history;
   }
 
   public getPreviousUrl(): string {
+    alert(`get previuous route: ${this.history}`)
     return this.history[this.history.length - 2] || '/index';
   }
 }
