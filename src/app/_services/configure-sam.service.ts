@@ -38,37 +38,37 @@ export class ConfigureSamService {
             })
     }
     setport(port: String) {
-        return this.http.post(`http://localhost:4000/setpublicport`, {
+        return this.http.post(`${this.sharedData.localhost_trayapp}setpublicport`, {
             "publicPort":port
             },httpOptions)
     }
     setwifiname(wifiname: String) {
-        return this.http.post<String>(`http://localhost:4000/setwifiname`, {
+        return this.http.post<String>(`${this.sharedData.localhost_trayapp}setwifiname`, {
             "wifiname":wifiname
             },httpOptions)
     }
     setwifipass(wifipass: String) {
-        return this.http.post<String>(`http://localhost:4000/setwifipass`, {
+        return this.http.post<String>(`${this.sharedData.localhost_trayapp}setwifipass`, {
             "wifipass":wifipass
             },httpOptions)
     }
     setserver(serverurl:String){
-        return this.http.post<String>(`http://localhost:4000/setserver`, {
+        return this.http.post<String>(`${this.sharedData.localhost_trayapp}setserver`, {
             "server":serverurl
             },httpOptions)
     }
     setid(id:String){
-        return this.http.post<String>(`http://localhost:4000/setid`, {
+        return this.http.post<String>(`${this.sharedData.localhost_trayapp}setid`, {
             "id":id
             },httpOptions)
     }
     sethellomsg(helloMessage:String){
-        return this.http.post<String>(`http://localhost:4000/sethellomessage`, {
+        return this.http.post<String>(`${this.sharedData.localhost_trayapp}sethellomessage`, {
             "helloMessage":helloMessage
             },httpOptions)
     }
     Sendhellomsg(){
-        return this.http.get<String>(`http://localhost:4000/SEND_HELLO_MESSAGE`,httpOptions)
+        return this.http.get<String>(`${this.sharedData.localhost_trayapp}SEND_HELLO_MESSAGE`,httpOptions)
     }
 }
 

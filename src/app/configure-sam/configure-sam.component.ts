@@ -12,7 +12,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class ConfigureSamComponent implements OnInit {
   // @ViewChild("carousel_next") carousel_next:ElementRef;
-  serverurl="serverurl.com";
+  serverurl="https://thesambackend.herokuapp.com/";
   boards =BOARDS;
   selectedBoard: board;
   constructor(private configservice:ConfigureSamService,private router: Router,
@@ -33,8 +33,8 @@ export class ConfigureSamComponent implements OnInit {
         alert(error);
       
       })
-      // this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-      this.returnUrl ="http://www.google.com"
+      this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+      // this.returnUrl ="http://www.google.com"
   }
   onSelect(boardx: board): void {
     this.selectedBoard = boardx;
@@ -51,7 +51,7 @@ export class ConfigureSamComponent implements OnInit {
           console.log("hellomsg is set to hello_"+boardid);
           this.configservice.Sendhellomsg().subscribe(data=>{
             console.log("hellomsg was sent");
-            this.router.navigate([this.returnUrl]);
+            this.router.navigate(["home"]);
           this.configservice.addcomponent(boardid).subscribe(data=>{
             console.log("id is set to"+boardid);
           
