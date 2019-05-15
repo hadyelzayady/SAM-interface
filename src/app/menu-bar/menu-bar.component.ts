@@ -76,7 +76,7 @@ export class MenuBarComponent extends CanDeactivateComponent implements OnInit {
     }
   }
   //openadd file dialoge
-  private select(args: MenuEventArgs): void {
+  public select(args: MenuEventArgs): void {
     if (!this.sim_mode) {
       switch (args.item.id) {
         case this.save_id:

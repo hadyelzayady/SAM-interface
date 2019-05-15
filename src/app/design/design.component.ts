@@ -32,9 +32,9 @@ export class DesignComponent {
   public diagram: DiagramComponent;
   public commandManager: CommandManager;
   @ViewChild(ToolBarComponent)
-  private toolBar: ToolBarComponent;
-  private connections = {}
-  private file_id: number;
+  toolBar: ToolBarComponent;
+  connections = {}
+  public file_id: number;
   public contextMenuSettings: ContextMenuSettingsModel;
   title = 'SAM-interface';
   constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, private designService: DesignService, private approute: Router, private localSocketService: LocalWebSocketService, private routingState: RoutingStateService) {
