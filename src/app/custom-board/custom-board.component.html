@@ -54,8 +54,8 @@
 
     </table>
   </div>
-  <div class=" col-9 w-80 nopadding">
-    <ejs-diagram #diagram id="diagram" width="100%" height="568px" (created)='diagramCreated()'
+  <div class=" col-9 w-80 nopadding main-wrapper">
+    <ejs-diagram #diagram id="diagram" width="100%" height="600px" (created)='diagramCreated()'
       (selectionChange)='selectionChangeEvent($event)' (historyChange)='historyChanged($event)'
       (textEdit)='EditBoardNameEvent($event)' [commandManager]="commandManager"
       [contextMenuSettings]="contextMenuSettings">

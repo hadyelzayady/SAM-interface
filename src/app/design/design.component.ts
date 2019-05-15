@@ -1,15 +1,19 @@
 import { Component, ViewChild, EventEmitter, Output, OnInit, AfterViewInit } from '@angular/core';
-import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuSettingsModel, ContextMenuItemModel, IHistoryChangeArgs, UndoRedo, ConnectorConstraints, NodeConstraints, DiagramConstraints, Keys, CommandManager, KeyModifiers, ContextMenuSettings } from '@syncfusion/ej2-angular-diagrams';
+import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuItemModel, IHistoryChangeArgs, UndoRedo, ConnectorConstraints, NodeConstraints, DiagramConstraints, Keys, CommandManager, KeyModifiers, ContextMenuSettings, ContextMenuSettingsModel, IDoubleClickEventArgs } from '@syncfusion/ej2-angular-diagrams';
 import { ClickEventArgs, ToolbarComponent, ContextMenu, MenuEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DesignService } from '../_services';
-import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints } from '../utils';
+import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue } from '../utils';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
 import { RoutingStateService } from '../_services/routing-state.service';
+import { select } from '@syncfusion/ej2-base';
+import { ContextMenuClickEventArgs } from '@syncfusion/ej2-grids';
+import { Switch } from '../_models/Switch';
+import { SocketEvent } from '../_models/event';
 //TODO enable context menu 
 interface ConnectorEnd {
   nodeId: string,
@@ -41,11 +45,12 @@ export class DesignComponent {
   previousRoute: string;
   ngOnInit(): void {
     this.previousRoute = this.routingState.getPreviousUrl();
-    console.log(this.previousRoute)
+    // console.log(this.previousRoute)
     this.sharedData.diagram = this.diagram;
     this.contextMenuSettings = {
       show: true,
     }
+
     this.setCommandManager()
     this.file_id = +this.route.snapshot.paramMap.get('id');
     this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
@@ -55,7 +60,6 @@ export class DesignComponent {
 
   }
   setCommandManager() {
-    let diagram = this.diagram
     let mythis = this
     this.diagram.commandManager = {
       commands: [{
@@ -99,14 +103,31 @@ export class DesignComponent {
     this.sharedData
   }
   historyChange(args: IHistoryChangeArgs) {
-    console.log(args)
+    // console.log(args)
   }
 
   setSimContextMenu() {
     //TODO: show send to front/back/..
     // this.contextMenuSettings = {
     //   show: true,
-    //   items: []
+    //   items: [{
+    //     text: "Cut",
+    //     id: "Cut"
+    //   }],
+    //   showCustomMenuOnly: true
+    // }
+  }
+  contextClick(args: ContextMenuClickEventArgs) {
+    // console.log("context menu click", args)
+  }
+  doubleClick(args: IDoubleClickEventArgs) {
+    // console.log("double click", args)
+    // // if (args.count == 1) {
+    // let clicked_node = args.source.nodes || null
+    // if (clicked_node[0].addInfo[addInfo_name] == Switch.name && this.sim_mode) {
+    //   Switch.Toggle(clicked_node[0])
+    //   this.diagram.dataBind()
+    // }
     // }
   }
   setConstraints(sim_mode: boolean) {
@@ -118,12 +139,26 @@ export class DesignComponent {
         connector.constraints = connectorSimConstraints;
       });
       this.localSocketService.onMessage().subscribe(msg => {
-        console.log("received mesage", msg.port_id)
+        console.log("received mesage", msg)
         console.log(this.sharedData.connected_component_id_index)
-        this.sharedData.changePortValue(msg.value, msg.port_id, this.sharedData.connected_component_id_index[msg.connected_component_id])
+        let component_index = this.sharedData.connected_component_id_index[msg.connected_component_id]
+        let source_node = this.diagram.nodes[component_index]
+        let port_index = source_node.ports.findIndex(port => {
+          return port.id == "" + msg.port_id
+        })
+        if (port_index > -1) {
+
+          // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
+          console.log("received change port", port_index)
+          this.sharedData.changePortValue(msg.value, port_index, component_index, component_index, port_index)
+        }
+      })
+      this.localSocketService.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
+
+        alert("local socket disconnected")
       })
       // command manager for shortcuts
-      this.setSimContextMenu()
+      // this.setSimContextMenu()
       //this should be the last line
       // this.diagram.refresh()
 
@@ -174,8 +209,7 @@ export class DesignComponent {
 
   diagramCreated() {
     this.loadDesignFile();
-    console.log(this.sharedData.diagram.historyManager.currentEntry)
-
+    // console.log(this.sharedData.diagram.historyManager.currentEntry)
   }
 
   selectionChangeEvent(args: ISelectionChangeEventArgs) {
