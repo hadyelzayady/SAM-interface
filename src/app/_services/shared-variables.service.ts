@@ -33,7 +33,7 @@ export class SharedVariablesService {
     this.pin_inputs_bit_index[target_node_index][target_port_index][source_node_index][source_port_index] = this.pin_inputs_bit_values[target_node_index][target_port_index].length
     //
   }
-
+  saved_design: boolean = true
   diagram: DiagramComponent;
   dialog: DialogComponent;
   connected_component_id_index = {};//connected_component_id : index of node in diagram with this id

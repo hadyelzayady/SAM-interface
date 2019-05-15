@@ -15,7 +15,7 @@ import { CanDeactivateComponent } from '../can-deactivate/can-deactivate.compone
   templateUrl: './menu-bar.component.html',
   styleUrls: ['./menu-bar.component.css']
 })
-export class MenuBarComponent extends CanDeactivateComponent implements OnInit {
+export class MenuBarComponent implements OnInit {
   animal: string;
   name: string;
   open_id = "open";
@@ -25,9 +25,7 @@ export class MenuBarComponent extends CanDeactivateComponent implements OnInit {
   @ViewChild("menu") menubar: MenuComponent
 
   //
-  canDeactivate(): boolean {
-    return this.saved_design
-  }
+
   menuItems: MenuItemModel[] = [
     {
       text: 'File',
@@ -47,7 +45,6 @@ export class MenuBarComponent extends CanDeactivateComponent implements OnInit {
   @Input() file_id: number;
 
   constructor(private simpleModalService: SimpleModalService, public sharedData: SharedVariablesService, private designService: DesignService, private router: Router) {
-    super()
 
   }
   saved_undo_stack_length = 0
@@ -64,9 +61,8 @@ export class MenuBarComponent extends CanDeactivateComponent implements OnInit {
       this.sim_mode = sim_mode;
     });
   }
-  saved_design: boolean = true
   setSaveStatus(saved: boolean) {
-    this.saved_design = saved
+    this.sharedData.saved_design = saved
     if (saved) {
       this.saved_undo_stack_length = this.sharedData.diagram.historyManager.undoStack.length
       this.menubar.items[1].iconCss = "em-icons e-check-mark"

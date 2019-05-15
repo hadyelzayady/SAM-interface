@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
-import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs, IHistoryChangeArgs, ITextEditEventArgs, CommandManager, ContextMenuSettingsModel } from '@syncfusion/ej2-angular-diagrams';
+import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs, IHistoryChangeArgs, ITextEditEventArgs, CommandManager, ContextMenuSettingsModel, UndoRedoService } from '@syncfusion/ej2-angular-diagrams';
 import { ClickEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { ModalService } from '../modal.service';
 import { CustomBoardService } from '../_services/custom-board.service';
@@ -149,7 +149,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
 
   historyChanged(args) {
     // if(args.change)
-    this.saved_design = false
+    this.sharedData.saved_design = false
     let isRemove = args.change["Remove"] || false
     let isInsert = args.change["Insert"] || false
     let isPropertyChaned = args.change["type"] == "PropertyChanged" || false
@@ -188,7 +188,9 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
-    this.sub.unsubscribe();
+    this.sub = this.sub || null
+    if (this.sub != null)
+      this.sub.unsubscribe();
   }
   public palettes: PaletteModel[];
   @ViewChild("sidebar") sidebar: SymbolPaletteComponent;
