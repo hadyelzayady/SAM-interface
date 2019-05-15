@@ -23,7 +23,7 @@ export class ConfigureSamComponent implements OnInit {
   ngOnInit() {
     this.configservice.getcomponents().subscribe(data=>{
     
-        console.log(data);
+        console.log("the recieved component is"+data);
         this.boards=data;
       
       },error=>{
@@ -39,6 +39,7 @@ export class ConfigureSamComponent implements OnInit {
   setport():void{
     console.log("entered here");
 this.configservice.setport(this.portvar).subscribe(data=>{
+  console.log(data);
   if(data["res"]=="failed")
   console.log("the data is failed");
   let carousel_next =document.getElementById("carousel_next") as HTMLElement;
@@ -47,7 +48,7 @@ this.configservice.setport(this.portvar).subscribe(data=>{
 
 },error=>{
   console.log("the error is "+error);
-  alert(error["res"]);
+ console.log(error)
 
 })
   }
