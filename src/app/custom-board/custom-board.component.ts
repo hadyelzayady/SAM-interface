@@ -654,7 +654,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
                 console.log(data.id)
                 this.board_id = data.id
                 this.board_node.addInfo[addInfo_componentId] = data.id
-                this.router.navigate(["customboard"], { queryParams: { board_id: this.board_id } });
+                this.router.navigate(["customboard"], { queryParams: { board_id: this.board_id }, skipLocationChange: true });
               }
 
             }, error => {
