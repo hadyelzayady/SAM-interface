@@ -12,7 +12,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class ConfigureSamComponent implements OnInit {
   // @ViewChild("carousel_next") carousel_next:ElementRef;
-  serverurl="https://thesambackend.herokuapp.com/";
+  serverurl="thesambackend.herokuapp.com";
   boards =BOARDS;
   selectedBoard: board;
   constructor(private configservice:ConfigureSamService,private router: Router,
