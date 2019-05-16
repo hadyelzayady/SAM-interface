@@ -466,49 +466,7 @@ export class ToolBarComponent {
                   .subscribe(data => {
                     this.send_connections = true
                     //prepare sim env
-                    this.LocalCommService.initSocket()
-                    this.LocalCommService.onEvent(SocketEvent.CONNECT).subscribe(() => {
-                      this.local_connected = true
-                      this.error_local_connected = false
-                    })
-                    this.LocalCommService.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
-                      this.local_connected = false
-                      this.error_local_connected = true
-                      this.closeSimulationMode()
-                    })
-
-                    //socket with server to start and end sim
-
-                    this.simComm.initSocket(this.file_id)
-                    this.simComm.onEvent(SocketEvent.SUCCESSFULL).subscribe(() => {
-                      this.connected = true
-                      this.error_connected = false
-                      try {
-                        //prepare outputs in the design
-                        this.PrepareDiagramForOutput();
-                        this.sim_mode = true
-                        this.sharedData.changeMode(true)
-                        this.sharedData.diagram.clearSelection();
-                        this.prepared = true
-
-                      } catch (error) {
-                        this.error_prepared = true
-                        this.prepared = false
-                        this.simComm.close()
-                      }
-                    })
-                    this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe((data) => {
-                      console.log(data)
-                      this.error_connected = true
-                      this.connected = false
-
-                      //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
-                      // if (this.sim_mode) {
-                      this.closeSimulationMode();
-                      // } else {
-                      // this.simComm.close()
-                      // }
-                    })
+                    this.startSockets()
                     //TODO: wait for start simulaion in websocket
                   }, error => {
                     this.error_send_connections = true
@@ -610,7 +568,70 @@ export class ToolBarComponent {
     }
 
   }
+  startSockets() {
+    this.LocalCommService.initSocket()
+    this.LocalCommService.onEvent(SocketEvent.CONNECT).subscribe(() => {
+      this.local_connected = true
+      this.error_local_connected = false
+    })
+    this.LocalCommService.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
+      this.local_connected = false
+      this.error_local_connected = true
+      this.closeSimulationMode()
+    })
+    this.LocalCommService.onMessage().subscribe(msg => {
+      console.log("received mesage", msg)
+      console.log(this.sharedData.connected_component_id_index)
+      let component_index = this.sharedData.connected_component_id_index[msg.connected_component_id]
+      let source_node = this.sharedData.diagram.nodes[component_index]
+      let port_index = source_node.ports.findIndex(port => {
+        return port.id == "" + msg.port_id
+      })
+      if (port_index > -1) {
 
+        // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
+        console.log("received change port", port_index)
+        this.sharedData.changePortValue(msg.value, port_index, component_index, component_index, port_index)
+      }
+    })
+    this.LocalCommService.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
+
+      alert("local socket disconnected")
+    })
+
+    //socket with server to start and end sim
+
+    this.simComm.initSocket(this.file_id)
+    this.simComm.onEvent(SocketEvent.SUCCESSFULL).subscribe(() => {
+      this.connected = true
+      this.error_connected = false
+      try {
+        //prepare outputs in the design
+        this.PrepareDiagramForOutput();
+        this.sim_mode = true
+        this.sharedData.changeMode(true)
+        this.sharedData.diagram.clearSelection();
+        this.prepared = true
+
+      } catch (error) {
+        this.error_prepared = true
+        this.prepared = false
+        this.simComm.close()
+      }
+    })
+    this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe((data) => {
+      console.log(data)
+      this.error_connected = true
+      this.connected = false
+
+      //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
+      // if (this.sim_mode) {
+      this.closeSimulationMode();
+      // } else {
+      // this.simComm.close()
+      // }
+    })
+  }
   fireSwitchTogglesEvent(isOn: boolean) {
     let switch_node = this.selected_board
     let switch_pin1_id = switch_node.ports[0].id
