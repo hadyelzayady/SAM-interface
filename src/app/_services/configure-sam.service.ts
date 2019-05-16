@@ -11,65 +11,65 @@ import { Board } from '../_models/board';
 import { NodeModel, PortModel, PortVisibility } from '@syncfusion/ej2-angular-diagrams';
 import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType, setImageSize } from '../utils';
 import { board } from '../configure-sam/boards';
-interface portresp{
-    res:string
-    
+interface portresp {
+    res: string
+
 }
 const httpOptions = {
     headers: new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
     })
-  }
+}
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class ConfigureSamService {
 
     constructor(private http: HttpClient, private sharedData: SharedVariablesService) { }
     private baseurl = this.sharedData.baseurl + '/design'
 
-    getcomponents(){
+    getcomponents() {
         return this.http.get<board[]>(`${this.sharedData.baseurl}/users/component`)
     }
-    addcomponent(board_id:String){
-        return this.http.post<String>(`${this.sharedData.baseurl}/component`, {
-            "component_id":board_id
-            })
+    addcomponent(board_id: String) {
+        return this.http.post<String>(`${this.sharedData.baseurl}/users/component`, {
+            "component_id": board_id
+        })
     }
     setport(port: String) {
         return this.http.post(`${this.sharedData.localhost_trayapp}setpublicport`, {
-            "publicPort":port
-            },httpOptions)
+            "publicPort": port
+        }, httpOptions)
     }
     setwifiname(wifiname: String) {
         return this.http.post<String>(`${this.sharedData.localhost_trayapp}setwifiname`, {
-            "wifiname":wifiname
-            },httpOptions)
+            "wifiname": wifiname
+        }, httpOptions)
     }
     setwifipass(wifipass: String) {
         return this.http.post<String>(`${this.sharedData.localhost_trayapp}setwifipass`, {
-            "wifipass":wifipass
-            },httpOptions)
+            "wifipass": wifipass
+        }, httpOptions)
     }
-    setserver(serverurl:String){
+    setserver(serverurl: String) {
         return this.http.post<String>(`${this.sharedData.localhost_trayapp}setserver`, {
-            "server":serverurl
-            },httpOptions)
+            "server": serverurl
+        }, httpOptions)
     }
-    setid(id:String){
+    setid(id: String) {
         return this.http.post<String>(`${this.sharedData.localhost_trayapp}setid`, {
-            "id":id
-            },httpOptions)
+            "id": id
+        }, httpOptions)
     }
-    sethellomsg(helloMessage:String){
+    sethellomsg(helloMessage: String) {
         return this.http.post<String>(`${this.sharedData.localhost_trayapp}sethellomessage`, {
-            "helloMessage":helloMessage
-            },httpOptions)
+            "helloMessage": helloMessage
+        }, httpOptions)
     }
-    Sendhellomsg(){
-        return this.http.get<String>(`${this.sharedData.localhost_trayapp}SEND_HELLO_MESSAGE`,httpOptions)
+    Sendhellomsg() {
+        return this.http.get<String>(`${this.sharedData.localhost_trayapp}SEND_HELLO_MESSAGE`, httpOptions)
     }
 }
 
