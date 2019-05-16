@@ -147,25 +147,7 @@ export class DesignComponent extends CanDeactivateComponent {
       this.diagram.connectors.forEach(connector => {
         connector.constraints = connectorSimConstraints;
       });
-      this.localSocketService.onMessage().subscribe(msg => {
-        console.log("received mesage", msg)
-        console.log(this.sharedData.connected_component_id_index)
-        let component_index = this.sharedData.connected_component_id_index[msg.connected_component_id]
-        let source_node = this.diagram.nodes[component_index]
-        let port_index = source_node.ports.findIndex(port => {
-          return port.id == "" + msg.port_id
-        })
-        if (port_index > -1) {
 
-          // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
-          console.log("received change port", port_index)
-          this.sharedData.changePortValue(msg.value, port_index, component_index, component_index, port_index)
-        }
-      })
-      this.localSocketService.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
-
-        alert("local socket disconnected")
-      })
       // command manager for shortcuts
       // this.setSimContextMenu()
       //this should be the last line
