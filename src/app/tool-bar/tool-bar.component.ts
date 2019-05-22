@@ -626,9 +626,9 @@ export class ToolBarComponent {
       let port_index = mapping.port_index
       if (port_index > -1) {
 
-        console.log("port_index", port_index)
-        console.log("component_index", component_index)
-        console.log("port value table", this.sharedData.port_value_table)
+        // console.log("port_index", port_index)
+        // console.log("component_index", component_index)
+        // console.log("port value table", this.sharedData.port_value_table)
         // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
         //console.log("received change port", port_index)
         this.sharedData.changePortValue(msg.value, port_index, component_index, component_index, port_index)

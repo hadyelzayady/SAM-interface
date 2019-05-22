@@ -32,19 +32,22 @@ export class UtilsService {
         let I_Component = nodes[nodeid_index[connector.targetID]]
 
         let source_pin = connector.sourcePortID
-        let destination_pin = connector.sourcePortID
+        let destination_pin = connector.targetPortID
         let destination_ip_port = I_Component.addInfo[addinfo_IP] + ":" + I_Component.addInfo[addinfo_port]
-        //if output to software component then map destination pin to global pin id
-        let original_destinaion_pin = destination_pin
-        let destination_pin_number = global_pin_number++
-        destination_pin = "" + destination_pin_number
-        let O_Component_index = nodeid_index[O_Component.id]
-        //get port index
-        let port_index = I_Component.ports.findIndex(port => {
-          return port.id == "" + connector.targetPortID
-        })
+        //map each HW output port to global pin id
+        if (I_Component.addInfo[addInfo_type] == ComponentType.Software) {
+          //if board outputs to software(I_component is switch or led) then send the destination as the board pin itself as we bind outputs to the board pin of the board  ,not like if board1 is connected to board2 then the destination will be the pin in board2
+          let original_destinaion_pin = destination_pin
+          let destination_pin_number = global_pin_number++
+          destination_pin = "" + destination_pin_number
+          let O_Component_index = nodeid_index[O_Component.id]
+          //get port index
+          let port_index = O_Component.ports.findIndex(port => {
+            return port.id == connector.sourcePortID
+          })
+          globalPinId_boardid_portid[destination_pin_number] = { component_index: O_Component_index, port_index: port_index }
+        }
         //
-        globalPinId_boardid_portid[destination_pin_number] = { component_index: O_Component_index, port_index: port_index }
         if (O_Component.addInfo[addInfo_type] == ComponentType.Hardware) {
           //output  not from switch
           if (!(O_Component.addInfo[addInfo_connectedComponentId] in connections)) {
