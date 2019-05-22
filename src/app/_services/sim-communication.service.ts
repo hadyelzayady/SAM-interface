@@ -8,7 +8,7 @@ import { PortVisibility } from '@syncfusion/ej2-angular-diagrams';
 import { Observable } from 'rxjs';
 import * as socketIo from 'socket.io-client';
 
-const SERVER_URL = 'https://thesambackend.herokuapp.com:3001';
+const SERVER_URL = 'localhost:3001';
 
 @Injectable({
   providedIn: 'root'
