@@ -79,7 +79,8 @@
                             (click)="onSelect(board)">
                             <span class="badge">{{board.id}}</span> 
                             <span >{{board.name}}</span>
-                            <img class ="boardimg"src={{board.image_path}}>
+                            <!-- <img class ="boardimg"src={{board.image_path}}> -->
+                            <img class ="boardimg" [src]="getimage(board.id)">
                           </li>
                 <li *ngIf="selectedBoard">
                           <button type="button" class="btn" (click)="setcomponent(selectedBoard.id)">Next</button>                   

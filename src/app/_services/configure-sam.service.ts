@@ -33,6 +33,7 @@ export class ConfigureSamService {
     getcomponents() {
         return this.http.get<board[]>(`${this.sharedData.baseurl}/users/component`)
     }
+    
     addcomponent(board_id: String) {
         return this.http.post<String>(`${this.sharedData.baseurl}/users/component`, {
             "component_id": board_id
