@@ -12,3 +12,10 @@ export interface Message {
     port_id: number;
     value: boolean
 }
+export interface SimValue {
+    pin_number: number;
+    value: boolean
+    // connected_component_id: number;
+    // port_id: number;
+    // value: boolean
+}

@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 
 import { SharedVariablesService } from './shared-variables.service';
-import { Message, BoardMessage } from '../_models/local_message';
+import { Message, BoardMessage, SimValue } from '../_models/local_message';
 import { SocketEvent } from '../_models/event';
 import { PortVisibility } from '@syncfusion/ej2-angular-diagrams';
 import { Observable } from 'rxjs';
@@ -46,9 +46,9 @@ export class LocalWebSocketService {
   public close(): void {
     this.socket.close()
   }
-  public onMessage(): Observable<Message> {
-    return new Observable<Message>(observer => {
-      this.socket.on('message', (data: Message) => observer.next(data));
+  public onMessage(): Observable<SimValue> {
+    return new Observable<SimValue>(observer => {
+      this.socket.on('message', (data: SimValue) => observer.next(data));
     });
   }
 

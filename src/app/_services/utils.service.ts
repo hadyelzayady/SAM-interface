@@ -18,11 +18,13 @@ export class UtilsService {
       constraints: ConnectorConstraints.Default | ConnectorConstraints.Bridging,
     }
   }
-
+  globalPinId_boardid_portid: { [global_pin_id: number]: { component_index: number, port_index: number } } = {}
   getDesignConnections(): any {
+    let global_pin_number = 0
     let connections: { [key: string]: string } = {}
     let nodeid_index = this.sharedData.nodeid_index
     let nodes = this.sharedData.diagram.nodes
+    let globalPinId_boardid_portid = this.globalPinId_boardid_portid
     this.sharedData.diagram.connectors.forEach(function (connector) {
       if (connector.targetID != "" && connector.sourceID != "") {
         // let connectedcomponent_id= this.sharedData.
@@ -32,6 +34,17 @@ export class UtilsService {
         let source_pin = connector.sourcePortID
         let destination_pin = connector.sourcePortID
         let destination_ip_port = I_Component.addInfo[addinfo_IP] + ":" + I_Component.addInfo[addinfo_port]
+        //if output to software component then map destination pin to global pin id
+        let original_destinaion_pin = destination_pin
+        let destination_pin_number = global_pin_number++
+        destination_pin = "" + destination_pin_number
+        let O_Component_index = nodeid_index[O_Component.id]
+        //get port index
+        let port_index = I_Component.ports.findIndex(port => {
+          return port.id == "" + connector.targetPortID
+        })
+        //
+        globalPinId_boardid_portid[destination_pin_number] = { component_index: O_Component_index, port_index: port_index }
         if (O_Component.addInfo[addInfo_type] == ComponentType.Hardware) {
           //output  not from switch
           if (!(O_Component.addInfo[addInfo_connectedComponentId] in connections)) {
@@ -45,8 +58,8 @@ export class UtilsService {
             connections[I_Component.addInfo[addInfo_connectedComponentId]] = ''
           }
           connections[I_Component.addInfo[addInfo_connectedComponentId]] += `"I":${destination_pin},`
-
         }
+
       }
     });
     return connections;

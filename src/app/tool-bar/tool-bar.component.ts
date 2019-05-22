@@ -176,6 +176,7 @@ export class ToolBarComponent {
     let reserved_index = 0
     let connected_components_id_index = {}
     let nodeid_index = {}
+    console.log("start config")
     this.sharedData.diagram.nodes.forEach((node, index) => {
       if (node.addInfo[addInfo_type] == ComponentType.Hardware) {
         if (node.addInfo[addInfo_componentId] in cache) {
@@ -473,6 +474,7 @@ export class ToolBarComponent {
                     this.send_connections = false;
                   });
               } catch (error) {
+                console.log('tr', error)
                 this.configured = false
                 this.error_config = true;
               }
@@ -513,7 +515,9 @@ export class ToolBarComponent {
           try {
             this.setComponentsReserveConfigs(data)
             this.configured = true
+            this.error_config = false
           } catch (error) {
+            console.log("in try catch", error)
             this.configured = false
             this.error_config = true;
           }
@@ -582,11 +586,16 @@ export class ToolBarComponent {
     this.LocalCommService.onMessage().subscribe(msg => {
       console.log("received mesage", msg)
       console.log(this.sharedData.connected_component_id_index)
-      let component_index = this.sharedData.connected_component_id_index[msg.connected_component_id]
-      let source_node = this.sharedData.diagram.nodes[component_index]
-      let port_index = source_node.ports.findIndex(port => {
-        return port.id == "" + msg.port_id
-      })
+      // let component_index = this.sharedData.connected_component_id_index[msg.connected_component_id]
+      // let source_node = this.sharedData.diagram.nodes[component_index]
+      // let port_index = source_node.ports.findIndex(port => {
+      //   return port.id == "" + msg.port_id
+      // })
+      console.log("gloab map", this.utils.globalPinId_boardid_portid)
+      let mapping = this.utils.globalPinId_boardid_portid[msg.pin_number]
+      console.log("mapping, msg value", mapping, msg.value)
+      let component_index = mapping.component_index
+      let port_index = mapping.port_index
       if (port_index > -1) {
 
         // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
