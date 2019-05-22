@@ -52,11 +52,11 @@ export class DesignService {
         return this.http.post(endpoint, connections)
     }
     getSideBarItems(): Observable<NodeModel[][]> {
-        return this.http.get(`${this.sharedData.baseurl}/users/component`).pipe(map(response => {
+        return this.http.get(`${this.sharedData.baseurl}/component`).pipe(map(response => {
             let components = response as Components;
             let i = 0;
             console.log(response)
-            console.log("components",components)
+            console.log("components", components)
             let builtin_boards = [] as NodeModel[]
             let user_boards = [] as NodeModel[]
             components.boards.forEach(board => {
@@ -65,9 +65,8 @@ export class DesignService {
                 node.addInfo = { [addInfo_name]: `${board.name}`, [addInfo_componentId]: board.id, [addInfo_reserved]: false, [addInfo_type]: ComponentType.Hardware }
                 node.shape = { type: "Image", source: `${this.sharedData.imageUrl}${board.id}/image` }
                 node.constraints = nodeDesignConstraints
-console.log("bar dports",board.ports)
-                if(board.ports.length!=0)
-                {
+                console.log("bar dports", board.ports)
+                if (board.ports.length != 0) {
                     node.ports = board.ports
                     node.ports.forEach(port => {
                         port.constraints = PortConstraints.InConnect | PortConstraints.OutConnect;
@@ -77,7 +76,7 @@ console.log("bar dports",board.ports)
                         }
                     })
                 }
-           
+
                 node.annotations = [{
                     content: node.id,
                 }]
