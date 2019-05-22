@@ -112,7 +112,7 @@ export class SideBarComponent implements OnInit {
         this.setBoards()
 
       }, error => {
-        // console.log(error)
+        console.log(error)
         alert("error in loading sidebar items")
       });
   }
