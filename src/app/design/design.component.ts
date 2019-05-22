@@ -182,7 +182,7 @@ export class DesignComponent extends CanDeactivateComponent {
           if (file != null) {
             this.diagram.loadDiagram(JSON.stringify(file))
             this.diagram.dataBind()
-            this.diagram.refreshDiagram()
+            this.diagram.refresh()
           }
 
           else {
