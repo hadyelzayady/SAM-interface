@@ -18,7 +18,7 @@ export class WebSocketService {
     this.socket = socketIo(SERVER_URL, {
       query: data,
     });
-    console.log(this.socket)
+    // // console.log(this.socket)
   }
 
   public send(message: Message): void {

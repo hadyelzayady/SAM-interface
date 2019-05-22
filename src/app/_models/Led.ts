@@ -18,7 +18,7 @@ export class Led extends Board {
             }
 
         } catch (error) {
-            console.log(error)
+            // console.log(error)
         }
     }
     static ports: PointPortModel[] = [new BoardPort(470 / 960, 620 / 680, "2").toJSON(), new BoardPort(560 / 960, 620 / 680, "3").toJSON()];
@@ -34,7 +34,7 @@ export class Led extends Board {
             id: this.id,
             shape: this.shape,
             constraints: this.constraints,
-            addInfo: { [addInfo_name]: Led.name, [addInfo_type]: ComponentType.Software, [addinfo_IP]: 'clientIP', [addinfo_port]: local_udp_server_port }
+            addInfo: { [addInfo_name]: Led.name, [addInfo_type]: ComponentType.Software, [addinfo_IP]: '192.168.1.113', [addinfo_port]: local_udp_server_port }
         }
     }
 

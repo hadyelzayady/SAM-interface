@@ -1,7 +1,7 @@
 <div class="control-section e-tbar-section">
   <div class="e-sample-container" style="  padding-bottom: 5px;  margin-right: 0px;">
     <div [hidden]="sim_mode">
-      <ejs-toolbar #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
+      <ejs-toolbar #toolbar_design class="toggle" (clicked)='toolbarClick($event)' (created)="created()">
         <e-items>
           <e-item [id]="undo_id" tooltipText='Undo' prefixIcon='e-undo-icon'></e-item>
           <e-item [id]="redo_id" tooltipText='Redo' prefixIcon='e-redo-icon'></e-item>
@@ -12,7 +12,7 @@
           <e-item [id]="connector_id" tooltipText='Draw Connector' prefixIcon='icon-Con__Orthogonal  tb-icon'>
           </e-item>
           <e-item type='Separator'></e-item>
-          <e-item>
+          <!-- <e-item>
             <ng-template #template>
               <div [hidden]="hide_fileupload">
                 <label [for]="fileupload_id" class="button">upload board code</label>
@@ -20,9 +20,10 @@
                 <p>{{selected_file}}</p>
               </div>
             </ng-template>
-          </e-item>
+          </e-item> -->
           <e-item [id]="simulate_id" text="simulate"></e-item>
           <e-item [id]="reserve_id" text="reserve"></e-item>
+          <e-item #upload_id [id]="upload_firmware_id" text="upload board firmware"></e-item>
         </e-items>
       </ejs-toolbar>
     </div>
@@ -34,7 +35,7 @@
           <e-item type='Separator'></e-item>
           <e-item [id]="simulate_id" text="stop simulation"></e-item>
           <e-item [id]="reset_id" text="reset board"></e-item>
-          <e-item [id]="toggle_id" text="toggle switch"></e-item>
+          <e-item [id]="toggle_id" text="toggle switch" hidden='true'></e-item>
         </e-items>
       </ejs-toolbar>
     </div>

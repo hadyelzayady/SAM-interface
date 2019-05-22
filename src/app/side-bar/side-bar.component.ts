@@ -60,7 +60,7 @@ export class SideBarComponent implements OnInit {
     this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
       this.sim_mode = sim_mode;
       if (sim_mode) {
-        console.log("sim,", sim_mode)
+        // // console.log("sim,", sim_mode)
         this.sidebar.allowDrag = false
       }
       else if (this.palettes) {
@@ -106,13 +106,13 @@ export class SideBarComponent implements OnInit {
       )).subscribe(([builtin_boards, user_boards]) => {
         //TODO: needs optimization as we can set properties of boards as default values but how?
         // this.boards = this.parseBoards(data["boards"])
-        console.log(builtin_boards, user_boards)
+        // // console.log(builtin_boards, user_boards)
         this.builtin_boards = builtin_boards
         this.user_boards = user_boards
         this.setBoards()
 
       }, error => {
-        console.log(error)
+        // console.log(error)
         alert("error in loading sidebar items")
       });
   }
@@ -145,7 +145,7 @@ export class SideBarComponent implements OnInit {
       reader.readAsDataURL(image)
     }, error => {
       this.added_count += 1
-      console.log("error in getting image", error)
+      // // console.log("error in getting image", error)
     })
   }
 

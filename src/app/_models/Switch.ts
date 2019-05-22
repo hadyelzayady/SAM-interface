@@ -10,7 +10,7 @@ export class Switch extends Board {
     static Toggle(switch_node: NodeModel, sim_mode: boolean = true) {
         if (switch_node.addInfo[addInfo_simValue] || !sim_mode) {
             //on
-            console.log("swtch off")
+            // console.log("swtch off")
             switch_node.shape = this.shape_off
             switch_node.addInfo[addInfo_simValue] = false
             // switch_node.ports.forEach(port => {
@@ -18,7 +18,7 @@ export class Switch extends Board {
             // })
         }
         else {
-            console.log("switch on")
+            // console.log("switch on")
             switch_node.shape = this.shape_on
             switch_node.addInfo[addInfo_simValue] = true
         }
@@ -43,7 +43,7 @@ export class Switch extends Board {
             id: this.id,
             shape: this.shape_off,
             constraints: this.constraints,
-            addInfo: { [addInfo_name]: Switch.name, [addInfo_type]: ComponentType.Software, [addinfo_IP]: 'clientIP', [addinfo_port]: local_udp_server_port, [addInfo_simValue]: false }
+            addInfo: { [addInfo_name]: Switch.name, [addInfo_type]: ComponentType.Software, [addinfo_IP]: '192.168.1.113', [addinfo_port]: local_udp_server_port, [addInfo_simValue]: false }
         }
     }
 

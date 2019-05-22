@@ -24,7 +24,7 @@ export class SimCommunicationService {
     this.socket = socketIo(SERVER_URL, {
       query: { token: token, design_id: fileid }
     });
-    console.log(this.socket)
+    // // console.log(this.socket)
     // this.webSocket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
     //   alert("the local server not running ")
     // })

@@ -50,14 +50,14 @@ export class UtilsService {
           if (!(O_Component.addInfo[addInfo_connectedComponentId] in connections)) {
             connections[O_Component.addInfo[addInfo_connectedComponentId]] = ''
           }
-          connections[O_Component.addInfo[addInfo_connectedComponentId]] += `"O":${source_pin}:${destination_ip_port}:${destination_pin},`
+          connections[O_Component.addInfo[addInfo_connectedComponentId]] += `O:${source_pin}:${destination_ip_port}:${destination_pin},`
         }
         if (I_Component.addInfo[addInfo_type] == ComponentType.Hardware) {
           //so led for example won't be sent to the server,target not let or switch input pin
           if (!(I_Component.addInfo[addInfo_connectedComponentId] in connections)) {
             connections[I_Component.addInfo[addInfo_connectedComponentId]] = ''
           }
-          connections[I_Component.addInfo[addInfo_connectedComponentId]] += `"I":${destination_pin},`
+          connections[I_Component.addInfo[addInfo_connectedComponentId]] += `I:${destination_pin}:${O_Component.addInfo[addinfo_IP]},`
         }
 
       }

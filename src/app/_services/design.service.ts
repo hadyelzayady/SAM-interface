@@ -42,7 +42,7 @@ export class DesignService {
         return this.http.post<DesignFile>(`${this.baseurl}/designfile`, { filename: filename })
     }
     deleteDesignFile(file_id: number) {
-        console.log("sendig delete file")
+        // console.log("sendig delete file")
         return this.http.delete(`${this.baseurl}/designfile/${file_id}`)
     }
 

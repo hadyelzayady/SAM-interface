@@ -60,6 +60,7 @@ export class ToolBarComponent {
 
   @ViewChild("toolbar_design") public designToolbar: ToolbarComponent;
   @ViewChild("toolbar_sim") public simToolbar: ToolbarComponent;
+  @ViewChild("upload_id") public upload_button: HTMLElement
   @Input() file_id: number;
   undo_id = "undo"
   redo_id = "redo"
@@ -70,6 +71,7 @@ export class ToolBarComponent {
   simulate_id = "simulate"
   reserve_id = "reserve"
   reset_id = "reset"
+  upload_firmware_id = "upload_id"
   // to unsubscribe from observables when sim ends
   private unsubscribe: Subject<void> = new Subject();
 
@@ -79,11 +81,21 @@ export class ToolBarComponent {
   }
   ngOnInit(): void {
     this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
-      console.log("sim mode change to ", sim_mode)
+      //console.log("sim mode change to ", sim_mode)
       this.sim_mode = sim_mode;
-      this.setOneBoardActionButtonsVisibility(false)
+      this.resetToolBar()
     });
   }
+  resetToolBar() {
+    if (this.sim_mode) {
+      this.simToolbar.hideItem(this.toggle_switch_index, true)
+      this.simToolbar.hideItem(this.reset_button_index, true)
+    }
+    else {
+      this.designToolbar.hideItem(this.upload_firmware_index, true)
+    }
+  }
+
   fileInputChange(event) {
     let board_id = this.sharedData.diagram.selectedItems.nodes[0].id
     let file = event.target.files[0]
@@ -94,51 +106,60 @@ export class ToolBarComponent {
     if (this.simToolbar.items.length > 4)
       this.simToolbar.hideItem(4, !visibility)
   }
+  resetToolbarToNormal() {
+    this.designToolbar.hideItem(10)
+  }
+  created() {
+    this.resetToolBar()
 
+
+  }
 
   selected_board: NodeModel;
   toggle_id = "toggle_switch"
+  reset_button_index = 4
+  toggle_switch_index = 5
+  upload_firmware_index = 10
   boardSelected(args: ISelectionChangeEventArgs) {
     let nodes = this.sharedData.diagram.selectedItems.nodes
+    //console.log("nodes length", nodes.length)
     if (nodes.length == 1) {
       if (!this.sim_mode) {
-        this.simToolbar.hideItem(5, true)//hide switch
-        this.hide_fileupload = false;
-        if (this.sharedData.diagram.selectedItems.nodes[0].id in this.boards_code) {
-          this.selected_file = this.boards_code[this.sharedData.diagram.selectedItems.nodes[0].id].name
+        //normal mode
+        // this.simToolbar.hideItem(5, true)//hide switch
+        if (nodes[0].addInfo[addInfo_type] == ComponentType.Hardware) {
+          //console.log(this.upload_button)
+          this.designToolbar.hideItem(this.upload_firmware_index, false)
         }
         else {
-          this.selected_file = "no code file selected"
+          this.designToolbar.hideItem(this.upload_firmware_index, true)
+
         }
+        // if (this.sharedData.diagram.selectedItems.nodes[0].id in this.boards_code) {
+        //   this.selected_file = this.boards_code[this.sharedData.diagram.selectedItems.nodes[0].id].name
+        // }
+        // else {
+        //   this.selected_file = "no code file selected"
+        // }
       } else {
+        //sim mode
         if (nodes[0].addInfo[addInfo_type] == ComponentType.Hardware) {
           this.selected_board = nodes[0]
           //sim mode ,show on/off reset,
-          this.simToolbar.hideItem(5, true)
-
-          this.setOneBoardActionButtonsVisibility(true)
+          this.simToolbar.hideItem(this.reset_button_index, false) // reset button
         }
         else if (nodes[0].addInfo[addInfo_name] == Switch.name) {
+          //hide other button
+          this.simToolbar.hideItem(this.reset_button_index, true) // reset button
+          //
           this.selected_board = nodes[0]
-          this.setOneBoardActionButtonsVisibility(false)
-          this.simToolbar.hideItem(5, false)
+          this.simToolbar.hideItem(this.toggle_switch_index, false)// 
         }
-        else {
-          this.setOneBoardActionButtonsVisibility(false)
-          this.simToolbar.hideItem(5, true)
-
-
-        }
-
-
       }
 
     }
     else {
-      this.hide_fileupload = true;
-      this.setOneBoardActionButtonsVisibility(false)
-      this.simToolbar.hideItem(5, true)
-
+      this.resetToolBar()
     }
 
   }
@@ -176,7 +197,7 @@ export class ToolBarComponent {
     let reserved_index = 0
     let connected_components_id_index = {}
     let nodeid_index = {}
-    console.log("start config")
+    //console.log("start config")
     this.sharedData.diagram.nodes.forEach((node, index) => {
       if (node.addInfo[addInfo_type] == ComponentType.Hardware) {
         if (node.addInfo[addInfo_componentId] in cache) {
@@ -207,7 +228,7 @@ export class ToolBarComponent {
             throw Error("error in config")
         }
         connected_components_id_index[node.addInfo[addInfo_connectedComponentId]] = index
-        console.log("in for each:", connected_components_id_index)
+        //console.log("in for each:", connected_components_id_index)
       }
     });
 
@@ -219,48 +240,50 @@ export class ToolBarComponent {
 
   PrepareDiagramForOutput() {
     //TODO: should be merged with getconnections
-    // console.log("table:", this.sharedData.diagram.node)
+    // //console.log("table:", this.sharedData.diagram.node)
     this.switch_source_nodes = {} //contains nodes indecies that outputs to the switch
     this.sharedData.pin_inputs_bit_index = {}
     this.sharedData.pin_inputs_bit_values = {}
     let id = 0;
+    //console.log("nodes index", this.sharedData.nodeid_index)
     this.sharedData.diagram.connectors.forEach((connector) => {
+      //console.log("connector target ndoe index", connector)
       let source_node_index = this.sharedData.nodeid_index[connector.sourceID]
       let target_node_index = this.sharedData.nodeid_index[connector.targetID]
       let source_port_index = this.sharedData.diagram.nodes[source_node_index].ports.findIndex(port => { return port.id == connector.sourcePortID })
       let target_port_index = this.sharedData.diagram.nodes[target_node_index].ports.findIndex(port => { return port.id == connector.targetPortID })
       //TODO: if board pin is input from switch we should bind event from switch output pin to send the value
-      console.log("tageti node name,", this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name])
+      //console.log("tageti node name,", this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name])
       let target_node = this.sharedData.diagram.nodes[target_node_index]
       let source_node = this.sharedData.diagram.nodes[source_node_index]
 
       //for multiple input
       this.sharedData.setPinInputBit(source_node_index, source_port_index, target_node_index, target_port_index)
 
-      console.log("input bit value", this.sharedData.pin_inputs_bit_values)
+      //console.log("input bit value", this.sharedData.pin_inputs_bit_values)
 
       if (target_node.addInfo[addInfo_name] == Led.name) {
 
         this.sharedData.addOutputEvent(source_port_index, source_node_index, target_port_index, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((output_event) => {
-          console.log("subscribe event led target id", output_event.target_port_index, output_event.target_node_index)
+          //console.log("subscribe event led target id", output_event.target_port_index, output_event.target_node_index)
           let target_node = this.sharedData.diagram.nodes[output_event.target_node_index]//target node is led node
           this.sharedData.changePortValue(output_event.value, output_event.target_port_index, output_event.target_node_index, output_event.source_node_index, output_event.source_port_index)
           let input_value = target_node.ports[output_event.target_port_index].addInfo[addInfo_simValue]
           Led.simBehaviour(input_value, target_node)
           this.sharedData.diagram.dataBind()
         }, error => {
-          console.log(error)
+          //console.log(error)
         })
       }
       else if (target_node.addInfo[addInfo_type] == ComponentType.Hardware && source_node.addInfo[addInfo_type] == ComponentType.Software) {
         //board has input pin from software component ,may be from switch of led input pin ,so we forward this value to the board
         //subscribe to source pin to get its value then forward it to the board
         this.sharedData.addOutputEvent(source_port_index, source_node_index, target_port_index, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((output_event) => {
-          console.log("subscribe event board target id", output_event.target_port_index, output_event.target_node_index)
+          //console.log("subscribe event board target id", output_event.target_port_index, output_event.target_node_index)
           let target_node = this.sharedData.diagram.nodes[output_event.target_node_index]
           this.boardSimBehaviour(output_event)
         }, error => {
-          console.log(error)
+          //console.log(error)
         })
       }
       else if (target_node.addInfo[addInfo_name] == Switch.name) {
@@ -291,11 +314,11 @@ export class ToolBarComponent {
 
       }
     })
-    console.log("switch sources target,", this.switch_source_nodes)
-    console.log("port value table,", this.sharedData.port_value_table)
+    //console.log("switch sources target,", this.switch_source_nodes)
+    //console.log("port value table,", this.sharedData.port_value_table)
     this.setSwitchSimConfigs()
     // this.sharedData.ports_values.subscribe((val) => {
-    //   console.log("event in sim to chag eled")
+    //   //console.log("event in sim to chag eled")
     //   this.sharedData.diagram.nodes[0].shape = {
     //     type: 'Image',
     //     source: "../assets/redLED_on.jpg"
@@ -334,31 +357,36 @@ export class ToolBarComponent {
   switchSimBehaviour(event: OutputEvent, switch_is_off = false) {
     let switch_node = this.sharedData.diagram.nodes[event.target_node_index] //switch node
     //switsh_is_off is true only when user turns off the switch
-    console.log("switch_is_off", switch_is_off)
+    //console.log("switch_is_off", switch_is_off)
     if (switch_node.addInfo[addInfo_simValue] || switch_is_off) {
-      console.log("switch is on")
+      //console.log("switch is on")
       //switch is on
       let source_port = this.sharedData.diagram.nodes[event.source_node_index].ports[event.source_port_index]
-      console.log("source_port_id,source node,source port", event.source_port_index, this.sharedData.diagram.nodes[event.source_node_index])
+      //console.log("source_port_id,source node,source port", event.source_port_index, this.sharedData.diagram.nodes[event.source_node_index])
       //TODO: set simValue in node in changeportvalue 
-      console.log("switch is off", switch_is_off)
+      //console.log("switch is off", switch_is_off)
       let forwarded_value = !switch_is_off ? source_port.addInfo[addInfo_simValue] : false
       //this condition not needed as we will bind board pin to switch port 
-      // if (target_node.addInfo[addInfo_type] == ComponentType.Hardware) {
-      //   //TODO: send value to the board over ip
-      // let switch_output_port = switch_node.ports.find((port) => {
-      //   return port.id != switch_input_port_id
-      // })
-      // switch_output_port.addInfo[addInfo_simValue] = forwarded_value
+      let target_node = this.sharedData.diagram.nodes[event.target_node_index]
 
-      // } else {
-      console.log("value,target_port_id,target_node_index", forwarded_value, event.target_port_index, event.target_node_index)
+      // if (target_node.addInfo[addInfo_type] == ComponentType.Hardware) {
+      //   //   //TODO: send value to the board over ip
+      //   let ip= target_node.addInfo[addinfo_IP]
+      //   let port= target_node.addInfo[addinfo_port]
+      //   let pin_number= target_node.ports[event.target_port_index]
+      //   this..sendValueToBoard(ip,port,pin_number,forwarded_value)
+      //   // let switch_output_port = switch_node.ports.find((port) => {
+      //   //   return port.id != switch_input_port_id
+      //   // })
+      //   // switch_output_port.addInfo[addInfo_simValue] = forwarded_value
+
+      // }
+      //console.log("value,target_port_id,target_node_index", forwarded_value, event.target_port_index, event.target_node_index)
       //forward this value to target port and event this change in target port
       //target port id is the id of switch port that output to target ,(switch output port)
       this.sharedData.changePortValue(forwarded_value, event.target_port_index, event.target_node_index, event.source_node_index, event.source_port_index)
       this.sharedData.diagram.dataBind()
       // 
-
     }
   }
   customClose(id: string) {
@@ -474,7 +502,7 @@ export class ToolBarComponent {
                     this.send_connections = false;
                   });
               } catch (error) {
-                console.log('tr', error)
+                //console.log('tr', error)
                 this.configured = false
                 this.error_config = true;
               }
@@ -490,10 +518,10 @@ export class ToolBarComponent {
           this.closeSimulationMode()
         }
         // this.sharedData.changePortValue(true, "1", "1")
-        // this.diagramService.sendCodeFiles(this.boards_code).subscribe(resp => console.log(resp));
+        // this.diagramService.sendCodeFiles(this.boards_code).subscribe(resp => //console.log(resp));
         // let connections = this.utils.getDesignConnections(this.sharedData.diagram)
         // // this.diagramService.sendSimulationData(this.boards_code[this.sharedData.diagram.nodes[0].id]).subscribe()
-        // this.diagramService.sendDesignConnections(connections).subscribe(resp => console.log(resp))
+        // this.diagramService.sendDesignConnections(connections).subscribe(resp => //console.log(resp))
         break;
       }
       case this.reserve_id: {
@@ -517,7 +545,7 @@ export class ToolBarComponent {
             this.configured = true
             this.error_config = false
           } catch (error) {
-            console.log("in try catch", error)
+            //console.log("in try catch", error)
             this.configured = false
             this.error_config = true;
           }
@@ -548,7 +576,7 @@ export class ToolBarComponent {
         if (this.selected_board.addInfo[addInfo_name] == Switch.name) {
           Switch.Toggle(this.selected_board)
           let switch_value = this.selected_board.addInfo[addInfo_simValue]
-          console.log("toggle switch value", switch_value)
+          //console.log("toggle switch value", switch_value)
           this.fireSwitchTogglesEvent(switch_value)
           // if (switch_value) {
           //   //switch is on, change its port values
@@ -584,8 +612,8 @@ export class ToolBarComponent {
       this.closeSimulationMode()
     })
     this.LocalCommService.onMessage().subscribe(msg => {
-      console.log("received mesage", msg)
-      console.log(this.sharedData.connected_component_id_index)
+      //console.log("received mesage", msg)
+      //console.log(this.sharedData.connected_component_id_index)
       // let component_index = this.sharedData.connected_component_id_index[msg.connected_component_id]
       // let source_node = this.sharedData.diagram.nodes[component_index]
       // let port_index = source_node.ports.findIndex(port => {
@@ -593,13 +621,16 @@ export class ToolBarComponent {
       // })
       console.log("gloab map", this.utils.globalPinId_boardid_portid)
       let mapping = this.utils.globalPinId_boardid_portid[msg.pin_number]
-      console.log("mapping, msg value", mapping, msg.value)
+      //console.log("mapping, msg value", mapping, msg.value)
       let component_index = mapping.component_index
       let port_index = mapping.port_index
       if (port_index > -1) {
 
+        console.log("port_index", port_index)
+        console.log("component_index", component_index)
+        console.log("port value table", this.sharedData.port_value_table)
         // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
-        console.log("received change port", port_index)
+        //console.log("received change port", port_index)
         this.sharedData.changePortValue(msg.value, port_index, component_index, component_index, port_index)
       }
     })
@@ -609,37 +640,41 @@ export class ToolBarComponent {
     })
 
     //socket with server to start and end sim
+    this.PrepareDiagramForOutput();
 
-    this.simComm.initSocket(this.file_id)
-    this.simComm.onEvent(SocketEvent.SUCCESSFULL).subscribe(() => {
-      this.connected = true
-      this.error_connected = false
-      try {
-        //prepare outputs in the design
-        this.PrepareDiagramForOutput();
-        this.sim_mode = true
-        this.sharedData.changeMode(true)
-        this.sharedData.diagram.clearSelection();
-        this.prepared = true
+    try {
+      //prepare outputs in the design
+      this.PrepareDiagramForOutput();
+      this.sim_mode = true
+      this.sharedData.changeMode(true)
+      this.sharedData.diagram.clearSelection();
+      this.prepared = true
 
-      } catch (error) {
-        this.error_prepared = true
-        this.prepared = false
-        this.simComm.close()
-      }
-    })
-    this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe((data) => {
-      console.log(data)
-      this.error_connected = true
-      this.connected = false
+      this.simComm.initSocket(this.file_id)
+      this.simComm.onEvent(SocketEvent.SUCCESSFULL).subscribe(() => {
+        this.connected = true
+        this.error_connected = false
+      })
+      this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe((data) => {
+        //console.log(data)
+        this.error_connected = true
+        this.connected = false
 
-      //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
-      // if (this.sim_mode) {
-      this.closeSimulationMode();
-      // } else {
-      // this.simComm.close()
-      // }
-    })
+        //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
+        // if (this.sim_mode) {
+        this.closeSimulationMode();
+        // } else {
+        // this.simComm.close()
+        // }
+      })
+
+    } catch (error) {
+      //console.log("error in prepare diagram ", error)
+      this.error_prepared = true
+      this.prepared = false
+      this.simComm.close()
+    }
+
   }
   fireSwitchTogglesEvent(isOn: boolean) {
     let switch_node = this.selected_board
@@ -655,7 +690,7 @@ export class ToolBarComponent {
     //TODO: bind input pin of switch to source pin
     //TODO: bind output pin of switch to multiple source pins (use array)
     //TODO: use bits so each suscriber has the index of its bit in switch port, in each event or the bits of the pin to get the value of the pin
-    console.log("set old value: ", source_node_index, switch_node, source_port_index, switch_output_port_index)
+    //console.log("set old value: ", source_node_index, switch_node, source_port_index, switch_output_port_index)
     this.switchSimBehaviour({ source_node_index: source_node_index, target_node_index: switch_node_index, target_port_index: switch_output_port_index, value: true, source_port_index: source_port_index }, !isOn)// value not used in switch so choose anything
     // let sources_ports=
     //if no on then switch is turned off so we send 0 to all output pin connected to switch ouptut pin

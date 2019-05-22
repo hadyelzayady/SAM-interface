@@ -86,7 +86,7 @@ export class DesignComponent extends CanDeactivateComponent {
       {
         name: 'copy',
         canExecute: function () {
-          console.log("canExute", mythis.sim_mode)
+          // // console.log("canExute", mythis.sim_mode)
           return !mythis.sim_mode
         }
 
@@ -206,6 +206,7 @@ export class DesignComponent extends CanDeactivateComponent {
 
   selectionChangeEvent(args: ISelectionChangeEventArgs) {
     if (args.state == "Changed") {
+      console.log("selec")
       this.toolBar.boardSelected(args);
     }
   }

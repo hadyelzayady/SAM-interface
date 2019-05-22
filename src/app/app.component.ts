@@ -30,8 +30,8 @@ export class AppComponent {
           // Every navigation sequence is given a unique ID. Even "popstate"
           // navigations are really just "roll forward" navigations that get
           // a new, unique ID.
-          console.log("navigation id:", event.id);
-          console.log("route:", event.url);
+          // console.log("navigation id:", event.id);
+          // console.log("route:", event.url);
           // The "navigationTrigger" will be one of:
           // --
           // - imperative (ie, user clicked a link).

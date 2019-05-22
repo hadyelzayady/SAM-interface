@@ -8,14 +8,14 @@ export class CanDeactivateGuard implements CanDeactivate<CanDeactivateComponent>
     canDeactivate(component: CanDeactivateComponent): boolean {
 
         if (!component.canDeactivate()) {
-            console.log("cannot deact")
+            // console.log("cannot deact")
             if (confirm("You have unsaved changes! If you leave, your changes will be lost.")) {
                 return true;
             } else {
                 return false;
             }
         }
-        console.log("cannot acti")
+        // console.log("cannot acti")
 
         return true;
     }

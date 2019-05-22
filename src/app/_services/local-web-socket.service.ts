@@ -25,8 +25,8 @@ export class LocalWebSocketService {
     this.socket.emit('reset', ip, port)
   }
   public sendToBoard(boardMessage: BoardMessage): void {
-    console.log("send message to board", boardMessage)
-    this.socket.emit('message', boardMessage);
+    // console.log("send message to board", boardMessage)
+    this.socket.emit('sendToBoard', boardMessage);
   }
   public initSocket(): void {
     this.socket = socketIo(SERVER_URL);
