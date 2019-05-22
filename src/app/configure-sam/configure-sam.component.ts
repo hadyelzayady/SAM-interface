@@ -4,8 +4,9 @@ import { BOARDS } from './boards-mocks';
 import { ConfigureSamService } from '../_services/configure-sam.service';
 import { element } from '@angular/core/src/render3';
 import { Router, ActivatedRoute } from '@angular/router';
-
+import { SharedVariablesService } from '../_services/shared-variables.service';
 @Component({
+
   selector: 'app-configure-sam',
   templateUrl: './configure-sam.component.html',
   styleUrls: ['./configure-sam.component.css']
@@ -16,7 +17,7 @@ export class ConfigureSamComponent implements OnInit {
   boards =BOARDS;
   selectedBoard: board;
   constructor(private configservice:ConfigureSamService,private router: Router,
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute,private sharedData: SharedVariablesService,) { }
   portvar:string;
   wifinamevar:string;
   wifipassvar:string;
@@ -51,7 +52,7 @@ export class ConfigureSamComponent implements OnInit {
           console.log("hellomsg is set to hello_"+boardid);
           this.configservice.Sendhellomsg().subscribe(data=>{
             console.log("hellomsg was sent");
-            this.router.navigate(["home"]);
+            this.router.navigate(["homex"]);
           this.configservice.addcomponent(boardid).subscribe(data=>{
             console.log("id is set to"+boardid);
           
@@ -80,6 +81,8 @@ export class ConfigureSamComponent implements OnInit {
   }
   setport():void{
     console.log("entered here");
+    console.log(this.portvar);
+    
 this.configservice.setport(this.portvar).subscribe(data=>{
   console.log(data);
   if(data["res"]=="failed")
@@ -93,6 +96,10 @@ this.configservice.setport(this.portvar).subscribe(data=>{
  console.log(error)
 
 })
+  }
+  getimage(boardid: String):any{
+  return  `${this.sharedData.imageUrl}${boardid}/image`
+  
   }
   setwifi():void{
     console.log("entered here");
