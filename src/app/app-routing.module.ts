@@ -12,7 +12,7 @@ import { CanDeactivateGuard } from './can-deactivate/can-deactivate.guard';
 
 const routes: Routes = [
   { path: 'customboard', component: CustomBoardComponent, canActivate: [AuthGuard] },
-  { path: '', component: HomeComponent, canActivate: [AuthGuard] },
+  { path: '', component: ConfigureSamComponent},
   // { path: '', component: ConfigureSamComponent },
   { path: 'login', component: LoginComponent },
   { path: 'ConfigureSamComponent', component: ConfigureSamComponent },

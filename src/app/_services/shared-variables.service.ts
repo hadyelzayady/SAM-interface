@@ -136,9 +136,9 @@ export class SharedVariablesService {
   }
   //////////////////
   domainbaseurl = "http://localhost:80/"
+
   baseurl = `${this.domainbaseurl}api`
   imageUrl = `${this.domainbaseurl}component/`
-
-
+  localhost_trayapp = "http://localhost:4000/"
 
 }
