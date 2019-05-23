@@ -98,7 +98,14 @@
   .btn{
     float: right;
   }
+  .instruction_block{
 
+    display: grid;
+  }
+
+  .instruction_text{
+    font-size: 100%;
+  }
   /*
   Copyright Google LLC. All Rights Reserved.
   Use of this source code is governed by an MIT-style license that

@@ -39,9 +39,10 @@ export class ConfigureSamService {
             "component_id": board_id
         })
     }
-    setport(port: String) {
-        return this.http.post(`${this.sharedData.localhost_trayapp}setpublicport`, {
-            "publicPort": port
+    setport(udpport: String,usbport:String) {
+        return this.http.post(`${this.sharedData.localhost_trayapp}setports`, {
+            "USBPORT": usbport,
+            "UDPPORT":udpport
         }, httpOptions)
     }
     setwifiname(wifiname: String) {
@@ -65,6 +66,10 @@ export class ConfigureSamService {
             "id": id
         }, httpOptions)
     }
+    getVersion(){
+        return this.http.get<String>(`${this.sharedData.localhost_trayapp}GET_BOARD_TYPE`, {
+        })
+    }
     sethellomsg(helloMessage: String) {
         return this.http.post<String>(`${this.sharedData.localhost_trayapp}sethellomessage`, {
             "helloMessage": helloMessage
@@ -73,11 +78,18 @@ export class ConfigureSamService {
     Sendhellomsg() {
         return this.http.get<String>(`${this.sharedData.localhost_trayapp}SEND_HELLO_MESSAGE`, httpOptions)
     }
+    sendfinish() {
+        return this.http.get<String>(`${this.sharedData.localhost_trayapp}FINISH_CONFIGURATIONS`, httpOptions)
+    }
     unBindAll() {
-        return this.http.post(`${this.sharedData.localhost_trayapp}UnBindAll`, "")
+        return this.http.post(`${this.sharedData.localhost_trayapp}UnBindAll`, "",{headers:new HttpHeaders({
+            "Access-Control-Allow-Origin": "*"
+          })
+            
+})
     }
     sendBindIPPort(ip, port) {
-        return this.http.post(`${this.sharedData.localhost_trayapp}Bind`, { ip: ip, port: port })
+        return this.http.post(`${this.sharedData.localhost_trayapp}Bind`, { ip: ip, port: port },)
     }
 }
 

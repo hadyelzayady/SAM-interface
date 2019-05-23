@@ -10,64 +10,61 @@
         <div class="col-xl-8">
         <div id="carouselExampleControls" class="carousel slide"  data-interval="false"data-ride="carousel">
             <div class="carousel-inner">
-              <div class="carousel-item active">
-                  <div class="portForwarding">
-                      <h2 class="sectionTitle">Intsructions</h2>
-                      <br>
-                          <ul class="Intsruction-Set">
-                              <li>
-                                  <span class="badge">1</span> 
-                                  <span >Plug your SAM with USB Cable</span>
-                                  <img class ="boardimg"src='https://i.stack.imgur.com/Bnx0H.gif'>
-                                </li>
-                                <li>
-                                    <span class="badge">2</span> 
-                                    <span >Enter your port After port forwarding Process </span>
-                                    <a href='https://www.lifewire.com/how-to-port-forward-4163829'>How to Port Forward</a>
-                                    <img class ="boardimg"src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Internet_port_forwarding.png/1200px-Internet_port_forwarding.png'>
-                                </li>
-                                <li>
-                                    <br>
-                                    <span>Port</span>
-                                    <input #port type="text" class="form-control" placeholder="Port" [(ngModel)]="portvar" aria-label="Port" aria-describedby="basic-addon1">
-                                    <br>   
+                <div class="carousel-item active">
+                   <div class=instruction_block>
+                    <div>
+                    <span class="badge">1</span> 
+                    <span class="instruction_text">please connect your sam board to electrical outlet and make sure the red led is on</span>
+                    <img class ="boardimg"src='https://static.dezeen.com/uploads/2018/04/tug-plug-design-technology_dezeen_sq.gif'>
+                  </div>
+                    <button type="button" class="btn" (click)="next()">Next</button>                   
+                  </div>   
+                  </div>
+                  <div class="carousel-item ">
+                      <div class=instruction_block>
+                       <div>
+                       <span class="badge">2</span> 
+                       <span class="instruction_text">please connect your sam board to usb cable with your computer using cable included</span>
+                       <img class ="boardimg"src='https://i.stack.imgur.com/Bnx0H.gif'>
+                     </div>
+                       <button type="button" class="btn" (click)="getversion()">Next</button>                   
+                     </div>   
+                     </div>
+                     <div class="carousel-item ">
+                        <div class=instruction_block>
+                         <div>
+                         <span class="badge">3</span> 
+                         <span class="instruction_text">please enter your wifi cridentials</span>
+                         <img class ="boardimg"src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTime7aH4loQkjXri7Ybz9-Xfqkn7zZCLL7-ZAVPOY5txDhjbvB1A'>
+                         <span>Wifi Name :</span>
+                         <input type="text" class="form-control" placeholder="Wifi Name"  [(ngModel)]="wifinamevar" aria-label="Wifi Name" aria-describedby="basic-addon1">    
+                         <br>                      
+                         <span>Wifi Password</span>
+                         <input type="password" class="form-control" placeholder="Wifi password"  [(ngModel)]="wifipassvar" aria-label="Wifi password" aria-describedby="basic-addon1">    
+                         <br>   
+                        </div>
+                        <button type="button" class="btn" (click)="setwifi()">Next</button> 
+                        <button *ngIf="EthernetAvailable" type="button" class="btn" (click)="next()">Use Ethernet</button>                   
+                       </div>   
+                       </div>
+                       <div class="carousel-item ">
+                          <div class=instruction_block>
+                           <div>
+                           <span class="badge">4</span> 
+                           <span class="instruction_text">Please enable port forwarding in your router configuration and write ports here</span>
+                           <a href='https://www.lifewire.com/how-to-port-forward-4163829'>How to Port Forward</a>
+                           <img class ="boardimg"src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Internet_port_forwarding.png/1200px-Internet_port_forwarding.png'>
+                          </div>
+                          <br>
+                                    <span>UDPPort</span>
+                                    <input #UDPport type="text" class="form-control" placeholder="UDPPort" [(ngModel)]="portvarUDP" aria-label="Port" aria-describedby="basic-addon1">
+                                    <span>USBPort</span>
+                                    <input #USBport type="text" class="form-control" placeholder="USBPort" [(ngModel)]="portvarUSB" aria-label="Port" aria-describedby="basic-addon1">
+                                    <br>    
                                     <button type="button" class="btn" (click)="setport()">Next</button>                   
-                                </li>              
-                            </ul>
-                      <!-- </nav> -->
-                     </div>  
-              </div>
-              <div class="carousel-item">
-                  <div class="connection">
-                      <h2 class="sectionTitle">How does your SAM connect to the internet?</h2>
-                      <!-- <nav> -->
-                          <ul class="connection-type">
-                              <li>
-                                  <span class="badge">1</span> 
-                                  <span >Ethernet</span>
-                                  <img class ="boardimg"src='https://4.imimg.com/data4/YN/EM/MY-11004280/cat-5-cable-500x500.jpg'>
-                                </li>
-                                <li>
-                                    <span class="badge">2</span> 
-                                    <span >Wifi</span>
-                                    <img class ="boardimg"src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTime7aH4loQkjXri7Ybz9-Xfqkn7zZCLL7-ZAVPOY5txDhjbvB1A'>
-                                   </li>
-                                   
-                                   <li>
-                                     <span>Wifi Name :</span>
-                                    <input type="text" class="form-control" placeholder="Wifi Name"  [(ngModel)]="wifinamevar" aria-label="Wifi Name" aria-describedby="basic-addon1">    
-                                    <br>                      
-                                    <span>Wifi Password</span>
-                                    <input type="password" class="form-control" placeholder="Wifi password"  [(ngModel)]="wifipassvar" aria-label="Wifi password" aria-describedby="basic-addon1">    
-                                    <br>   
-                                  </li>              
-                            </ul>
-                            <button type="button" class="btn" (click)="setwifi()">Next</button>                   
-                              
-                      <!-- </nav> -->
-          
-                  </div>
-                  </div>
+                                </div>   
+                         </div>
+                     
               <div class="carousel-item">
                 <!-- <div class="col-md-3"></div> -->
                   <div class="connectedTo">
@@ -102,9 +99,8 @@
             </a>
           </div>
         </div>  
-        <div class="col-xl-2"></div>
+    <div class="col-xl-2"></div>
     </div>
-   
 </div>
 
 
@@ -121,7 +117,7 @@
   </div>
 
 </div> -->
-</div>
+<!-- </div> -->
 <!-- 
  <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
     <div class="carousel-inner">
@@ -147,3 +143,69 @@
       <span class="sr-only">Next</span>
     </a>
   </div> -->
+
+
+
+<!-- 
+
+            
+  <div class="carousel-item">
+      <div class="portForwarding">
+          <h2 class="sectionTitle">Intsructions</h2>
+          <br>
+              <ul class="Intsruction-Set">
+                  <li>
+                      <span class="badge">1</span> 
+                      <span >Plug your SAM with USB Cable</span>
+                      <img class ="boardimg"src='https://i.stack.imgur.com/Bnx0H.gif'>
+                    </li>
+                    <li>
+                        <span class="badge">2</span> 
+                        <span >Enter your port After port forwarding Process </span>
+                        <a href='https://www.lifewire.com/how-to-port-forward-4163829'>How to Port Forward</a>
+                        <img class ="boardimg"src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Internet_port_forwarding.png/1200px-Internet_port_forwarding.png'>
+                    </li>
+                    <li>
+                        <br>
+                        <span>Port</span>
+                        <input #port type="text" class="form-control" placeholder="Port" [(ngModel)]="portvar" aria-label="Port" aria-describedby="basic-addon1">
+                        <br>   
+                        <button type="button" class="btn" (click)="setport()">Next</button>                   
+                    </li>              
+                </ul>
+    
+         </div>  
+  </div>
+  
+
+  <div class="carousel-item">
+      <div class="connection">
+          <h2 class="sectionTitle">How does your SAM connect to the internet?</h2>
+      
+              <ul class="connection-type">
+                  <li>
+                      <span class="badge">1</span> 
+                      <span >Ethernet</span>
+                      <img class ="boardimg"src='https://4.imimg.com/data4/YN/EM/MY-11004280/cat-5-cable-500x500.jpg'>
+                    </li>
+                    <li>
+                        <span class="badge">2</span> 
+                        <span >Wifi</span>
+                        <img class ="boardimg"src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTime7aH4loQkjXri7Ybz9-Xfqkn7zZCLL7-ZAVPOY5txDhjbvB1A'>
+                       </li>
+                       
+                       <li>
+                         <span>Wifi Name :</span>
+                        <input type="text" class="form-control" placeholder="Wifi Name"  [(ngModel)]="wifinamevar" aria-label="Wifi Name" aria-describedby="basic-addon1">    
+                        <br>                      
+                        <span>Wifi Password</span>
+                        <input type="password" class="form-control" placeholder="Wifi password"  [(ngModel)]="wifipassvar" aria-label="Wifi password" aria-describedby="basic-addon1">    
+                        <br>   
+                      </li>              
+                </ul>
+                <button type="button" class="btn" (click)="setwifi()">Next</button>                   
+                  
+        
+
+      </div>
+      </div> -->
