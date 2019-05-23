@@ -1,28 +1,26 @@
 import { Injectable } from '@angular/core';
-
-import { WebSocketService } from './web-socket.service';
-import { SharedVariablesService } from './shared-variables.service';
-import { Message } from '../_models/local_message';
-import { SocketEvent } from '../_models/event';
-import { PortVisibility } from '@syncfusion/ej2-angular-diagrams';
-import { Observable } from 'rxjs';
 import * as socketIo from 'socket.io-client';
+import { SharedVariablesService } from '.';
+import { Message } from '@angular/compiler/src/i18n/i18n_ast';
+import { Observable } from 'rxjs';
+import { SocketEvent } from '../_models/event';
 
 const SERVER_URL = 'http://localhost:3001';
 
 @Injectable({
   providedIn: 'root'
 })
-export class SimCommunicationService {
+export class ReserveCommunicationService {
+
   constructor(private sharedData: SharedVariablesService) {
   }
 
   private socket;
 
-  public initSocket(fileid, mode = "simulate"): void {
+  public initSocket(fileid): void {
     let token = JSON.parse(localStorage.getItem('currentUser')).token;
     this.socket = socketIo(SERVER_URL, {
-      query: { token: token, design_id: fileid, mode: mode }
+      query: { token: token, design_id: fileid, mode: "reserve" }
     });
     // // console.log(this.socket)
     // this.webSocket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
@@ -46,7 +44,6 @@ export class SimCommunicationService {
   public close(): void {
     this.socket.close()
   }
-
   public onMessage(): Observable<Message> {
     return new Observable<Message>(observer => {
       this.socket.on('message', (data: Message) => observer.next(data));

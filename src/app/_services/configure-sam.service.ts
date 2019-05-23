@@ -33,7 +33,7 @@ export class ConfigureSamService {
     getcomponents() {
         return this.http.get<board[]>(`${this.sharedData.baseurl}/users/component`)
     }
-    
+
     addcomponent(board_id: String) {
         return this.http.post<String>(`${this.sharedData.baseurl}/users/component`, {
             "component_id": board_id
@@ -54,6 +54,7 @@ export class ConfigureSamService {
             "wifipass": wifipass
         }, httpOptions)
     }
+
     setserver(serverurl: String) {
         return this.http.post<String>(`${this.sharedData.localhost_trayapp}setserver`, {
             "server": serverurl
@@ -71,6 +72,12 @@ export class ConfigureSamService {
     }
     Sendhellomsg() {
         return this.http.get<String>(`${this.sharedData.localhost_trayapp}SEND_HELLO_MESSAGE`, httpOptions)
+    }
+    unBindAll() {
+        return this.http.post(`${this.sharedData.localhost_trayapp}UnBindAll`, "")
+    }
+    sendBindIPPort(ip, port) {
+        return this.http.post(`${this.sharedData.localhost_trayapp}Bind`, { ip: ip, port: port })
     }
 }
 

@@ -3,7 +3,8 @@ export interface ReserveComponentsResponse {
     reserved: boolean,
     ComponentId: 1,
     IP: string,
-    port: number
+    udp_port: number
+    usb_ip_port: number
 }
 
 export interface CustomBoard {

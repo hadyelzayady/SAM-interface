@@ -21,6 +21,7 @@ import { SwitchSourceNodes } from '../_models/types';
 import { nextContext } from '@angular/core/src/render3';
 import { Switch } from '../_models/Switch';
 import { BoardMessage } from '../_models/local_message';
+import { ConfigureSamService } from '../_services/configure-sam.service';
 
 @Component({
   selector: 'app-tool-bar',
@@ -43,6 +44,8 @@ export class ToolBarComponent {
   error_parsed = false;
   error_reserved = false;
   error_config = false;
+  error_binded = false
+  binded = false
   reserve_modal_id = "reserve"
   hide_modal_close_btn = true
   //added for sim
@@ -76,7 +79,7 @@ export class ToolBarComponent {
   private unsubscribe: Subject<void> = new Subject();
 
   //TODO: merge diagram service in designservice
-  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService, private simComm: SimCommunicationService, private LocalCommService: LocalWebSocketService) {
+  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService, private simComm: SimCommunicationService, private LocalCommService: LocalWebSocketService, private configSamService: ConfigureSamService) {
 
   }
   ngOnInit(): void {
@@ -205,7 +208,7 @@ export class ToolBarComponent {
           node.addInfo[addInfo_reserved] = true;
           node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
           node.addInfo[addinfo_IP] = reserved_comps[cache[componentId]].IP;
-          node.addInfo[addinfo_port] = reserved_comps[cache[componentId]].port;
+          node.addInfo[addinfo_port] = reserved_comps[cache[componentId]].udp_port;
           delete cache[componentId]
         }
         else {
@@ -215,7 +218,7 @@ export class ToolBarComponent {
               node.addInfo[addInfo_reserved] = true;
               node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
               node.addInfo[addinfo_IP] = reserved_comps[reserved_index].IP
-              node.addInfo[addinfo_port] = reserved_comps[reserved_index].port
+              node.addInfo[addinfo_port] = reserved_comps[reserved_index].udp_port
               found_component = true;
               reserved_index++
               break;
@@ -537,17 +540,58 @@ export class ToolBarComponent {
         }
         this.designService.reserve(reservecomps, this.file_id).pipe(finalize(() => {
           this.hide_modal_close_btn = false
-        })).subscribe(data => {
+        })).subscribe(reserved_comps => {
           // this.status = "components reserved "
           this.reserved = true
+
           try {
-            this.setComponentsReserveConfigs(data)
-            this.configured = true
-            this.error_config = false
+            this.simComm.initSocket(this.file_id, "bind")
+            // this.simComm.bindBoards(this.file_id)
+            this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
+              console.log("bind fail")
+              this.designService.unreserve(this.file_id).subscribe(data => {
+                //  this.co
+                //TODO:
+              }, error => {
+                console.log("error unreserve")
+              })
+              this.simComm.close()
+              this.error_binded = true
+              this.binded = false
+            })
+
+            this.simComm.onEvent(SocketEvent.BIND_SUCCESS).subscribe(() => {
+              console.log("bind succkes")
+              this.error_binded = false
+              this.binded = true
+              try {
+                console.log("after bind")
+                this.setComponentsReserveConfigs(reserved_comps)
+                this.configSamService.unBindAll().subscribe(data => {
+                  if (data != "ok") {
+                    //TODO: unreserve
+                  }
+                })
+                reserved_comps.forEach(comp => {
+                  this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port).subscribe(data => {
+                    if (data != "ok") {
+                      alert("can not bind to local port")
+                    }
+                  })
+                });
+                this.configured = true
+                this.error_config = false
+
+              } catch (error) {
+                this.configured = false
+                this.error_config = true;
+              }
+              this.simComm.close()
+            })
+
           } catch (error) {
             //console.log("in try catch", error)
-            this.configured = false
-            this.error_config = true;
+            //error binding
           }
         }, error => {
           this.reserved = false;
