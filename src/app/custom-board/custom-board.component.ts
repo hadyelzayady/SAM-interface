@@ -28,7 +28,27 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   board_name_regex = /^[A-Za-z][a-zA-Z0-9]*$/
   board_id = null
   map_table_rows_count = 10
-  SAM_pins = Array(8)
+  SAM_pins = ['3',
+    '4',
+    '17',
+    '27',
+    '22',
+    '10',
+    '9',
+    '11',
+    '5',
+    '6',
+    '13',
+    '19',
+    '26',
+    '14',
+    '15',
+    '18',
+    '23',
+    '24',
+    '25',
+    '8']
+
   public contextMenuSettings: ContextMenuSettingsModel;
   public commandManager: CommandManager;
   ngOnInit() {
@@ -521,7 +541,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     return [x, y]
   }
   BoardPin_SAMPin: { [key: string]: string } = {}
-  SAMPin_BoardPin: Array<string> = []
+  SAMPin_BoardPin: { [SAM_pin: string]: string } = {}
 
 
   create_board() {
@@ -604,9 +624,10 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   }
   getSAMMapping() {
     let map = {}
-    this.SAMPin_BoardPin.forEach((board_pin, sam_pin) => {
+    Object.keys(this.SAMPin_BoardPin).forEach((sam_pin) => {
+      let board_pin = this.SAMPin_BoardPin[sam_pin]
       if (board_pin != "")
-        map["" + sam_pin] = board_pin
+        map[sam_pin] = board_pin
     })
     return map
   }
