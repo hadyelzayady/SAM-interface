@@ -207,7 +207,7 @@ export class ToolBarComponent {
           let componentId = node.addInfo[addInfo_componentId];
           node.addInfo[addInfo_reserved] = true;
           node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
-          node.addInfo[addinfo_IP] = reserved_comps[cache[componentId]].IP;
+          node.addInfo[addinfo_IP] = 1919//reserved_comps[cache[componentId]].IP;
           node.addInfo[addinfo_port] = reserved_comps[cache[componentId]].udp_port;
           delete cache[componentId]
         }
@@ -218,7 +218,7 @@ export class ToolBarComponent {
               node.addInfo[addInfo_reserved] = true;
               node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
               node.addInfo[addinfo_IP] = reserved_comps[reserved_index].IP
-              node.addInfo[addinfo_port] = reserved_comps[reserved_index].udp_port
+              node.addInfo[addinfo_port] = 1919//reserved_comps[reserved_index].udp_port
               found_component = true;
               reserved_index++
               break;
@@ -330,11 +330,12 @@ export class ToolBarComponent {
 
   }
   boardSimBehaviour(output_event: OutputEvent) {
-    let value = this.sharedData.diagram.nodes[output_event.source_node_index].addInfo[addInfo_simValue]
+    let value = this.sharedData.diagram.nodes[output_event.source_node_index].ports[output_event.source_port_index].addInfo[addInfo_simValue]
     let target_board = this.sharedData.diagram.nodes[output_event.target_node_index]
     let target_pin_number = parseInt(target_board.ports[output_event.target_port_index].id)
     let IP = target_board.addInfo[addinfo_IP]
     let port = target_board.addInfo[addinfo_port]
+    console.log("send to board ", output_event.source_node_index)
     this.LocalCommService.sendToBoard(<BoardMessage>{ IP: IP, port: port, value: value, pin_id: target_pin_number })
   }
 

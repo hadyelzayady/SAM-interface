@@ -37,19 +37,21 @@
         <th>Board pin name</th>
       </tr>
       <tr *ngFor="let pin of SAM_pins let i=index" [attr.data-index]="i">
-        <td>SAM pin:{{i}}</td>
+        <td>SAM pin:{{pin}}</td>
         <!-- <td><input type="text" size="4" [(ngModel)]="SAMPin_BoardPin[i]"></td>
          -->
-        <select [ngModel]="SAMPin_BoardPin[i]" (ngModelChange)="PinSelectedEvent(i,$event)">
-          <option value="">none</option>
-          <ng-container *ngFor="let node of getPins()">
-            <option
-              *ngIf="node.annotations[0].content== SAMPin_BoardPin[i] || boardPin_selected[node.annotations[0].content] ==undefined || !boardPin_selected[node.annotations[0].content]">
-              {{node.annotations[0].content}}</option>
-          </ng-container>
-          <!-- <option *ngFor="let node of getPins()" [ngValue]="node">{{node.annotations[0].content}}
+        <td>
+          <select [ngModel]="SAMPin_BoardPin[pin]" (ngModelChange)="PinSelectedEvent(pin,$event)">
+            <option value="">none</option>
+            <ng-container *ngFor="let node of getPins()">
+              <option
+                *ngIf="node.annotations[0].content== SAMPin_BoardPin[pin] || boardPin_selected[node.annotations[0].content] ==undefined || !boardPin_selected[node.annotations[0].content]">
+                {{node.annotations[0].content}}</option>
+            </ng-container>
+            <!-- <option *ngFor="let node of getPins()" [ngValue]="node">{{node.annotations[0].content}}
           </option> -->
-        </select>
+          </select>
+        </td>
       </tr>
 
     </table>
