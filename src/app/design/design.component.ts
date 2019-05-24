@@ -116,7 +116,6 @@ export class DesignComponent extends CanDeactivateComponent {
   }
 
   setSimContextMenu() {
-    //TODO: show send to front/back/..
     // this.contextMenuSettings = {
     //   show: true,
     //   items: [{
@@ -169,7 +168,6 @@ export class DesignComponent extends CanDeactivateComponent {
       //this should be the last line
     }
   }
-  //TODO: disable cut/copy/paste/undo/redo in sim mode . commandmanager does not work
 
   loadDesignFile(): void {
 

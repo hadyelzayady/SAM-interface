@@ -22,7 +22,8 @@ import { nextContext } from '@angular/core/src/render3';
 import { Switch } from '../_models/Switch';
 import { BoardMessage } from '../_models/local_message';
 import { ConfigureSamService } from '../_services/configure-sam.service';
-
+//TODO: if connected to vcc send 1 ,if GND send 0 in intervals
+//TODO: validate design
 @Component({
   selector: 'app-tool-bar',
   templateUrl: './tool-bar.component.html',
@@ -78,7 +79,6 @@ export class ToolBarComponent {
   // to unsubscribe from observables when sim ends
   private unsubscribe: Subject<void> = new Subject();
 
-  //TODO: merge diagram service in designservice
   constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService, private simComm: SimCommunicationService, private LocalCommService: LocalWebSocketService, private configSamService: ConfigureSamService) {
 
   }
@@ -242,7 +242,6 @@ export class ToolBarComponent {
   switch_source_nodes: SwitchSourceNodes
 
   PrepareDiagramForOutput() {
-    //TODO: should be merged with getconnections
     // //console.log("table:", this.sharedData.diagram.node)
     this.switch_source_nodes = {} //contains nodes indecies that outputs to the switch
     this.sharedData.pin_inputs_bit_index = {}
@@ -255,7 +254,6 @@ export class ToolBarComponent {
       let target_node_index = this.sharedData.nodeid_index[connector.targetID]
       let source_port_index = this.sharedData.diagram.nodes[source_node_index].ports.findIndex(port => { return port.id == connector.sourcePortID })
       let target_port_index = this.sharedData.diagram.nodes[target_node_index].ports.findIndex(port => { return port.id == connector.targetPortID })
-      //TODO: if board pin is input from switch we should bind event from switch output pin to send the value
       //console.log("tageti node name,", this.sharedData.diagram.nodes[target_node_index].addInfo[addInfo_name])
       let target_node = this.sharedData.diagram.nodes[target_node_index]
       let source_node = this.sharedData.diagram.nodes[source_node_index]
@@ -475,7 +473,7 @@ export class ToolBarComponent {
         break;
       }
       case this.simulate_id: {
-
+        //TODO: what about bind in reserve
         if (!this.sim_mode) {
           this.modalService.open(this.simulate_modal_id)
           try {
@@ -570,7 +568,11 @@ export class ToolBarComponent {
                 this.setComponentsReserveConfigs(reserved_comps)
                 this.configSamService.unBindAll().subscribe(data => {
                   if (data != "ok") {
-                    //TODO: unreserve
+                    this.designService.unreserve(this.file_id).subscribe((data) => {
+                      alert(data)
+                    }, error => {
+                      alert(error)
+                    })
                   }
                 })
                 reserved_comps.forEach(comp => {
@@ -732,9 +734,7 @@ export class ToolBarComponent {
     let source_port_index = switch_props["sourcePortIndex"]
     let switch_input_port_index = switch_props["switchInputPortIndex"]
     let switch_output_port_index = Math.abs(1 - switch_input_port_index)
-    //TODO: bind input pin of switch to source pin
-    //TODO: bind output pin of switch to multiple source pins (use array)
-    //TODO: use bits so each suscriber has the index of its bit in switch port, in each event or the bits of the pin to get the value of the pin
+    //use bits so each suscriber has the index of its bit in switch port, in each event or the bits of the pin to get the value of the pin
     //console.log("set old value: ", source_node_index, switch_node, source_port_index, switch_output_port_index)
     this.switchSimBehaviour({ source_node_index: source_node_index, target_node_index: switch_node_index, target_port_index: switch_output_port_index, value: true, source_port_index: source_port_index }, !isOn)// value not used in switch so choose anything
     // let sources_ports=
