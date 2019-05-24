@@ -399,6 +399,8 @@ export class ToolBarComponent {
     this.error_reserved = false;
     this.error_config = false;
     this.hide_modal_close_btn = true
+    this.binded = false
+    this.error_binded = false
     //added for sim
     this.prepared = false
     this.error_prepared = false
