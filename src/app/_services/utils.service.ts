@@ -73,7 +73,7 @@ export class UtilsService {
           if (O_Component.addInfo[addInfo_type] == ComponentType.Software) {
             source_ip = mythis.sharedData.ip
           }
-          connections[I_Component.addInfo[addInfo_connectedComponentId]] += `I:${destination_pin}:${O_Component.addInfo[addinfo_IP]},`
+          connections[I_Component.addInfo[addInfo_connectedComponentId]] += `I:${destination_pin}:${source_ip},`
         }
 
       }
