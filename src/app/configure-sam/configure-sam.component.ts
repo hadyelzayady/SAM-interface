@@ -84,10 +84,10 @@ export class ConfigureSamComponent implements OnInit {
           this.configservice.Sendhellomsg().subscribe(data=>{
             console.log("hellomsg was sent");
          
-          this.configservice.addcomponent(boardid).subscribe(data=>{
+          this.configservice.addcomponent(boardid,this.portvarUDP,this.portvarUSB).subscribe(data=>{
             console.log("id is set to"+boardid);
-            this.configservice.setport(this.portvarUDP,this.portvarUSB,boardid).subscribe(data=>{
-              console.log(data);
+            // this.configservice.setport(this.portvarUDP,this.portvarUSB,boardid).subscribe(data=>{
+            //   console.log(data);
             
             
             //remember this is important 
@@ -95,10 +95,10 @@ export class ConfigureSamComponent implements OnInit {
               console.log("finishsent");
                  this.router.navigate(["homex"]);
 
-                },error=>{
-                  console.log("the error is "+error);
-                 console.log(error)
-                })  
+                // },error=>{
+                //   console.log("the error is "+error);
+                //  console.log(error)
+                // })  
                 },error=>{
                   console.log("the error is "+error);
                   alert(error);
