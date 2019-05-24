@@ -39,17 +39,22 @@ export class ConfigureSamService {
         return this.http.get(`${this.sharedData.localhost_trayapp}/ip`)
 
     }
-    addcomponent(board_id: String) {
+
+
+    addcomponent(board_id: String, udpport: String, usbport: String) {
         return this.http.post<String>(`${this.sharedData.baseurl}/users/component`, {
-            "component_id": board_id
-        })
-    }
-    setport(udpport: String, usbport: String) {
-        return this.http.post(`${this.sharedData.localhost_trayapp}setports`, {
+            "component_id": board_id,
             "USBPORT": usbport,
             "UDPPORT": udpport
         }, httpOptions)
     }
+    // setport(udpport: String,usbport:String,boardid:String) {
+    //     return this.http.post(`${this.sharedData.baseurl}/users/component/setports`, {
+    //         "BOARDID":boardid,
+    //         "USBPORT": usbport,
+    //         "UDPPORT":udpport
+    //     }, httpOptions)
+    // }
     setwifiname(wifiname: String) {
         return this.http.post<String>(`${this.sharedData.localhost_trayapp}setwifiname`, {
             "wifiname": wifiname

@@ -14,7 +14,8 @@ import { SharedVariablesService } from '../_services/shared-variables.service';
 export class ConfigureSamComponent implements OnInit {
   // @ViewChild("carousel_next") carousel_next:ElementRef;
   /// remember this is important
-  serverurl="thesambackend.herokuapp.com";
+  // serverurl="thesambackend.herokuapp.com";
+  serverurl="192.168.1.2/SAM";
   boards =BOARDS;
   selectedBoard: board;
 
@@ -83,12 +84,21 @@ export class ConfigureSamComponent implements OnInit {
           this.configservice.Sendhellomsg().subscribe(data=>{
             console.log("hellomsg was sent");
          
-          this.configservice.addcomponent(boardid).subscribe(data=>{
+          this.configservice.addcomponent(boardid,this.portvarUDP,this.portvarUSB).subscribe(data=>{
             console.log("id is set to"+boardid);
+            // this.configservice.setport(this.portvarUDP,this.portvarUSB,boardid).subscribe(data=>{
+            //   console.log(data);
+            
+            
             //remember this is important 
             this.configservice.sendfinish().subscribe(data=>{
               console.log("finishsent");
                  this.router.navigate(["homex"]);
+
+                // },error=>{
+                //   console.log("the error is "+error);
+                //  console.log(error)
+                // })  
                 },error=>{
                   console.log("the error is "+error);
                   alert(error);
@@ -129,17 +139,18 @@ export class ConfigureSamComponent implements OnInit {
     console.log("entered here");
     console.log(this.portvarUDP);
     console.log(this.portvarUSB);
-    
-this.configservice.setport(this.portvarUDP,this.portvarUSB).subscribe(data=>{
-  console.log(data);
-  if(data["res"]=="failed")
-  console.log("the data is failed");
-},error=>{
-  console.log("the error is "+error);
- console.log(error)
-})
 this.next();
   }
+  // sendports():void{
+  //   this.configservice.setport(this.portvarUDP,this.portvarUSB).subscribe(data=>{
+  //     console.log(data);
+  //     if(data["res"]=="failed")
+  //     console.log("the data is failed");
+  //   },error=>{
+  //     console.log("the error is "+error);
+  //    console.log(error)
+  //   })
+  // }
   getimage(boardid: String):any{
   return  `${this.sharedData.imageUrl}${boardid}/image`
   }
