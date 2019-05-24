@@ -36,7 +36,7 @@ export class ConfigureSamService {
     }
 
     getUserIP() {
-        return this.http.get(`${this.sharedData.localhost_trayapp}/ip`)
+        return this.http.get(`${this.sharedData.localhost_trayapp}UserIP`)
 
     }
 

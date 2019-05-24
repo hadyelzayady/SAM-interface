@@ -481,7 +481,7 @@ export class ToolBarComponent {
             try {
               this.sharedData.ip = data["ip"]
               this.sharedData.port = data["port"]
-
+              console.log(this.sharedData.port)
               let reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
               this.parsed = true
               //reserve
@@ -560,6 +560,14 @@ export class ToolBarComponent {
               this.designService.unreserve(this.file_id).subscribe(data => {
                 //  this.co
                 //TODO:
+                this.designService.unreserve(this.file_id).subscribe((data) => {
+                  alert(data)
+                  this.simComm.close()
+                }, error => {
+                  alert(error)
+                  this.simComm.close()
+
+                })
               }, error => {
                 console.log("error unreserve")
               })
@@ -577,6 +585,8 @@ export class ToolBarComponent {
                 this.setComponentsReserveConfigs(reserved_comps)
                 this.configSamService.unBindAll().subscribe(data => {
                   if (data != "ok") {
+                    this.simComm.close()
+
                     this.designService.unreserve(this.file_id).subscribe((data) => {
                       alert(data)
                     }, error => {
@@ -585,8 +595,10 @@ export class ToolBarComponent {
                   }
                 })
                 reserved_comps.forEach(comp => {
+                  console.log("usb ip port", comp.usb_ip_port)
                   this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port).subscribe(data => {
                     if (data != "ok") {
+
                       alert("can not bind to local port")
                     }
                   })
