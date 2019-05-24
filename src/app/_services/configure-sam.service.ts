@@ -39,8 +39,9 @@ export class ConfigureSamService {
             "component_id": board_id
         })
     }
-    setport(udpport: String,usbport:String) {
-        return this.http.post(`${this.sharedData.localhost_trayapp}setports`, {
+    setport(udpport: String,usbport:String,boardid:String) {
+        return this.http.post(`${this.sharedData.baseurl}/users/component/setports`, {
+            "BOARDID":boardid,
             "USBPORT": usbport,
             "UDPPORT":udpport
         }, httpOptions)
