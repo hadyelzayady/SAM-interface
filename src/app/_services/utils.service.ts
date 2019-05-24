@@ -25,6 +25,7 @@ export class UtilsService {
     let nodeid_index = this.sharedData.nodeid_index
     let nodes = this.sharedData.diagram.nodes
     let globalPinId_boardid_portid = this.globalPinId_boardid_portid
+    let mythis = this
     this.sharedData.diagram.connectors.forEach(function (connector) {
       if (connector.targetID != "" && connector.sourceID != "") {
         // let connectedcomponent_id= this.sharedData.
@@ -33,7 +34,14 @@ export class UtilsService {
 
         let source_pin = connector.sourcePortID
         let destination_pin = connector.targetPortID
-        let destination_ip_port = I_Component.addInfo[addinfo_IP] + ":" + I_Component.addInfo[addinfo_port]
+        let destination_ip_port = null
+        if (I_Component.addInfo[addInfo_type] == ComponentType.Software) {
+          destination_ip_port = mythis.sharedData.ip + ":" + mythis.sharedData.port
+
+        } else {
+          destination_ip_port = I_Component.addInfo[addinfo_IP] + ":" + I_Component.addInfo[addinfo_port]
+
+        }
         //map each HW output port to global pin id
         if (I_Component.addInfo[addInfo_type] == ComponentType.Software) {
           //if board outputs to software(I_component is switch or led) then send the destination as the board pin itself as we bind outputs to the board pin of the board  ,not like if board1 is connected to board2 then the destination will be the pin in board2

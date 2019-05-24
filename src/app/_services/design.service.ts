@@ -11,6 +11,9 @@ import { NodeModel, PortModel, PortVisibility, PortConstraints } from '@syncfusi
 import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType, setImageSize, addInfo_simValue } from '../utils';
 @Injectable()
 export class DesignService {
+    getReservedComponents(file_id: number) {
+        return this.http.get<ReserveComponentsResponse[]>(`${this.baseurl}/${file_id}/reserve`)
+    }
     unreserve(file_id: number) {
         return this.http.delete(`${this.baseurl}/${file_id}/reserve`)
     }

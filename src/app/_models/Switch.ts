@@ -1,7 +1,7 @@
 import { NodeModel, PointPortModel, PortVisibility, NodeConstraints, ShapeModel, ImageModel } from '@syncfusion/ej2-angular-diagrams';
 import { BoardPort } from './BoardPort';
 import { Board } from './board';
-import { addInfo_name, addInfo_type, ComponentType, local_udp_server_port, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue } from '../utils';
+import { addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue } from '../utils';
 import { SharedVariablesService } from '../_services';
 import { switch_on_source, switch_off_source } from './image_sources';
 
@@ -43,7 +43,7 @@ export class Switch extends Board {
             id: this.id,
             shape: this.shape_off,
             constraints: this.constraints,
-            addInfo: { [addInfo_name]: Switch.name, [addInfo_type]: ComponentType.Software, [addinfo_IP]: '192.168.1.113', [addinfo_port]: local_udp_server_port, [addInfo_simValue]: false }
+            addInfo: { [addInfo_name]: Switch.name, [addInfo_type]: ComponentType.Software, [addInfo_simValue]: false }
         }
     }
 

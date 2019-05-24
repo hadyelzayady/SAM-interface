@@ -141,4 +141,8 @@ export class SharedVariablesService {
   imageUrl = `${this.domainbaseurl}component/`
   localhost_trayapp = "http://localhost:4000/"
 
+  //ip,port of user for simuation as board sends to this ip,port (udp)
+  ip = null //local ip of user
+  port = null //local udp server port
+
 }

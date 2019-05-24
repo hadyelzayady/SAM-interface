@@ -16,7 +16,7 @@ export const addInfo_connectedComponentId = "connectedComponentId";
 export const addInfo_simValue = "sim_value";
 export enum ComponentType { Hardware, Software }
 export enum SwitchValue { ON, OFF }
-export const local_udp_server_port = "31234"
+
 export function setImageSize(width, height) {
     this.board_props.width = width
 }

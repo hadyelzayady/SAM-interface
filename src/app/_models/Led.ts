@@ -1,7 +1,7 @@
 import { NodeModel, PointPortModel, PortVisibility, NodeConstraints, ShapeModel, ImageModel } from '@syncfusion/ej2-angular-diagrams';
 import { BoardPort } from './BoardPort';
 import { Board } from './board';
-import { addInfo_name, addInfo_type, ComponentType, local_udp_server_port, addinfo_IP, addinfo_port } from '../utils';
+import { addInfo_name, addInfo_type, ComponentType } from '../utils';
 import { led_on_source, led_off_source } from './image_sources';
 
 export class Led extends Board {
@@ -34,7 +34,7 @@ export class Led extends Board {
             id: this.id,
             shape: this.shape,
             constraints: this.constraints,
-            addInfo: { [addInfo_name]: Led.name, [addInfo_type]: ComponentType.Software, [addinfo_IP]: '192.168.1.113', [addinfo_port]: local_udp_server_port }
+            addInfo: { [addInfo_name]: Led.name, [addInfo_type]: ComponentType.Software }
         }
     }
 

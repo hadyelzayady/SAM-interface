@@ -27,6 +27,7 @@ const httpOptions = {
 })
 export class ConfigureSamService {
 
+
     constructor(private http: HttpClient, private sharedData: SharedVariablesService) { }
     private baseurl = this.sharedData.baseurl + '/design'
 
@@ -34,15 +35,19 @@ export class ConfigureSamService {
         return this.http.get<board[]>(`${this.sharedData.baseurl}/users/component`)
     }
 
+    getUserIP() {
+        return this.http.get(`${this.sharedData.localhost_trayapp}/ip`)
+
+    }
     addcomponent(board_id: String) {
         return this.http.post<String>(`${this.sharedData.baseurl}/users/component`, {
             "component_id": board_id
         })
     }
-    setport(udpport: String,usbport:String) {
+    setport(udpport: String, usbport: String) {
         return this.http.post(`${this.sharedData.localhost_trayapp}setports`, {
             "USBPORT": usbport,
-            "UDPPORT":udpport
+            "UDPPORT": udpport
         }, httpOptions)
     }
     setwifiname(wifiname: String) {
@@ -66,7 +71,7 @@ export class ConfigureSamService {
             "id": id
         }, httpOptions)
     }
-    getVersion(){
+    getVersion() {
         return this.http.get<String>(`${this.sharedData.localhost_trayapp}GET_BOARD_TYPE`, {
         })
     }
@@ -82,14 +87,15 @@ export class ConfigureSamService {
         return this.http.get<String>(`${this.sharedData.localhost_trayapp}FINISH_CONFIGURATIONS`, httpOptions)
     }
     unBindAll() {
-        return this.http.post(`${this.sharedData.localhost_trayapp}UnBindAll`, "",{headers:new HttpHeaders({
-            "Access-Control-Allow-Origin": "*"
-          })
-            
-})
+        return this.http.post(`${this.sharedData.localhost_trayapp}UnBindAll`, "", {
+            headers: new HttpHeaders({
+                "Access-Control-Allow-Origin": "*"
+            })
+
+        })
     }
     sendBindIPPort(ip, port) {
-        return this.http.post(`${this.sharedData.localhost_trayapp}Bind`, { ip: ip, port: port },)
+        return this.http.post(`${this.sharedData.localhost_trayapp}Bind`, { ip: ip, port: port })
     }
 }
 

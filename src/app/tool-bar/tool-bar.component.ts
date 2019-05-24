@@ -207,7 +207,7 @@ export class ToolBarComponent {
           let componentId = node.addInfo[addInfo_componentId];
           node.addInfo[addInfo_reserved] = true;
           node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
-          node.addInfo[addinfo_IP] = 1919//reserved_comps[cache[componentId]].IP;
+          node.addInfo[addinfo_IP] = reserved_comps[cache[componentId]].IP;
           node.addInfo[addinfo_port] = reserved_comps[cache[componentId]].udp_port;
           delete cache[componentId]
         }
@@ -218,7 +218,7 @@ export class ToolBarComponent {
               node.addInfo[addInfo_reserved] = true;
               node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
               node.addInfo[addinfo_IP] = reserved_comps[reserved_index].IP
-              node.addInfo[addinfo_port] = 1919//reserved_comps[reserved_index].udp_port
+              node.addInfo[addinfo_port] = reserved_comps[reserved_index].udp_port
               found_component = true;
               reserved_index++
               break;
@@ -476,46 +476,55 @@ export class ToolBarComponent {
         //TODO: what about bind in reserve
         if (!this.sim_mode) {
           this.modalService.open(this.simulate_modal_id)
-          try {
-            //parse
-            let reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
-            this.parsed = true
-            //reserve
-            this.designService.reserve(reservecomps, this.file_id).pipe(finalize(() => {
+          //parse
+          this.configSamService.getUserIP().subscribe(data => {
+            try {
+              this.sharedData.ip = data["ip"]
+              this.sharedData.port = data["port"]
+
+              let reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
+              this.parsed = true
+              //reserve
+              this.designService.getReservedComponents(this.file_id).pipe(finalize(() => {
+                this.hide_modal_close_btn = false
+              })).subscribe((reserved_components) => {
+                this.reserved = true
+                //config
+                try {
+                  this.setComponentsReserveConfigs(reserved_components)
+                  this.configured = true
+                  //connections
+                  //set nodeid_index as it is a dependancy for getconnection,prepare diagram
+                  this.setNodeIdIndex()
+                  let connections = this.utils.getDesignConnections()
+                  this.designService.sendDesignConnections(connections, this.file_id)
+                    .subscribe(data => {
+                      this.send_connections = true
+                      //prepare sim env
+                      this.startSockets()
+                      //TODO: wait for start simulaion in websocket
+                    }, error => {
+                      this.error_send_connections = true
+                      this.send_connections = false;
+                    });
+                } catch (error) {
+                  //console.log('tr', error)
+                  this.configured = false
+                  this.error_config = true;
+                }
+              }, error => {
+                this.reserved = false;
+                this.error_reserved = true
+              });
+            } catch (error) {
+              this.error_parsed = true
               this.hide_modal_close_btn = false
-            })).subscribe((data) => {
-              this.reserved = true
-              //config
-              try {
-                this.setComponentsReserveConfigs(data)
-                this.configured = true
-                //connections
-                //set nodeid_index as it is a dependancy for getconnection,prepare diagram
-                this.setNodeIdIndex()
-                let connections = this.utils.getDesignConnections()
-                this.designService.sendDesignConnections(connections, this.file_id)
-                  .subscribe(data => {
-                    this.send_connections = true
-                    //prepare sim env
-                    this.startSockets()
-                    //TODO: wait for start simulaion in websocket
-                  }, error => {
-                    this.error_send_connections = true
-                    this.send_connections = false;
-                  });
-              } catch (error) {
-                //console.log('tr', error)
-                this.configured = false
-                this.error_config = true;
-              }
-            }, error => {
-              this.reserved = false;
-              this.error_reserved = true
-            });
-          } catch (error) {
-            this.error_parsed = true
+            }
+          }, error => {
+            alert("please open tray application")
             this.hide_modal_close_btn = false
-          }
+          })
+
         } else {
           this.closeSimulationMode()
         }
