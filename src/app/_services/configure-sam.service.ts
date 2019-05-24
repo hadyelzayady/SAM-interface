@@ -32,7 +32,7 @@ export class ConfigureSamService {
     private baseurl = this.sharedData.baseurl + '/design'
 
     getcomponents() {
-        return this.http.get<board[]>(`${this.sharedData.baseurl}/users/component`)
+        return this.http.get<board[]>(`${this.sharedData.baseurl}/users/components`)
     }
 
     getUserIP() {
