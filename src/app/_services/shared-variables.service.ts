@@ -135,12 +135,13 @@ export class SharedVariablesService {
 
   }
   //////////////////
-  domainbaseurl = "http://192.168.1.5:80/"
-
+  domainbaseurl_without_port = "http://192.168.1.5"
+  domainbaseurl = `${this.domainbaseurl_without_port}:80/`
   baseurl = `${this.domainbaseurl}api`
   imageUrl = `${this.domainbaseurl}component/`
   localhost_trayapp = "http://localhost:4000/"
 
+  web_socket_server_url = `${this.domainbaseurl_without_port}:3001`
   //ip,port of user for simuation as board sends to this ip,port (udp)
   ip = null //local ip of user
   port = null //local udp server port

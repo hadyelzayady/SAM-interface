@@ -8,7 +8,6 @@ import { PortVisibility } from '@syncfusion/ej2-angular-diagrams';
 import { Observable } from 'rxjs';
 import * as socketIo from 'socket.io-client';
 
-const SERVER_URL = 'http://localhost:3001';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +20,7 @@ export class SimCommunicationService {
 
   public initSocket(fileid, mode = "simulate"): void {
     let token = JSON.parse(localStorage.getItem('currentUser')).token;
-    this.socket = socketIo(SERVER_URL, {
+    this.socket = socketIo(this.sharedData.web_socket_server_url, {
       query: { token: token, design_id: fileid, mode: mode }
     });
     // // console.log(this.socket)
