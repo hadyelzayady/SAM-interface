@@ -5,7 +5,7 @@ import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
 import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { DesignService } from '../_services';
-import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue, addinfo_IP, addinfo_port, addInfo_isBinded, addInfo_reserved } from '../utils';
+import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue, addinfo_IP, addinfo_port, addInfo_isBinded, addInfo_reserved, UNDEFINED, addInfo_pinType, PinType_GROUND, PinType_VCC } from '../utils';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
@@ -177,8 +177,11 @@ export class DesignComponent extends CanDeactivateComponent {
       .subscribe(file => {
         try {
           // console.log(JSON.stringify(file))
+
           if (file != null) {
+            console.log("file: ",file)
             this.diagram.loadDiagram(JSON.stringify(file))
+            console.log("HHHHHHHHHHHHHHHHHH")
             this.diagram.nodes.forEach(node => {
               node.addInfo[addinfo_IP] = null
               node.addInfo[addinfo_port] = null
@@ -186,10 +189,20 @@ export class DesignComponent extends CanDeactivateComponent {
               node.addInfo[addInfo_isBinded] = false
               node.addInfo[addInfo_reserved] = false
               node.ports.forEach(element => {
-                element.addInfo[addInfo_simValue] = false
+                let sim_value=UNDEFINED
+                if(element.addInfo[addInfo_pinType]== PinType_GROUND)
+                  sim_value='0'
+                  else if (element.addInfo[addInfo_pinType]== PinType_VCC)
+                  sim_value='1'
+
+                element.addInfo[addInfo_simValue] = sim_value
               });
             })
+            console.log("DDDDDDDDDDDDDDD")
+
             this.diagram.refreshDiagram()
+            console.log("HHHHHHHHHHHHHHHHHH")
+
           }
 
           else {
@@ -198,6 +211,7 @@ export class DesignComponent extends CanDeactivateComponent {
 
           }
         } catch (error) {
+          console.log(error)
           this.approute.navigate(["home"])
           alert("error on loading design ,fie reseted")
         }
@@ -214,7 +228,7 @@ export class DesignComponent extends CanDeactivateComponent {
 
   selectionChangeEvent(args: ISelectionChangeEventArgs) {
     if (args.state == "Changed") {
-      console.log("selec")
+      // console.log("selec")
       this.toolBar.boardSelected(args);
     }
   }

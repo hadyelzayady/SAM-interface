@@ -3,8 +3,15 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-6 offset-sm-3"> -->
+<!-- </div>
+        </div>
+    </div>
+</div> -->
+<!-- ////////////////////////////////// -->
 <alert></alert>
 <div [hidden]='logedin' class="container-fluid menucontainer">
+<div class="row">
+    <div class="col-sm-12">
 <a href="/"> 
 <img class="logo" src="https://static.rfstat.com/renderforest/images/v2/logos/renderforest-logo2.jpg">
 </a>
@@ -16,7 +23,11 @@
 <a [routerLink]="['/register']" class="btn btn-link accountbtns ">Register</a>
 </span>
 </div>
+</div>
+</div>
 <div [hidden]='!logedin' class="container-fluid menucontainer">
+        <div class="row">
+                <div class="col-sm-12">
         <a href="/"> 
         <img class="logo" src="https://static.rfstat.com/renderforest/images/v2/logos/renderforest-logo2.jpg">
         </a>
@@ -26,9 +37,7 @@
         <a class="menuitem"href="/"> Support</a>
         <button (click)="logout()"class="btn btn-primary accountbtns">Logout</button>
         </span>
-        </div>
+</div>
+</div>
+</div>
 <router-outlet></router-outlet>
-<!-- </div>
-        </div>
-    </div>
-</div> -->

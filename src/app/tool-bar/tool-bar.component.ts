@@ -294,7 +294,7 @@ export class ToolBarComponent {
       }
 
       if (target_node.addInfo[addInfo_name] == Led.name) {
-        console.log("led add output eetn", source_node_index, source_port_index)
+        // console.log("led add output eetn", source_node_index, source_port_index)
         this.sharedData.addOutputEvent(source_port_index, source_node_index, target_port_index, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((output_event) => {
           //console.log("subscribe event led target id", output_event.target_port_index, output_event.target_node_index)
           let target_node = this.sharedData.diagram.nodes[output_event.target_node_index]//target node is led node
@@ -346,7 +346,7 @@ export class ToolBarComponent {
       }
     })
     //console.log("switch sources target,", this.switch_source_nodes)
-    console.log("port value table,", this.sharedData.port_value_table)
+    // console.log("port value table,", this.sharedData.port_value_table)
 
     this.setSwitchSimConfigs()
 
@@ -591,7 +591,7 @@ export class ToolBarComponent {
                         this.send_connections = false;
                       });
                   } catch (error) {
-                    console.log('tr', error)
+                    // console.log('tr', error)
                     this.validated = false
                     this.error_validate = true
 
@@ -684,7 +684,7 @@ export class ToolBarComponent {
                   }
                 })
                 reserved_comps.forEach(comp => {
-                  console.log("usb ip port", comp.usb_ip_port)
+                  // console.log("usb ip port", comp.usb_ip_port)
                   this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port).subscribe(data => {
                     if (data != "ok") {
                       this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].addInfo[addInfo_isBinded] = false
@@ -836,7 +836,7 @@ export class ToolBarComponent {
       // })
       msg.forEach(([pin_number, value]) => {
 
-        console.log("gloab map", this.utils.globalPinId_boardid_portid)
+        // console.log("gloab map", this.utils.globalPinId_boardid_portid)
         let mapping = this.utils.globalPinId_boardid_portid[pin_number]
         //console.log("mapping, msg value", mapping, msg.value)
         let component_index = mapping.component_index

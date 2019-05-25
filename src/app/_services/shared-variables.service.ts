@@ -65,11 +65,11 @@ export class SharedVariablesService {
 
   changePortValue(value: boolean, port_index: number, component_index: number, source_node_index: number, source_pin_index: number) {
     // console.log("port value table", this.port_value_table)
-    console.log("params", component_index, port_index, value)
+    // console.log("params", component_index, port_index, value)
     // console.log("bit vaue", this.pin_inputs_bit_values[component_index])
     let _value = this.updatePinBitAndGetValue(value, component_index, port_index, source_node_index, source_pin_index)
     if (component_index in this.port_value_table) {
-      console.log("exist", _value)
+      // console.log("exist", _value)
       //change port value in node
       //oring all input of this node to get final value
       //if pin source value comes from from actual hardware then its identifies is itself(its pin index and board index)

@@ -91,7 +91,7 @@ export class ConfigureSamComponent implements OnInit {
 
               //remember this is important 
               this.configservice.sendfinish().subscribe(data => {
-                console.log("finishsent");
+                // console.log("finishsent");
                 this.router.navigate(["homex"]);
 
                 // },error=>{
