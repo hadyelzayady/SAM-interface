@@ -9,12 +9,12 @@ import { UserBoards } from '../_models/MiscInterfaces';
 import { CustomBoardService } from '../_services/custom-board.service';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  selector: 'app-dashboard',
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css']
 })
+export class DashboardComponent implements OnInit {
 
-export class HomeComponent implements OnInit {
   design_files: DesignFile[];
   user_boards: UserBoards[];
   constructor(private userService: UserService, private designService: DesignService, private customBoardService: CustomBoardService, private simpleModalService: SimpleModalService, private router: Router, private alertService: AlertService) { }
@@ -37,7 +37,6 @@ export class HomeComponent implements OnInit {
   customBoardDesign() {
     this.router.navigateByUrl('/customboard');
   }
-  
   deleteDesignFile(file_id: number, filename: string) {
     if (confirm("if you delete this file ,you will not be able to restore again,sure about delete?")) {
       this.designService.deleteDesignFile(file_id).subscribe((data) => {
@@ -70,7 +69,6 @@ export class HomeComponent implements OnInit {
             // this.router.navigate(['design', file.id])
             this.loadUserDesigns()
             this.alertService.success(`file ${filename} created`)
-            this.router.navigate([`/design/${file.id}`])
           }, error => {
             this.alertService.error(`Sorry File ${filename} couldn't be created`)
           });

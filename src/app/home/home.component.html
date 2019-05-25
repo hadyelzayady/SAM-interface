@@ -1,63 +1,36 @@
-<h1>Home page</h1>
-<a routerLink="/ConfigureSamComponent"> configure new component</a>
-<div class="row">
-    <div class="col-sm-6" style="background-color:yellow;">
-        <h2>Design Files</h2>
-        <button type="button" class="btn btn-outline-dark" (click)='createNewFile()'>create new file</button>
-        <ul>
-            <li *ngFor="let file of design_files">
-                <hr>
-                <a routerLink="/design/{{file.id}}"> {{file.original_file_name}}</a>
-                <br><small>id: {{file.id}}</small>
-                <button type="button" (click)='deleteDesignFile(file.id,file.original_file_name)' style="float: right;"
-                    class="btn-outline-danger">Delete</button>
-            </li>
-        </ul>
-    </div>
-    <div class="col-sm-6" style="background-color:pink;">
-        <h2>User Boards</h2>
-        <button type="button" class="btn btn-outline-dark" (click)='customBoardDesign()'>create new Board</button>
-        <ul>
-            <li *ngFor="let board of user_boards">
-                <hr>
-                <a [routerLink]="['/customboard']" [queryParams]="{board_id:board.id}"> {{board.name}}</a>
-                <br><small>id: {{board.id}}</small>
-                <button type="button" (click)='deleteBoard(board.id,board.name)' style="float: right;"
-                    class="btn-outline-danger">Delete</button>
-
-            </li>
-        </ul>
-    </div>
-</div>
-
-
-<!-- 
-
 <div class="container-fluid bgcontainer min-vh-100">
     <h1 class="title">The SAM Menu</h1>
 <div class="card-deck">
     <div class="card">
+        <a (click)='createNewFile()' href='#'>
         <div class="card-img-top bgimg1"></div>
         <div class="card-body">
         <h4 class="card-title titleofcard">Design</h4>
         <p class="card-text descriptionofcard">Make your own new Design with various boards shared by our users</p>      
         </div>
+        </a>
     </div>  
+   
     <div class="card">
+        <a routerLink="/ConfigureSamComponent">
             <div class="card-img-top bgimg2"></div>
             <div class="card-body">
             <h4 class="card-title titleofcard">Add New Component</h4>
-            <p class="card-text descriptionofcard">Got a new SAM ?<br> No problem follow our confiuration wizzard here to setup your new SAM</p>
+            <p class="card-text descriptionofcard">Got a new SAM ?<br> No problem follow our configuration wizard here to setup your new SAM</p>
             </div>
+        </a>
     </div>  
+
     <div class="card">
+            <a routerLink="/Dashboard">
             <div class="card-img-top bgimg3"></div>
             <div class="card-body">
             <h4 class="card-title titleofcard">DashBoard</h4>
             <p class="card-text descriptionofcard">Keep track of all your components designs and more..</p>
             </div>
+        </a>
     </div>  
      
     </div>
   </div>
-   -->
+  

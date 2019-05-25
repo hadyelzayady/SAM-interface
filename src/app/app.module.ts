@@ -31,6 +31,7 @@ import { SimCommunicationService } from './_services/sim-communication.service';
 import { CustomBoardComponent } from './custom-board/custom-board.component';
 import { CanDeactivateGuard } from './can-deactivate/can-deactivate.guard';
 import { ConfigureSamComponent } from './configure-sam/configure-sam.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -47,6 +48,7 @@ import { ConfigureSamComponent } from './configure-sam/configure-sam.component';
     LoadingModalComponent,
     CustomBoardComponent,
     ConfigureSamComponent,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,
