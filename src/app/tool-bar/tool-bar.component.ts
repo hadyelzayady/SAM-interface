@@ -262,7 +262,7 @@ export class ToolBarComponent {
       this.sharedData.setPinInputBit(source_node_index, source_port_index, target_node_index, target_port_index)
 
       //console.log("input bit value", this.sharedData.pin_inputs_bit_values)
-
+      // if()
       if (target_node.addInfo[addInfo_name] == Led.name) {
 
         this.sharedData.addOutputEvent(source_port_index, source_node_index, target_port_index, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((output_event) => {
@@ -399,6 +399,8 @@ export class ToolBarComponent {
     this.error_reserved = false;
     this.error_config = false;
     this.hide_modal_close_btn = true
+    this.binded = false
+    this.error_binded = false
     //added for sim
     this.prepared = false
     this.error_prepared = false
@@ -708,8 +710,6 @@ export class ToolBarComponent {
     })
 
     //socket with server to start and end sim
-    this.PrepareDiagramForOutput();
-
     try {
       //prepare outputs in the design
       this.PrepareDiagramForOutput();
