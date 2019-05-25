@@ -3,11 +3,11 @@
    margin: 0 !important;
 }
 .logo{
-height: 1%;
+height: 50px;
 width: 10%;
 }
 .menuitem{
-   padding: 3%;
+   padding: 0% 2%;
 }
 .menucontainer{
    background-color: antiquewhite;
@@ -18,4 +18,7 @@ width: 10%;
 }
 .btns{
    margin: 1%;
+}
+.accountbtns{
+   float: right;
 }
