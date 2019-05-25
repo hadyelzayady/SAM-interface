@@ -4,13 +4,20 @@ import { RoutingStateService } from './_services/routing-state.service';
 import { Router, NavigationStart } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Event as NavigationEvent } from "@angular/router";
+import { AuthenticationService, SharedVariablesService } from './_services';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(private chatService: SimCommunicationService, routingState: RoutingStateService, route: Router) {
+  logedin:boolean;
+  
+  constructor(private chatService: SimCommunicationService,private sharedData: SharedVariablesService,private router: Router,   private authenticationService: AuthenticationService,routingState: RoutingStateService, route: Router) {
+    this.sharedData.currentloginstatus.subscribe(data=>{
+      this.logedin=data;
+      console.log(data);
+    })
     route.events
       .pipe(
         // The "events" stream contains all the navigation events. For this demo,
@@ -43,7 +50,17 @@ export class AppComponent {
         }
       )
   }
+  logout(){
+    this.authenticationService.logout();
+    this.logedin=false;
+    this.router.navigate(['/login']);
+    console.log("i am logged out");
+  }
   ngOnInit() {
-
+    if (localStorage.getItem('currentUser')) {
+      // logged in so return true
+      this.logedin=true;
+    console.log(this.logedin);
+    }
   }
 }

@@ -48,6 +48,13 @@ export class SharedVariablesService {
   changeMode(mode: boolean) {
     this.sim_mode.next(mode)
   }
+
+  private logedin: Subject<boolean> = new Subject();
+  currentloginstatus = this.logedin.asObservable();
+  changeLogin(mode: boolean) {
+    this.logedin.next(mode)
+
+  }
   /////////////
   ////////////////
   port_value_table: { [source_component_index: string]: { [target_component_index: number]: { [source_pin_index: number]: { [target_port_index: number]: Subject<OutputEvent> } } } } = {};

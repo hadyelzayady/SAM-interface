@@ -4,11 +4,29 @@
         <div class="row">
             <div class="col-sm-6 offset-sm-3"> -->
 <alert></alert>
-<div class="container">
-<a href="/"> Home</a>
-<a href="/"> About</a>
-<a href="/"> Support</a>
+<div [hidden]='logedin' class="container-fluid menucontainer">
+<a href="/"> 
+<img class="logo" src="https://static.rfstat.com/renderforest/images/v2/logos/renderforest-logo2.jpg">
+</a>
+<span class="menu">
+<a class="menuitem"href="/"> Home</a>
+<a class="menuitem"href="/"> About</a>
+<a class="menuitem"href="/"> Support</a>
+<a  href="#login" class="btn btn-link ">Login</a>
+<a [routerLink]="['/register']" class="btn btn-link ">Register</a>
+</span>
 </div>
+<div [hidden]='!logedin' class="container-fluid menucontainer">
+        <a href="/"> 
+        <img class="logo" src="https://static.rfstat.com/renderforest/images/v2/logos/renderforest-logo2.jpg">
+        </a>
+        <span class="menu">
+        <a class="menuitem"href="/"> Home</a>
+        <a class="menuitem"href="/"> About</a>
+        <a class="menuitem"href="/"> Support</a>
+        <button (click)="logout()"class="btn btn-primary">Logout</button>
+        </span>
+        </div>
 <router-outlet></router-outlet>
 <!-- </div>
         </div>
