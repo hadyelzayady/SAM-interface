@@ -46,7 +46,7 @@ export class AppComponent {
           // - hashchange
           // --
           // NOTE: I am not sure what triggers the "hashchange" type.
-          console.log("trigger:", event.navigationTrigger);
+          // console.log("trigger:", event.navigationTrigger);
         }
       )
   }
@@ -54,13 +54,13 @@ export class AppComponent {
     this.authenticationService.logout();
     this.logedin=false;
     this.router.navigate(['/login']);
-    console.log("i am logged out");
+    // console.log("i am logged out");
   }
   ngOnInit() {
     if (localStorage.getItem('currentUser')) {
       // logged in so return true
       this.logedin=true;
-    console.log(this.logedin);
+    // console.log(this.logedin);
     }
   }
 }

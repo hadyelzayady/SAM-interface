@@ -51,7 +51,7 @@ export class LoginComponent implements OnInit {
         data => {
           this.router.navigate([this.returnUrl]);
           this.sharedData.changeLogin(true);
-          console.log("iam logged in");
+          // console.log("iam logged in");
         },
         error => {
           this.alertService.error(error);

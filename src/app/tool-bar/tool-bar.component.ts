@@ -333,7 +333,7 @@ export class ToolBarComponent {
     let target_pin_number = parseInt(target_board.ports[output_event.target_port_index].id)
     let IP = target_board.addInfo[addinfo_IP]
     let port = target_board.addInfo[addinfo_port]
-    console.log("send to board ", output_event.source_node_index)
+    // console.log("send to board ", output_event.source_node_index)
     this.LocalCommService.sendToBoard(<BoardMessage>{ IP: IP, port: port, value: value, pin_id: target_pin_number })
   }
 
@@ -558,7 +558,7 @@ export class ToolBarComponent {
             this.simComm.initSocket(this.file_id, "bind")
             // this.simComm.bindBoards(this.file_id)
             this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
-              console.log("bind fail")
+              // console.log("bind fail")
               this.designService.unreserve(this.file_id).subscribe(data => {
                 //  this.co
                 //TODO:
@@ -571,7 +571,7 @@ export class ToolBarComponent {
 
                 })
               }, error => {
-                console.log("error unreserve")
+                // console.log("error unreserve")
               })
               this.simComm.close()
               this.error_binded = true
@@ -579,11 +579,11 @@ export class ToolBarComponent {
             })
 
             this.simComm.onEvent(SocketEvent.BIND_SUCCESS).subscribe(() => {
-              console.log("bind succkes")
+              // console.log("bind succkes")
               this.error_binded = false
               this.binded = true
               try {
-                console.log("after bind")
+                // console.log("after bind")
                 this.setComponentsReserveConfigs(reserved_comps)
                 this.configSamService.unBindAll().subscribe(data => {
                   if (data != "ok") {
@@ -689,7 +689,7 @@ export class ToolBarComponent {
       // let port_index = source_node.ports.findIndex(port => {
       //   return port.id == "" + msg.port_id
       // })
-      console.log("gloab map", this.utils.globalPinId_boardid_portid)
+      // console.log("gloab map", this.utils.globalPinId_boardid_portid)
       let mapping = this.utils.globalPinId_boardid_portid[msg.pin_number]
       //console.log("mapping, msg value", mapping, msg.value)
       let component_index = mapping.component_index
