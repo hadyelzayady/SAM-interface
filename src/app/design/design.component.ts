@@ -5,7 +5,7 @@ import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
 import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { DesignService } from '../_services';
-import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue } from '../utils';
+import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue, addinfo_IP, addinfo_port, addInfo_isBinded, addInfo_reserved } from '../utils';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
@@ -172,13 +172,23 @@ export class DesignComponent extends CanDeactivateComponent {
   loadDesignFile(): void {
 
     // this.file_id = +this.route.snapshot.paramMap.get('id');
-
+    //TODO: reset addinfo for component like binded and etc
     this.designService.getDesignFileById(this.file_id)
       .subscribe(file => {
         try {
           // console.log(JSON.stringify(file))
           if (file != null) {
             this.diagram.loadDiagram(JSON.stringify(file))
+            this.diagram.nodes.forEach(node => {
+              node.addInfo[addinfo_IP] = null
+              node.addInfo[addinfo_port] = null
+              node.addInfo[addInfo_simValue] = false
+              node.addInfo[addInfo_isBinded] = false
+              node.addInfo[addInfo_reserved] = false
+              node.ports.forEach(element => {
+                element.addInfo[addInfo_simValue] = false
+              });
+            })
             this.diagram.refreshDiagram()
           }
 
@@ -198,6 +208,7 @@ export class DesignComponent extends CanDeactivateComponent {
 
   diagramCreated() {
     this.loadDesignFile();
+    this.diagram.refreshDiagramLayer()
     // console.log(this.sharedData.diagram.historyManager.currentEntry)
   }
 

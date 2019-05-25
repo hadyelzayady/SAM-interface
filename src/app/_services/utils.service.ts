@@ -3,7 +3,7 @@ import { ConnectorModel, ConnectorConstraints, NodeModel } from '@syncfusion/ej2
 import { SharedVariablesService } from './shared-variables.service';
 import { DiagramComponent, DiagramAllModule } from '@syncfusion/ej2-angular-diagrams';
 import { Arduino } from '../_models/arduino';
-import { addInfo_componentId, addInfo_type, ComponentType, addInfo_connectedComponentId, addinfo_port, addinfo_IP } from '../utils';
+import { addInfo_componentId, addInfo_type, ComponentType, addInfo_connectedComponentId, addinfo_port, addinfo_IP, addInfo_pinType, PinType_GROUND, PinType_VCC } from '../utils';
 
 
 @Injectable({
@@ -61,7 +61,8 @@ export class UtilsService {
           globalPinId_boardid_portid[destination_pin_number] = { component_index: O_Component_index, port_index: port_index }
         }
         //
-        if (O_Component.addInfo[addInfo_type] == ComponentType.Hardware) {
+        let O_port = O_Component.ports.find(port => { return port.id == connector.sourcePortID })
+        if (O_Component.addInfo[addInfo_type] == ComponentType.Hardware && O_port.addInfo[addInfo_pinType] != PinType_GROUND && O_port.addInfo[addInfo_pinType] != PinType_VCC) {
           //output  not from switch
           if (!(O_Component.addInfo[addInfo_connectedComponentId] in connections)) {
             connections[O_Component.addInfo[addInfo_connectedComponentId]] = ''

@@ -8,9 +8,9 @@ import { ToolbarItem, valueAccessor } from '@syncfusion/ej2-grids';
 import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
 import { DiagramApiService } from '../_services/diagram-api.service';
 import { ReserveComponentsResponse, OutputEvent } from '../_models';
-import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue, addInfo_pinType, PinType_VCC, PinType_GROUND } from '../utils';
+import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue, addInfo_pinType, PinType_VCC, PinType_GROUND, addInfo_isBinded, connectorDesignConstraints } from '../utils';
 import { ModalService } from '../modal.service';
-import { finalize, takeUntil } from 'rxjs/operators';
+import { finalize, takeUntil, startWith } from 'rxjs/operators';
 import { WebSocketService } from '../_services/web-socket.service';
 import { SimCommunicationService } from '../_services/sim-communication.service';
 import { Led } from '../_models/Led';
@@ -287,7 +287,7 @@ export class ToolBarComponent {
         this.VCC_pins.push([source_port_index, source_node_index, source_node_index, source_port_index])
       }
       if (source_node.ports[source_port_index].addInfo[addInfo_pinType] == PinType_GROUND) {
-        console.log("set vc")
+        console.log("set GND")
         this.GND_pins.push([source_port_index, source_node_index, source_node_index, source_port_index])
       }
 
@@ -348,30 +348,36 @@ export class ToolBarComponent {
 
     this.setSwitchSimConfigs()
 
-    interval(8000).pipe(takeUntil(this.unsubscribe))
-      .subscribe(() => {
-        console.log("time", this.VCC_pins)
-        this.VCC_pins.forEach(pin => {
-          // console.log("port_index", port_index)
-          // console.log("component_index", component_index)
-          // console.log("port value table", this.sharedData.port_value_table)
-          // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
-          //console.log("received change port", port_index)
-          this.sharedData.changePortValue(true, pin[0], pin[1], pin[2], pin[3])
-        })
-      });
-    interval(8000).pipe(takeUntil(this.unsubscribe))
-      .subscribe(() => {
-        console.log("time", this.VCC_pins)
-        this.GND_pins.forEach(pin => {
-          // console.log("port_index", port_index)
-          // console.log("component_index", component_index)
-          // console.log("port value table", this.sharedData.port_value_table)
-          // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
-          //console.log("received change port", port_index)
-          this.sharedData.changePortValue(false, pin[0], pin[1], pin[2], pin[3])
-        })
-      });
+    if (this.VCC_pins.length != 0) {
+
+      interval(8000).pipe(takeUntil(this.unsubscribe), startWith(0))
+        .subscribe(() => {
+          console.log("time", this.VCC_pins)
+          this.VCC_pins.forEach(pin => {
+            // console.log("port_index", port_index)
+            // console.log("component_index", component_index)
+            // console.log("port value table", this.sharedData.port_value_table)
+            // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
+            //console.log("received change port", port_index)
+            this.sharedData.changePortValue(true, pin[0], pin[1], pin[2], pin[3])
+          })
+        });
+    }
+    if (this.GND_pins.length != 0) {
+
+      interval(8000).pipe(takeUntil(this.unsubscribe), startWith(0))
+        .subscribe(() => {
+          console.log("time", this.VCC_pins)
+          this.GND_pins.forEach(pin => {
+            // console.log("port_index", port_index)
+            // console.log("component_index", component_index)
+            // console.log("port value table", this.sharedData.port_value_table)
+            // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
+            //console.log("received change port", port_index)
+            this.sharedData.changePortValue(false, pin[0], pin[1], pin[2], pin[3])
+          })
+        });
+    }
     // this.sharedData.ports_values.subscribe((val) => {
     //   //console.log("event in sim to chag eled")
     //   this.sharedData.diagram.nodes[0].shape = {
@@ -493,12 +499,21 @@ export class ToolBarComponent {
 
     this.sharedData.changeMode(false)
     this.unsubscribe.next()
-    this.unsubscribe.complete();
+    // this.unsubscribe.complete();
     this.simComm.close()
     this.LocalCommService.close()
     this.resetComponents()
   }
+  isReservedBinded() {
+    for (const node of this.sharedData.diagram.nodes) {
+      if (node.addInfo[addInfo_type] == ComponentType.Hardware) {
+        if (node.addInfo[addInfo_isBinded] == false)
+          return false
+      }
 
+    }
+    return true;
+  }
   toolbarClick(args: ClickEventArgs): void {
     switch (args.item.id) {
       case this.undo_id: {
@@ -547,7 +562,8 @@ export class ToolBarComponent {
                 //config
                 try {
                   let count = this.utils.getDesignHWComponentsCount(this.sharedData.diagram)
-                  if (reserved_components.length != count) {
+                  let isBinded = this.isReservedBinded()
+                  if (reserved_components.length != count || !isBinded) {
                     throw Error("re-reserve")
                   }
                   this.setComponentsReserveConfigs(reserved_components)
@@ -668,8 +684,12 @@ export class ToolBarComponent {
                   console.log("usb ip port", comp.usb_ip_port)
                   this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port).subscribe(data => {
                     if (data != "ok") {
+                      this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].addInfo[addInfo_isBinded] = false
 
                       alert("can not bind to local port")
+                    } else {
+
+                      this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].addInfo[addInfo_isBinded] = true
                     }
                   })
                 });
@@ -758,7 +778,6 @@ export class ToolBarComponent {
       //if new target is in is_pin_O with true value ,or new source is in is_pin_O with false value
       is_pin_O[connector.targetID] = is_pin_O[connector.targetID] || { [connector.targetPortID]: false }
       is_pin_O[connector.sourceID] = is_pin_O[connector.sourceID] || { [connector.sourceID]: true }
-
       // if (is_pin_O[connector.targetID][connector.targetPortID] || !is_pin_O[connector.sourceID][connector.sourcePortID]) {
       //   throw Error("output pin can not take input")
       // }
@@ -771,6 +790,10 @@ export class ToolBarComponent {
       //   throw Error("VCC is connected to Ground!")
       // }
       //end validate no ground connected to VCC
+      // no inpurt to VCC
+      let target_port = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[connector.targetID]].ports.find(port => { return port.id == connector.targetPortID })
+      if (target_port.addInfo[addInfo_pinType] == PinType_VCC)
+        throw Error("VCC should be input pin")
     }
     //validate leds
     // let leds = this.sharedData.diagram.nodes.filter(node => {

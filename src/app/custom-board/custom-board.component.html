@@ -42,7 +42,7 @@
          -->
         <td>
           <select [ngModel]="SAMPin_BoardPin[pin]" (ngModelChange)="PinSelectedEvent(pin,$event)">
-            <option value="">none</option>
+            <option value="" [selected]='selected'>none</option>
             <ng-container *ngFor="let node of getPins()">
               <option
                 *ngIf="node.annotations[0].content== SAMPin_BoardPin[pin] || boardPin_selected[node.annotations[0].content] ==undefined || !boardPin_selected[node.annotations[0].content]">

@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, EventEmitter } from '@angular/core';
-import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs, IHistoryChangeArgs, ITextEditEventArgs, CommandManager, ContextMenuSettingsModel, UndoRedoService } from '@syncfusion/ej2-angular-diagrams';
+import { PaletteModel, SymbolPaletteComponent, NodeModel, NodeConstraints, DiagramComponent, DiagramTools, BasicShapeModel, PortVisibility, PortConstraints, ShapeStyle, ShapeStyleModel, PointPortModel, StackPanel, ISelectionChangeEventArgs, ITextEditEventArgs, CommandManager, ContextMenuSettingsModel, UndoRedoService } from '@syncfusion/ej2-angular-diagrams';
 import { ClickEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { ModalService } from '../modal.service';
 import { CustomBoardService } from '../_services/custom-board.service';
@@ -7,7 +7,7 @@ import { finalize, first } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Board } from '../_models/board';
 import { SharedVariablesService } from '../_services';
-import { addInfo_name, addInfo_componentId } from '../utils';
+import { addInfo_name, addInfo_componentId, PinType_VCC, PinType_GROUND, addInfo_pinType } from '../utils';
 import { TouchSequence } from 'selenium-webdriver';
 import { queryParams, select } from '@syncfusion/ej2-base';
 import { WidthTable } from '@syncfusion/ej2-pdf-export';
@@ -28,6 +28,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   board_name_regex = /^[A-Za-z][a-zA-Z0-9]*$/
   board_id = null
   map_table_rows_count = 10
+  selected = false
   SAM_pins = ['3',
     '4',
     '17',
@@ -134,7 +135,21 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
                 diagram.clear()
                 mythis.resetTable()
               }
-              else { }
+
+            }
+            else {
+              // let node = diagram.selectedItems.nodes[0]
+              // let oldBoardPin_id = this.SAMPin_BoardPin[sam_pin_index] || null
+              // console.log("old pin_id", oldBoardPin_id)
+              // if (oldBoardPin_id != null) {
+              //   delete this.BoardPin_SAMPin[sam_pin_index]
+              //   this.boardPin_selected[oldBoardPin_id] = false
+              // }
+              // this.SAMPin_BoardPin[sam_pin_index] = ''
+              // console.log(this.SAMPin_BoardPin[sam_pin_index])
+              // mythis.SAMPin_BoardPin[node]
+              diagram.removeNode(diagram.selectedItems.nodes[0])
+              diagram.refresh()
             }
           }
         },
@@ -156,9 +171,9 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     }
   }
   resetTable() {
-    for (let index = 0; index < this.SAM_pins.length; index++) {
-      this.SAMPin_BoardPin[index] = ""
-    }
+    Object.keys(this.SAMPin_BoardPin).forEach(key => {
+      this.SAMPin_BoardPin[key] = ""
+    })
     this.boardPin_selected = {}
     this.BoardPin_SAMPin = {}
   }
@@ -194,6 +209,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
           if (!this.board_name_regex.test(annotations[0].content)) {
             alert("invalid name")
             this.board_node.annotations[0].content = this.board_props_default.annotations[0].content
+            this.diagram.refresh()
             return;
           } else {
             this.board_props_default.annotations[0].content = annotations[0].content
@@ -295,11 +311,11 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       let nodes = this.diagram.selectedItems.nodes
       if (nodes.length == 1 && nodes[0].addInfo["type"] == "pin") {
         this.hide_pin_type = false;
-        if (nodes[0].addInfo["pin_type"] == "GROUND") {
+        if (nodes[0].addInfo[addInfo_pinType] == PinType_GROUND) {
           this.isGROUND = true;
           this.isVCC = false;
         }
-        else if (nodes[0].addInfo["pin_type"] == "VCC") {
+        else if (nodes[0].addInfo[addInfo_pinType] == PinType_VCC) {
           this.isGROUND = false;
           this.isVCC = true;
         }
@@ -318,7 +334,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   getPins() {
     return this.diagram.nodes.filter(node => {
       let type = node.addInfo["type"] || null
-      return type == "pin"
+      return type == "pin" //&& (node.addInfo[addInfo_pinType] != PinType_VCC && node.addInfo[addInfo_pinType] != PinType_GROUND)
     })
   }
 
@@ -381,8 +397,10 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   }
   initTable(pin_map: { [key: string]: string }) {
     //set pins map
+
     Object.keys(pin_map).forEach(sam_pin => {
-      this.SAMPin_BoardPin[sam_pin] = pin_map[sam_pin]
+      if (pin_map[sam_pin])
+        this.SAMPin_BoardPin[sam_pin] = pin_map[sam_pin]
       this.BoardPin_SAMPin[pin_map[sam_pin]] = sam_pin
       this.boardPin_selected[pin_map[sam_pin]] = true
     })
@@ -555,14 +573,15 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       if (node.id != "board" && node.id != "group") {
         if (this.isNodeInsideBoard(node)) {
           console.log(node.annotations[0].content, pin_ids)
-
           if (pin_ids.includes(node.annotations[0].content))
             throw Error("pins should have unique name,more than one pin have the same name")
           else
             pin_ids.push(node.annotations[0].content)
           let pin_id = node.annotations[0].content
+
           let SAM_pin = this.BoardPin_SAMPin[pin_id]
-          if (SAM_pin == null)
+          console.log("helllllllllllllllllllll1", node.addInfo["pin_type"])
+          if (SAM_pin == null) //&& (node.addInfo["pin_type"] != PinType_VCC && node.addInfo["pin_type"] != PinType_GROUND))
             throw Error("SAM pin map not assigned")
           let [x, y] = this.getPinOffset(this.board_node, node.offsetX, node.offsetY)
           ports.push({
@@ -614,20 +633,27 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   error_message = null
 
   checkAllPinMapped() {
+    console.log("nodes", this.diagram.nodes)
     console.log("board pn sele", this.boardPin_selected)
+    console.log("nodes pins lenght", this.diagram.nodes.filter(node => {
+      return node.addInfo["type"] == "pin"// && (node.addInfo[addInfo_pinType] != PinType_GROUND && node.addInfo[addInfo_pinType] != PinType_VCC)
+    }).length)
+    console.log("selected pins", Object.keys(this.boardPin_selected).filter(pin_id => {
+      return this.boardPin_selected[pin_id] == true
+    }).length)
     return Object.keys(this.boardPin_selected).filter(pin_id => {
       return this.boardPin_selected[pin_id] == true
     }).length
       == this.diagram.nodes.filter(node => {
-        return node.addInfo["type"] == "pin"
+        return node.addInfo["type"] == "pin" //&& (node.addInfo[addInfo_pinType] != PinType_GROUND && node.addInfo[addInfo_pinType] != PinType_VCC)
       }).length
   }
   getSAMMapping() {
     let map = {}
     Object.keys(this.SAMPin_BoardPin).forEach((sam_pin) => {
       let board_pin = this.SAMPin_BoardPin[sam_pin]
-      if (board_pin != "")
-        map[sam_pin] = board_pin
+      // if (board_pin != "" &&)
+      map[sam_pin] = board_pin
     })
     return map
   }

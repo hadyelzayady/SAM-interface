@@ -77,6 +77,7 @@ export class MenuBarComponent implements OnInit {
       switch (args.item.id) {
         case this.save_id:
           {
+
             this.designService.saveDesign(this.sharedData.diagram.saveDiagram(), this.file_id).subscribe(() => {
               this.setSaveStatus(true)
               alert("file edited")
