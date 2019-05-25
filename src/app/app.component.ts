@@ -56,6 +56,9 @@ export class AppComponent {
     this.router.navigate(['/login']);
     // console.log("i am logged out");
   }
+  ScrollToBottom(){
+    window.scrollTo({top:400,behavior: 'smooth',});
+  }
   ngOnInit() {
     if (localStorage.getItem('currentUser')) {
       // logged in so return true
