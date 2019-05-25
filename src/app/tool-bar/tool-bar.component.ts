@@ -14,7 +14,7 @@ import { finalize, takeUntil } from 'rxjs/operators';
 import { WebSocketService } from '../_services/web-socket.service';
 import { SimCommunicationService } from '../_services/sim-communication.service';
 import { Led } from '../_models/Led';
-import { Subject } from 'rxjs';
+import { Subject, Observable, interval } from 'rxjs';
 import { SocketEvent } from '../_models/event';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
 import { SwitchSourceNodes } from '../_models/types';
@@ -22,6 +22,7 @@ import { nextContext } from '@angular/core/src/render3';
 import { Switch } from '../_models/Switch';
 import { BoardMessage } from '../_models/local_message';
 import { ConfigureSamService } from '../_services/configure-sam.service';
+
 //TODO: if connected to vcc send 1 ,if GND send 0 in intervals
 //TODO: validate design
 @Component({
@@ -189,7 +190,10 @@ export class ToolBarComponent {
 
       node.addInfo[addInfo_simValue] = false
       node.ports.forEach(port => {
-        port.addInfo[addInfo_simValue] = false
+        let sim_value = false
+        if (port.addInfo[addInfo_pinType] == PinType_VCC)
+          sim_value = true
+        port.addInfo[addInfo_simValue] = sim_value
       })
     })
 
@@ -211,6 +215,9 @@ export class ToolBarComponent {
           node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
           node.addInfo[addinfo_IP] = reserved_comps[cache[componentId]].IP;
           node.addInfo[addinfo_port] = reserved_comps[cache[componentId]].udp_port;
+          node.annotations[0] = {
+            content: node.addInfo[addinfo_IP]
+          }
           delete cache[componentId]
         }
         else {
@@ -221,6 +228,9 @@ export class ToolBarComponent {
               node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
               node.addInfo[addinfo_IP] = reserved_comps[reserved_index].IP
               node.addInfo[addinfo_port] = reserved_comps[reserved_index].udp_port
+              node.annotations[0] = {
+                content: node.addInfo[addinfo_IP]
+              }
               found_component = true;
               reserved_index++
               break;
@@ -236,20 +246,26 @@ export class ToolBarComponent {
         //console.log("in for each:", connected_components_id_index)
       }
     });
-
+    this.sharedData.diagram.dataBind()
     this.sharedData.connected_component_id_index = connected_components_id_index
     this.sharedData.nodeid_index = nodeid_index
   }
 
   switch_source_nodes: SwitchSourceNodes
 
+  VCC_pins = []
+  GND_pins = []
   PrepareDiagramForOutput() {
     // //console.log("table:", this.sharedData.diagram.node)
     this.switch_source_nodes = {} //contains nodes indecies that outputs to the switch
     this.sharedData.pin_inputs_bit_index = {}
     this.sharedData.pin_inputs_bit_values = {}
     let id = 0;
+    this.VCC_pins = []
+    this.GND_pins = []
     //console.log("nodes index", this.sharedData.nodeid_index)
+    //VCC event
+
     this.sharedData.diagram.connectors.forEach((connector) => {
       //console.log("connector target ndoe index", connector)
       let source_node_index = this.sharedData.nodeid_index[connector.sourceID]
@@ -265,8 +281,18 @@ export class ToolBarComponent {
 
       //console.log("input bit value", this.sharedData.pin_inputs_bit_values)
       // if()
-      if (target_node.addInfo[addInfo_name] == Led.name) {
+      console.log("source port", source_node.ports[source_port_index])
+      if (source_node.ports[source_port_index].addInfo[addInfo_pinType] == PinType_VCC) {
+        console.log("set vc")
+        this.VCC_pins.push([source_port_index, source_node_index, source_node_index, source_port_index])
+      }
+      if (source_node.ports[source_port_index].addInfo[addInfo_pinType] == PinType_GROUND) {
+        console.log("set vc")
+        this.GND_pins.push([source_port_index, source_node_index, source_node_index, source_port_index])
+      }
 
+      if (target_node.addInfo[addInfo_name] == Led.name) {
+        console.log("led add output eetn", source_node_index, source_port_index)
         this.sharedData.addOutputEvent(source_port_index, source_node_index, target_port_index, target_node_index).pipe(takeUntil(this.unsubscribe)).subscribe((output_event) => {
           //console.log("subscribe event led target id", output_event.target_port_index, output_event.target_node_index)
           let target_node = this.sharedData.diagram.nodes[output_event.target_node_index]//target node is led node
@@ -318,8 +344,34 @@ export class ToolBarComponent {
       }
     })
     //console.log("switch sources target,", this.switch_source_nodes)
-    //console.log("port value table,", this.sharedData.port_value_table)
+    console.log("port value table,", this.sharedData.port_value_table)
+
     this.setSwitchSimConfigs()
+
+    interval(8000).pipe(takeUntil(this.unsubscribe))
+      .subscribe(() => {
+        console.log("time", this.VCC_pins)
+        this.VCC_pins.forEach(pin => {
+          // console.log("port_index", port_index)
+          // console.log("component_index", component_index)
+          // console.log("port value table", this.sharedData.port_value_table)
+          // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
+          //console.log("received change port", port_index)
+          this.sharedData.changePortValue(true, pin[0], pin[1], pin[2], pin[3])
+        })
+      });
+    interval(8000).pipe(takeUntil(this.unsubscribe))
+      .subscribe(() => {
+        console.log("time", this.VCC_pins)
+        this.GND_pins.forEach(pin => {
+          // console.log("port_index", port_index)
+          // console.log("component_index", component_index)
+          // console.log("port value table", this.sharedData.port_value_table)
+          // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
+          //console.log("received change port", port_index)
+          this.sharedData.changePortValue(false, pin[0], pin[1], pin[2], pin[3])
+        })
+      });
     // this.sharedData.ports_values.subscribe((val) => {
     //   //console.log("event in sim to chag eled")
     //   this.sharedData.diagram.nodes[0].shape = {
@@ -486,7 +538,6 @@ export class ToolBarComponent {
               this.sharedData.ip = data["ip"]
               this.sharedData.port = data["port"]
               console.log(this.sharedData.port)
-              let reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
               this.parsed = true
               //reserve
               this.designService.getReservedComponents(this.file_id).pipe(finalize(() => {
@@ -495,6 +546,10 @@ export class ToolBarComponent {
                 this.reserved = true
                 //config
                 try {
+                  let count = this.utils.getDesignHWComponentsCount(this.sharedData.diagram)
+                  if (reserved_components.length != count) {
+                    throw Error("re-reserve")
+                  }
                   this.setComponentsReserveConfigs(reserved_components)
                   this.configured = true
                   this.error_config = false
@@ -704,16 +759,17 @@ export class ToolBarComponent {
       is_pin_O[connector.targetID] = is_pin_O[connector.targetID] || { [connector.targetPortID]: false }
       is_pin_O[connector.sourceID] = is_pin_O[connector.sourceID] || { [connector.sourceID]: true }
 
-      if (is_pin_O[connector.targetID][connector.targetPortID] || !is_pin_O[connector.sourceID][connector.sourcePortID]) {
-        throw Error("output pin can not take input")
-      }
+      // if (is_pin_O[connector.targetID][connector.targetPortID] || !is_pin_O[connector.sourceID][connector.sourcePortID]) {
+      //   throw Error("output pin can not take input")
+      // }
       // end valdate no output pin has input 
       //validate no ground connected to VCC
-      let source_port = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[connector.sourceID]].ports.find(port => { return port.id == connector.sourcePortID })
-      let target_port = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[connector.targetPortID]].ports.find(port => { return port.id == connector.targetPortID })
-      if ((source_port.addInfo[addInfo_pinType] == PinType_VCC && target_port.addInfo[addInfo_pinType] == PinType_GROUND) || target_port.addInfo[addInfo_pinType] == PinType_VCC && source_port.addInfo[addInfo_pinType] == PinType_GROUND) {
-        throw Error("VCC is connected to Ground!")
-      }
+      // console.log(this.sharedData.diagram.nodes[this.sharedData.nodeid_index[connector.sourceID]], this.sharedData.nodeid_index[connector.sourceID])
+      // let source_port = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[connector.sourceID]].ports.find(port => { return port.id == connector.sourcePortID })
+      // let target_port = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[connector.targetPortID]].ports.find(port => { return port.id == connector.targetPortID })
+      // if ((source_port.addInfo[addInfo_pinType] == PinType_VCC && target_port.addInfo[addInfo_pinType] == PinType_GROUND) || target_port.addInfo[addInfo_pinType] == PinType_VCC && source_port.addInfo[addInfo_pinType] == PinType_GROUND) {
+      //   throw Error("VCC is connected to Ground!")
+      // }
       //end validate no ground connected to VCC
     }
     //validate leds
@@ -752,20 +808,23 @@ export class ToolBarComponent {
       // let port_index = source_node.ports.findIndex(port => {
       //   return port.id == "" + msg.port_id
       // })
-      console.log("gloab map", this.utils.globalPinId_boardid_portid)
-      let mapping = this.utils.globalPinId_boardid_portid[msg.pin_number]
-      //console.log("mapping, msg value", mapping, msg.value)
-      let component_index = mapping.component_index
-      let port_index = mapping.port_index
-      if (port_index > -1) {
+      msg.forEach(([pin_number, value]) => {
 
-        // console.log("port_index", port_index)
-        // console.log("component_index", component_index)
-        // console.log("port value table", this.sharedData.port_value_table)
-        // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
-        //console.log("received change port", port_index)
-        this.sharedData.changePortValue(msg.value, port_index, component_index, component_index, port_index)
-      }
+        console.log("gloab map", this.utils.globalPinId_boardid_portid)
+        let mapping = this.utils.globalPinId_boardid_portid[pin_number]
+        //console.log("mapping, msg value", mapping, msg.value)
+        let component_index = mapping.component_index
+        let port_index = mapping.port_index
+        if (port_index > -1) {
+
+          // console.log("port_index", port_index)
+          // console.log("component_index", component_index)
+          // console.log("port value table", this.sharedData.port_value_table)
+          // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
+          //console.log("received change port", port_index)
+          this.sharedData.changePortValue(value, port_index, component_index, component_index, port_index)
+        }
+      })
     })
     this.LocalCommService.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
 

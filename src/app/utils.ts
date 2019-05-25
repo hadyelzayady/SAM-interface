@@ -14,7 +14,7 @@ export const addInfo_type = "type";
 export const addInfo_reserved = "reserved";
 export const addInfo_connectedComponentId = "connectedComponentId";
 export const addInfo_simValue = "sim_value";
-export const addInfo_pinType = "sim_value";
+export const addInfo_pinType = "pin_type";
 export enum ComponentType { Hardware, Software }
 export enum SwitchValue { ON, OFF };
 export const PinType_GROUND = "GROUND"

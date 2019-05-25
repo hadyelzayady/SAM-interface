@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { filter, map, flatMap, timestamp } from 'rxjs/operators';
 import { Board } from '../_models/board';
 import { NodeModel, PortModel, PortVisibility, PortConstraints } from '@syncfusion/ej2-angular-diagrams';
-import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType, setImageSize, addInfo_simValue } from '../utils';
+import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType, setImageSize, addInfo_simValue, addInfo_pinType, PinType_VCC } from '../utils';
 @Injectable()
 export class DesignService {
     getReservedComponents(file_id: number) {
@@ -75,11 +75,11 @@ export class DesignService {
                 if (board.ports.length != 0) {
                     node.ports = board.ports
                     node.ports.forEach(port => {
+                        console.log("port addino", port.addInfo)
                         port.constraints = PortConstraints.InConnect | PortConstraints.OutConnect;
                         port.visibility = PortVisibility.Visible;
-                        port.addInfo = {
-                            [addInfo_simValue]: false
-                        }
+                        port.addInfo = port.addInfo || {}
+                        port.addInfo[addInfo_simValue] = port.addInfo[addInfo_pinType] == PinType_VCC ? true : false
                     })
                 }
 

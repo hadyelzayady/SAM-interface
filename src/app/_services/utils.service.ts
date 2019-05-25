@@ -10,6 +10,11 @@ import { addInfo_componentId, addInfo_type, ComponentType, addInfo_connectedComp
   providedIn: 'root'
 })
 export class UtilsService {
+  getDesignHWComponentsCount(diagram: DiagramComponent) {
+    return diagram.nodes.filter(component => {
+      return component.addInfo[addInfo_type] == ComponentType.Hardware
+    }).length
+  }
 
   constructor(private sharedData: SharedVariablesService) { }
   getConnector(): NodeModel | ConnectorModel {

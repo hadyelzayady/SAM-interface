@@ -46,9 +46,10 @@ export class LocalWebSocketService {
   public close(): void {
     this.socket.close()
   }
-  public onMessage(): Observable<SimValue> {
-    return new Observable<SimValue>(observer => {
-      this.socket.on('message', (data: SimValue) => observer.next(data));
+  public onMessage(): Observable<any> {
+    console.log("received")
+    return new Observable(observer => {
+      this.socket.on('message', (data) => observer.next(data));
     });
   }
 

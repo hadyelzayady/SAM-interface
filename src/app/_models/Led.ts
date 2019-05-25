@@ -6,6 +6,7 @@ import { led_on_source, led_off_source } from './image_sources';
 
 export class Led extends Board {
     static simBehaviour(value: boolean, led_node: NodeModel) {
+        console.log("led sim behavur", value)
         let source;
         if (value)
             source = led_on_source
