@@ -8,7 +8,7 @@ import { ToolbarItem, valueAccessor } from '@syncfusion/ej2-grids';
 import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
 import { DiagramApiService } from '../_services/diagram-api.service';
 import { ReserveComponentsResponse, OutputEvent } from '../_models';
-import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue } from '../utils';
+import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue, addInfo_pinType, PinType_VCC, PinType_GROUND } from '../utils';
 import { ModalService } from '../modal.service';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { WebSocketService } from '../_services/web-socket.service';
@@ -42,6 +42,8 @@ export class ToolBarComponent {
   parsed = false;
   reserved = false;
   configured = false;
+  validated = false
+  error_validate = false
   error_parsed = false;
   error_reserved = false;
   error_config = false;
@@ -495,25 +497,36 @@ export class ToolBarComponent {
                 try {
                   this.setComponentsReserveConfigs(reserved_components)
                   this.configured = true
+                  this.error_config = false
                   //connections
                   //set nodeid_index as it is a dependancy for getconnection,prepare diagram
                   this.setNodeIdIndex()
-                  let connections = this.utils.getDesignConnections()
-                  this.designService.sendDesignConnections(connections, this.file_id)
-                    .subscribe(data => {
-                      this.send_connections = true
-                      //prepare sim env
-                      this.startSockets()
-                      //TODO: wait for start simulaion in websocket
-                    }, error => {
-                      this.error_send_connections = true
-                      this.send_connections = false;
-                    });
+                  try {
+                    this.validate()
+                    this.validated = true
+                    this.error_validate = false
+                    let connections = this.utils.getDesignConnections()
+                    this.designService.sendDesignConnections(connections, this.file_id)
+                      .subscribe(data => {
+                        this.send_connections = true
+                        //prepare sim env
+                        this.startSockets()
+                        //TODO: wait for start simulaion in websocket
+                      }, error => {
+                        this.error_send_connections = true
+                        this.send_connections = false;
+                      });
+                  } catch (error) {
+                    console.log('tr', error)
+                    this.validated = false
+                    this.error_validate = true
+
+                  }
                 } catch (error) {
-                  //console.log('tr', error)
                   this.configured = false
                   this.error_config = true;
                 }
+
               }, error => {
                 this.reserved = false;
                 this.error_reserved = true
@@ -669,6 +682,56 @@ export class ToolBarComponent {
       }
     }
 
+  }
+  validate() {
+    let is_pin_O: { [board_id: string]: { [pin_id: string]: boolean } } = {} // this pin is output true ,input false
+    let pin_connector: { [board_id: string]: { [pin_id: string]: number } } = {}// number is connector index
+    let i = 0
+    for (const connector of this.sharedData.diagram.connectors) {
+      //init some data for later use
+      pin_connector[connector.sourceID] = pin_connector[connector.sourceID] || {}
+      pin_connector[connector.sourceID][connector.sourcePortID] = i
+      pin_connector[connector.targetID] = pin_connector[connector.targetID] || {}
+      pin_connector[connector.targetID][connector.targetPortID] = i
+      i++
+      //
+      if (connector.sourceID == "" || connector.targetID == "")
+        throw Error("float wire")
+      //no connector target is connected to pin that has connector source == no output pin has input
+      //=no two output pins connected together
+      let board_id = connector.sourceID
+      //if new target is in is_pin_O with true value ,or new source is in is_pin_O with false value
+      is_pin_O[connector.targetID] = is_pin_O[connector.targetID] || { [connector.targetPortID]: false }
+      is_pin_O[connector.sourceID] = is_pin_O[connector.sourceID] || { [connector.sourceID]: true }
+
+      if (is_pin_O[connector.targetID][connector.targetPortID] || !is_pin_O[connector.sourceID][connector.sourcePortID]) {
+        throw Error("output pin can not take input")
+      }
+      // end valdate no output pin has input 
+      //validate no ground connected to VCC
+      let source_port = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[connector.sourceID]].ports.find(port => { return port.id == connector.sourcePortID })
+      let target_port = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[connector.targetPortID]].ports.find(port => { return port.id == connector.targetPortID })
+      if ((source_port.addInfo[addInfo_pinType] == PinType_VCC && target_port.addInfo[addInfo_pinType] == PinType_GROUND) || target_port.addInfo[addInfo_pinType] == PinType_VCC && source_port.addInfo[addInfo_pinType] == PinType_GROUND) {
+        throw Error("VCC is connected to Ground!")
+      }
+      //end validate no ground connected to VCC
+    }
+    //validate leds
+    // let leds = this.sharedData.diagram.nodes.filter(node => {
+    //   return node.addInfo[addInfo_name] == Led.name
+    // })
+    // for (const led_node of leds) {
+    //   let pin1_connector = this.sharedData.diagram.connectors[pin_connector[led_node.id][led_node.ports[0].id]]
+    //   let pin2_connector = this.sharedData.diagram.connectors[pin_connector[led_node.id][led_node.ports[1].id]]
+    //   let pin1_target_port = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[pin1_connector.targetID]].ports.find(port => { return port.id == pin1_connector.targetPortID })
+    //   let pin2_target_port = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[pin2_connector.targetID]].ports.find(port => { return port.id == pin2_connector.targetPortID })
+    //   if (pin1_target_port.addInfo[addInfo_pinType] ==  ) {
+
+    //   }
+    // }
+    //end validate leds
+
+    return true
   }
   startSockets() {
     this.LocalCommService.initSocket()
