@@ -3,7 +3,7 @@ import { ConnectorModel, ConnectorConstraints, NodeModel } from '@syncfusion/ej2
 import { SharedVariablesService } from './shared-variables.service';
 import { DiagramComponent, DiagramAllModule } from '@syncfusion/ej2-angular-diagrams';
 import { Arduino } from '../_models/arduino';
-import { addInfo_componentId, addInfo_type, ComponentType, addInfo_connectedComponentId, addinfo_port, addinfo_IP, addInfo_pinType, PinType_GROUND, PinType_VCC } from '../utils';
+import { addInfo_componentId, addInfo_type, ComponentType, addInfo_connectedComponentId, addinfo_port, addinfo_IP, addInfo_pinType, PinType_GROUND, PinType_VCC, addInfo_isBinded } from '../utils';
 
 
 @Injectable({
@@ -92,6 +92,7 @@ export class UtilsService {
   getDesignComponents(diagram: DiagramComponent) {
     let components = {}
     diagram.nodes.forEach(function (node) {
+      node.addInfo[addInfo_isBinded] = false// to remove old binded 
       if (node.addInfo[addInfo_type] == ComponentType.Hardware) {
         if (node.addInfo[addInfo_componentId] in components)
           components[node.addInfo[addInfo_componentId]] += 1

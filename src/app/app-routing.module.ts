@@ -16,9 +16,9 @@ const routes: Routes = [
   { path: '', component: HomeComponent, canActivate: [AuthGuard] },
   // { path: '', component: ConfigureSamComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'ConfigureSamComponent', component: ConfigureSamComponent },
+  { path: 'ConfigureSamComponent', component: ConfigureSamComponent, canActivate: [AuthGuard] },
   // { path: 'homex', component: HomeComponent },
-  { path: 'Dashboard', component: DashboardComponent },
+  { path: 'Dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'register', component: RegisterComponent },
   { path: 'design/:id', component: DesignComponent, canActivate: [AuthGuard], canDeactivate: [CanDeactivateGuard] },
 

@@ -11,12 +11,12 @@ import { AuthenticationService, SharedVariablesService } from './_services';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  logedin:boolean;
-  
-  constructor(private chatService: SimCommunicationService,private sharedData: SharedVariablesService,private router: Router,   private authenticationService: AuthenticationService,routingState: RoutingStateService, route: Router) {
-    this.sharedData.currentloginstatus.subscribe(data=>{
-      this.logedin=data;
-      console.log(data);
+  logedin: boolean;
+
+  constructor(private chatService: SimCommunicationService, private sharedData: SharedVariablesService, private router: Router, private authenticationService: AuthenticationService, routingState: RoutingStateService, route: Router) {
+    this.sharedData.currentloginstatus.subscribe(data => {
+      this.logedin = data;
+      // console.log(data);
     })
     route.events
       .pipe(
@@ -50,20 +50,20 @@ export class AppComponent {
         }
       )
   }
-  logout(){
+  logout() {
     this.authenticationService.logout();
-    this.logedin=false;
+    this.logedin = false;
     this.router.navigate(['/login']);
     // console.log("i am logged out");
   }
-  ScrollToBottom(){
-    window.scrollTo({top:400,behavior: 'smooth',});
+  ScrollToBottom() {
+    window.scrollTo({ top: 400, behavior: 'smooth', });
   }
   ngOnInit() {
     if (localStorage.getItem('currentUser')) {
       // logged in so return true
-      this.logedin=true;
-    // console.log(this.logedin);
+      this.logedin = true;
+      // console.log(this.logedin);
     }
   }
 }

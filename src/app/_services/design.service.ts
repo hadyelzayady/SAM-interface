@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { filter, map, flatMap, timestamp } from 'rxjs/operators';
 import { Board } from '../_models/board';
 import { NodeModel, PortModel, PortVisibility, PortConstraints } from '@syncfusion/ej2-angular-diagrams';
-import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType, setImageSize, addInfo_simValue, addInfo_pinType, PinType_VCC } from '../utils';
+import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType, setImageSize, addInfo_simValue, addInfo_pinType, PinType_VCC, UNDEFINED, PinType_GROUND } from '../utils';
 @Injectable()
 export class DesignService {
     getReservedComponents(file_id: number) {
@@ -71,15 +71,20 @@ export class DesignService {
                 node.addInfo = { [addInfo_name]: `${board.name}`, [addInfo_componentId]: board.id, [addInfo_reserved]: false, [addInfo_type]: ComponentType.Hardware }
                 node.shape = { type: "Image", source: `${this.sharedData.imageUrl}${board.id}/image` }
                 node.constraints = nodeDesignConstraints
-                console.log("bar dports", board.ports)
+                // console.log("bar dports", board.ports)
                 if (board.ports.length != 0) {
                     node.ports = board.ports
                     node.ports.forEach(port => {
-                        console.log("port addino", port.addInfo)
+                        // console.log("port addino", port.addInfo)
                         port.constraints = PortConstraints.InConnect | PortConstraints.OutConnect;
                         port.visibility = PortVisibility.Visible;
                         port.addInfo = port.addInfo || {}
-                        port.addInfo[addInfo_simValue] = port.addInfo[addInfo_pinType] == PinType_VCC ? true : false
+                        let sim_value = UNDEFINED
+                        if (port.addInfo[addInfo_pinType] == PinType_VCC)
+                            sim_value = '1'
+                        else if (port.addInfo[addInfo_pinType] == PinType_GROUND)
+                            sim_value = '0'
+                        port.addInfo[addInfo_simValue] = sim_value
                     })
                 }
 

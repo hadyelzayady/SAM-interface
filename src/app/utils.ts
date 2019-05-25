@@ -1,6 +1,6 @@
 import { ConnectorConstraints, NodeConstraints, NodeModel } from '@syncfusion/ej2-angular-diagrams';
 
-export const connectorDesignConstraints = ConnectorConstraints.Default | ConnectorConstraints.Bridging;
+export const connectorDesignConstraints = ConnectorConstraints.Default | ConnectorConstraints.Bridging | ConnectorConstraints.BridgeObstacle;
 export const connectorSimConstraints = ConnectorConstraints.None
 
 export const nodeDesignConstraints = NodeConstraints.Default & ~NodeConstraints.InConnect & ~NodeConstraints.OutConnect;
@@ -16,6 +16,7 @@ export const addInfo_connectedComponentId = "connectedComponentId";
 export const addInfo_simValue = "sim_value";
 export const addInfo_pinType = "pin_type";
 export const addInfo_isBinded = "isBinded";
+export const UNDEFINED = '2'
 export enum ComponentType { Hardware, Software }
 export enum SwitchValue { ON, OFF };
 export const PinType_GROUND = "GROUND"

@@ -8,7 +8,7 @@ import { ToolbarItem, valueAccessor } from '@syncfusion/ej2-grids';
 import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
 import { DiagramApiService } from '../_services/diagram-api.service';
 import { ReserveComponentsResponse, OutputEvent } from '../_models';
-import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue, addInfo_pinType, PinType_VCC, PinType_GROUND, addInfo_isBinded, connectorDesignConstraints } from '../utils';
+import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue, addInfo_pinType, PinType_VCC, PinType_GROUND, addInfo_isBinded, connectorDesignConstraints, UNDEFINED } from '../utils';
 import { ModalService } from '../modal.service';
 import { finalize, takeUntil, startWith } from 'rxjs/operators';
 import { WebSocketService } from '../_services/web-socket.service';
@@ -190,9 +190,11 @@ export class ToolBarComponent {
 
       node.addInfo[addInfo_simValue] = false
       node.ports.forEach(port => {
-        let sim_value = false
+        let sim_value = UNDEFINED
         if (port.addInfo[addInfo_pinType] == PinType_VCC)
-          sim_value = true
+          sim_value = '1'
+        else if (port.addInfo[addInfo_pinType] == PinType_GROUND)
+          sim_value = '0'
         port.addInfo[addInfo_simValue] = sim_value
       })
     })
@@ -281,13 +283,13 @@ export class ToolBarComponent {
 
       //console.log("input bit value", this.sharedData.pin_inputs_bit_values)
       // if()
-      console.log("source port", source_node.ports[source_port_index])
+      // console.log("source port", source_node.ports[source_port_index])
       if (source_node.ports[source_port_index].addInfo[addInfo_pinType] == PinType_VCC) {
-        console.log("set vc")
+        // console.log("set vc")
         this.VCC_pins.push([source_port_index, source_node_index, source_node_index, source_port_index])
       }
       if (source_node.ports[source_port_index].addInfo[addInfo_pinType] == PinType_GROUND) {
-        console.log("set GND")
+        // console.log("set GND")
         this.GND_pins.push([source_port_index, source_node_index, source_node_index, source_port_index])
       }
 
@@ -352,7 +354,7 @@ export class ToolBarComponent {
 
       interval(8000).pipe(takeUntil(this.unsubscribe), startWith(0))
         .subscribe(() => {
-          console.log("time", this.VCC_pins)
+          // console.log("time", this.VCC_pins)
           this.VCC_pins.forEach(pin => {
             // console.log("port_index", port_index)
             // console.log("component_index", component_index)
@@ -367,7 +369,7 @@ export class ToolBarComponent {
 
       interval(8000).pipe(takeUntil(this.unsubscribe), startWith(0))
         .subscribe(() => {
-          console.log("time", this.VCC_pins)
+          // // console.log("time", this.VCC_pins)
           this.GND_pins.forEach(pin => {
             // console.log("port_index", port_index)
             // console.log("component_index", component_index)
@@ -508,7 +510,7 @@ export class ToolBarComponent {
     for (const node of this.sharedData.diagram.nodes) {
       if (node.addInfo[addInfo_type] == ComponentType.Hardware) {
         if (node.addInfo[addInfo_isBinded] == false)
-          return false
+          return true //TODO: should be false but waiting till binding works fine
       }
 
     }
@@ -552,7 +554,7 @@ export class ToolBarComponent {
             try {
               this.sharedData.ip = data["ip"]
               this.sharedData.port = data["port"]
-              console.log(this.sharedData.port)
+              // console.log(this.sharedData.port)
               this.parsed = true
               //reserve
               this.designService.getReservedComponents(this.file_id).pipe(finalize(() => {
@@ -563,6 +565,7 @@ export class ToolBarComponent {
                 try {
                   let count = this.utils.getDesignHWComponentsCount(this.sharedData.diagram)
                   let isBinded = this.isReservedBinded()
+                  // // console.log("simulate", isBinded, count, reserved_components)
                   if (reserved_components.length != count || !isBinded) {
                     throw Error("re-reserve")
                   }
@@ -851,7 +854,7 @@ export class ToolBarComponent {
     })
     this.LocalCommService.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
 
-      alert("local socket disconnected")
+      // alert("local socket disconnected")
     })
 
     //socket with server to start and end sim

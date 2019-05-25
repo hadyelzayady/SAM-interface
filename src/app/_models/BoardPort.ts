@@ -1,6 +1,6 @@
 import { PointPortModel, PortVisibility, PortConstraints, PointModel } from '@syncfusion/ej2-angular-diagrams';
 import { OffsetPosition } from '@syncfusion/ej2-popups';
-import { addInfo_simValue } from '../utils';
+import { addInfo_simValue, UNDEFINED } from '../utils';
 
 export class BoardPort implements PointPortModel {
     id: string;
@@ -33,7 +33,7 @@ export class BoardPort implements PointPortModel {
             visibility: this.visibility,
             constraints: this.constraints,
             addInfo: {
-                [addInfo_simValue]: false
+                [addInfo_simValue]: UNDEFINED
             }
         }
 
