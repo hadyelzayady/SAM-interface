@@ -2,3 +2,23 @@
    padding: 0 !important;
    margin: 0 !important;
 }
+.logo{
+height: 50px;
+width: 10%;
+}
+.menuitem{
+   padding: 0% 2%;
+}
+.menucontainer{
+   background-color: antiquewhite;
+}
+.menubarLoginBtn{
+   float: right;
+   
+}
+.btns{
+   margin: 1%;
+}
+.accountbtns{
+   float: right;
+}

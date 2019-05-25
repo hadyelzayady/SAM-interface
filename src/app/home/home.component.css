@@ -1,0 +1,42 @@
+.bgimg1{
+    background-image: url('../../PCB_Photos/IMG_7311.JPG');
+    height: 200px;
+    background-position: center;
+    background-size: cover;
+}
+.bgimg2{
+    background-image: url('../../PCB_Photos/IMG_7309.JPG');
+    height: 200px;
+    background-position: center;
+    background-size: cover;
+}
+.bgimg3{
+    background-image: url('../../PCB_Photos/IMG_7376.JPG');
+    height: 200px;
+    background-position: center;
+    background-size: cover;
+}
+.bgcontainer{
+    background-image: url('../../PCB_Photos/IMG_7303.JPG');
+    height: 100%;
+    background-position: center;
+    background-size: cover;
+}
+.title{
+    color: white;
+    padding-bottom: 7%;
+    padding-top: 1%;
+    text-align: center;
+    font-size: 500%;
+}
+.titleofcard{
+    text-align: center;
+    margin-top: 5%;
+}
+.descriptionofcard{
+    text-align: center;
+   
+}
+.btnofcard{
+    text-align: center;
+}

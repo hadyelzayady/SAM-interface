@@ -61,8 +61,8 @@ export class DesignService {
         return this.http.get(`${this.baseurl}/components`).pipe(map(response => {
             let components = response as Components;
             let i = 0;
-            console.log(response)
-            console.log("components", components)
+            // console.log(response)
+            // console.log("components", components)
             let builtin_boards = [] as NodeModel[]
             let user_boards = [] as NodeModel[]
             components.boards.forEach(board => {

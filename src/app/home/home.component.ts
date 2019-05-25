@@ -37,6 +37,7 @@ export class HomeComponent implements OnInit {
   customBoardDesign() {
     this.router.navigateByUrl('/customboard');
   }
+  
   deleteDesignFile(file_id: number, filename: string) {
     if (confirm("if you delete this file ,you will not be able to restore again,sure about delete?")) {
       this.designService.deleteDesignFile(file_id).subscribe((data) => {
@@ -69,6 +70,7 @@ export class HomeComponent implements OnInit {
             // this.router.navigate(['design', file.id])
             this.loadUserDesigns()
             this.alertService.success(`file ${filename} created`)
+            this.router.navigate([`/design/${file.id}`])
           }, error => {
             this.alertService.error(`Sorry File ${filename} couldn't be created`)
           });

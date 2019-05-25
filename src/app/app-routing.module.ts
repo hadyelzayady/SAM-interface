@@ -6,6 +6,7 @@ import { RegisterComponent } from './register/register.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 import { DesignComponent } from './design/design.component';
 import { CustomBoardComponent } from './custom-board/custom-board.component';
 import { CanDeactivateGuard } from './can-deactivate/can-deactivate.guard';
@@ -16,7 +17,8 @@ const routes: Routes = [
   // { path: '', component: ConfigureSamComponent },
   { path: 'login', component: LoginComponent },
   { path: 'ConfigureSamComponent', component: ConfigureSamComponent },
-  { path: 'homex', component: HomeComponent },
+  // { path: 'homex', component: HomeComponent },
+  { path: 'Dashboard', component: DashboardComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'design/:id', component: DesignComponent, canActivate: [AuthGuard], canDeactivate: [CanDeactivateGuard] },
 
