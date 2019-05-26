@@ -189,9 +189,8 @@ export class DesignComponent extends CanDeactivateComponent {
               node.addInfo[addInfo_simValue] = false
               node.addInfo[addInfo_isBinded] = false
               node.addInfo[addInfo_reserved] = false
+              node.annotations[0].content = node.addInfo[addInfo_name]
               console.log(node.addInfo[addInfo_componentId])
-              node.annotations = [{}]
-              node.addInfo = { [addInfo_name]: node.addInfo[addInfo_name], [addInfo_componentId]: node.id, [addInfo_reserved]: false, [addInfo_type]: ComponentType.Hardware }
               // console.log("bar dports", board.ports)
               node.ports.forEach(port => {
                 // console.log("port addino", port.addInfo)
@@ -202,20 +201,10 @@ export class DesignComponent extends CanDeactivateComponent {
                   sim_value = '0'
                 port.addInfo[addInfo_simValue] = sim_value
               })
-              node.annotations = [{
-                content: node.addInfo[addInfo_name],
-                style: {
-                  color: 'black',
-                  bold: true,
-                  italic: true,
-                  fontSize: 20,
-                  fontFamily: 'TimesNewRoman'
-                }
-                // constraints: AnnotationConstraints.ReadOnly
-              }]
+
             })
             console.log("DDDDDDDDDDDDDDD")
-
+            this.diagram.dataBind()
             this.diagram.refreshDiagram()
             console.log("HHHHHHHHHHHHHHHHHH")
 

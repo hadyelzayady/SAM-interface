@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, Inject, ViewChild, AfterViewInit, Input } from '@angular/core';
+import { Component, ViewEncapsulation, Inject, ViewChild, AfterViewInit, Input, EventEmitter } from '@angular/core';
 import { cssClass } from '@syncfusion/ej2-lists';
 import { AppComponent } from '../app.component';
 import { SharedVariablesService, UtilsService, DesignService } from '../_services';
@@ -8,9 +8,9 @@ import { ToolbarItem, valueAccessor } from '@syncfusion/ej2-grids';
 import { InputEventArgs, UploadingEventArgs } from '@syncfusion/ej2-inputs';
 import { DiagramApiService } from '../_services/diagram-api.service';
 import { ReserveComponentsResponse, OutputEvent } from '../_models';
-import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue, addInfo_pinType, PinType_VCC, PinType_GROUND, addInfo_isBinded, connectorDesignConstraints, UNDEFINED } from '../utils';
+import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue, addInfo_pinType, PinType_VCC, PinType_GROUND, addInfo_isBinded, connectorDesignConstraints, UNDEFINED, addinfo_BindedPort } from '../utils';
 import { ModalService } from '../modal.service';
-import { finalize, takeUntil, startWith } from 'rxjs/operators';
+import { finalize, takeUntil, startWith, first } from 'rxjs/operators';
 import { WebSocketService } from '../_services/web-socket.service';
 import { SimCommunicationService } from '../_services/sim-communication.service';
 import { Led } from '../_models/Led';
@@ -228,7 +228,7 @@ export class ToolBarComponent {
               node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
               node.addInfo[addinfo_IP] = reserved_comps[reserved_index].IP
               node.addInfo[addinfo_port] = reserved_comps[reserved_index].udp_port
-              node.annotations[0].content += "_" + node.addInfo[addinfo_IP]
+              node.annotations[0].content = node.addInfo[addInfo_componentId] + "_" + node.addInfo[addinfo_IP]
               found_component = true;
               reserved_index++
               break;
@@ -642,6 +642,7 @@ export class ToolBarComponent {
           // this.status = "components reserved "
           this.reserved = true
           this.error_reserved = false
+          console.log("reserveing", reserved_comps)
           try {
             this.simComm.initSocket(this.file_id, "bind")
             // this.simComm.bindBoards(this.file_id)
@@ -665,43 +666,82 @@ export class ToolBarComponent {
 
             this.simComm.onEvent(SocketEvent.BIND_SUCCESS).subscribe(() => {
               // console.log("bind succkes")
-              this.error_binded = false
-              this.binded = true
+
               try {
                 // console.log("after bind")
+
                 this.configSamService.unBindAll().subscribe(data => {
                   if (data != "ok") {
                     this.simComm.close()
-
+                    this.binded = false
+                    this.error_binded = true
                     this.designService.unreserve(this.file_id).subscribe((data) => {
                       alert(data)
                     }, error => {
-                      alert(error)
+
                     })
                   }
                 })
+
                 reserved_comps.forEach(comp => {
                   // console.log("usb ip port", comp.usb_ip_port)
-                  this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port).subscribe(data => {
+                  let binded_count = 0
+                  console.log("FUCKCKKCCCK", comp)
+                  this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port, comp).subscribe(data => {
+                    console.log("send bind io ", data)
                     if (data != "ok") {
                       this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].addInfo[addInfo_isBinded] = false
                       alert("can not bind to local port")
                     } else {
-                      this.configSamService.checkPort().subscribe(HW_ports => {
-                        this.binded = true
+                      let allBindedEvent = new EventEmitter()
+                      allBindedEvent.pipe(first()).subscribe(() => {
                         this.error_binded = false
-                        this.sharedData
-                        this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].addInfo[addInfo_isBinded] = true
-                        this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].annotations[0].content += "_" + HW_ports[0]
-                      }, error => {
-                        this.binded = false
+                        this.binded = true
+                        this.setComponentsReserveConfigs(reserved_comps)
+                        allBindedEvent.unsubscribe()
+                      })
+                      let NoBindedEvent = new EventEmitter()
+                      NoBindedEvent.pipe(first()).subscribe(() => {
                         this.error_binded = true
+                        this.binded = false
+                        this.designService.unreserve(this.file_id).subscribe((data) => {
+                        }, error => {
+
+                        })
+                        NoBindedEvent.unsubscribe()
+                      })
+                      this.configSamService.checkPort().subscribe(HW_ports => {
+                        console.log(HW_ports)
+
+                        let board = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]]
+                        board.addInfo[addInfo_isBinded] = true
+                        this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].annotations[0].content = board.id + "_" + HW_ports[0]
+                        binded_count++
+                        if (binded_count == reserved_comps.length) {
+                          allBindedEvent.emit()
+
+                        }
+                      }, error => {
+                        console.log(error)
+                        this.error_binded = false
+                        this.binded = true
+
                         alert("can not bind")
                       })
                     }
+                  }, error => {
+                    //error in sendbindipport
+                    console.log("error i  sendip poirt", error)
+                    this.error_binded = true,
+                      this.binded = false
+                    this.designService.unreserve(this.file_id).subscribe((data) => {
+                    }, error => {
+
+                    })
+
                   })
+
                 });
-                this.setComponentsReserveConfigs(reserved_comps)
 
                 this.configured = true
                 this.error_config = false
@@ -718,6 +758,7 @@ export class ToolBarComponent {
             //error binding
           }
         }, error => {
+          console.log(error)
           this.reserved = false;
           this.error_reserved = true
 
