@@ -514,6 +514,11 @@ export class ToolBarComponent {
     }
     return true;
   }
+  setUnBindAll() {
+    Object.keys(this.sharedData.connected_component_id_index).forEach(connected_component_id => {
+      this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[connected_component_id]].addInfo[addInfo_isBinded] = false
+    })
+  }
   diagram_before_sim = null
   toolbarClick(args: ClickEventArgs): void {
     switch (args.item.id) {
@@ -653,11 +658,8 @@ export class ToolBarComponent {
               this.designService.unreserve(this.file_id).subscribe((data) => {
                 alert(data)
 
-                this.simComm.close()
               }, error => {
                 alert(error)
-                this.simComm.close()
-
               })
               this.simComm.close()
               this.error_binded = true
@@ -682,44 +684,57 @@ export class ToolBarComponent {
                     })
                   }
                 })
+                this.setComponentsReserveConfigs(reserved_comps)
+                let allBindedEvent = new EventEmitter()
+                allBindedEvent.pipe(first()).subscribe(() => {
+                  this.error_binded = false
+                  this.binded = true
+                  try {
+                    this.configured = true
+                    this.error_config = false
+                  } catch (error) {
+                    this.configured = false
+                    this.error_config = true;
+                  }
+                  allBindedEvent.unsubscribe()
+                })
+                let NoBindedEvent = new EventEmitter()
+                NoBindedEvent.pipe(first()).subscribe(() => {
+                  this.error_binded = true
+                  this.binded = false
+                  this.setUnBindAll()
+                  this.configSamService.unBindAll()
+                  this.designService.unreserve(this.file_id).subscribe((data) => {
+                  }, error => {
 
-                reserved_comps.forEach(comp => {
+                  })
+                  NoBindedEvent.unsubscribe()
+                })
+                let binded_count = 0
+                reserved_comps.forEach((comp, index) => {
                   // console.log("usb ip port", comp.usb_ip_port)
-                  let binded_count = 0
                   console.log("FUCKCKKCCCK", comp)
                   this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port, comp).subscribe(data => {
-                    console.log("send bind io ", data)
-                    if (data != "ok") {
-                      this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].addInfo[addInfo_isBinded] = false
+                    let reserved_board = data.board
+                    console.log("send bind io ", data, reserved_board)
+                    if (data.ok != "ok") {
                       alert("can not bind to local port")
                     } else {
-                      let allBindedEvent = new EventEmitter()
-                      allBindedEvent.pipe(first()).subscribe(() => {
-                        this.error_binded = false
-                        this.binded = true
-                        this.setComponentsReserveConfigs(reserved_comps)
-                        allBindedEvent.unsubscribe()
-                      })
-                      let NoBindedEvent = new EventEmitter()
-                      NoBindedEvent.pipe(first()).subscribe(() => {
-                        this.error_binded = true
-                        this.binded = false
-                        this.designService.unreserve(this.file_id).subscribe((data) => {
-                        }, error => {
 
-                        })
-                        NoBindedEvent.unsubscribe()
-                      })
                       this.configSamService.checkPort().subscribe(HW_ports => {
                         console.log(HW_ports)
 
-                        let board = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]]
+                        let board = this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[reserved_board.id]]
                         board.addInfo[addInfo_isBinded] = true
-                        this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].annotations[0].content = board.id + "_" + HW_ports[0]
+                        board.annotations[0].content = board.addInfo[addInfo_name] + "_" + HW_ports[0]
                         binded_count++
-                        if (binded_count == reserved_comps.length) {
-                          allBindedEvent.emit()
-
+                        if (index == reserved_comps.length - 1) {
+                          console.log("binded count,reserved count", binded_count, reserved_comps.length)
+                          if (binded_count == reserved_comps.length) {
+                            allBindedEvent.emit()
+                          } else {
+                            NoBindedEvent.emit()
+                          }
                         }
                       }, error => {
                         console.log(error)
@@ -743,12 +758,10 @@ export class ToolBarComponent {
 
                 });
 
-                this.configured = true
-                this.error_config = false
+
 
               } catch (error) {
-                this.configured = false
-                this.error_config = true;
+
               }
               this.simComm.close()
             })
