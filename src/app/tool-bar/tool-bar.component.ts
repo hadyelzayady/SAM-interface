@@ -217,9 +217,7 @@ export class ToolBarComponent {
           node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
           node.addInfo[addinfo_IP] = reserved_comps[cache[componentId]].IP;
           node.addInfo[addinfo_port] = reserved_comps[cache[componentId]].udp_port;
-          node.annotations[0] = {
-            content: node.addInfo[addinfo_IP]
-          }
+          node.annotations[0].content += "_" + node.addInfo[addinfo_IP]
           delete cache[componentId]
         }
         else {
@@ -230,9 +228,7 @@ export class ToolBarComponent {
               node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
               node.addInfo[addinfo_IP] = reserved_comps[reserved_index].IP
               node.addInfo[addinfo_port] = reserved_comps[reserved_index].udp_port
-              node.annotations[0] = {
-                content: node.addInfo[addinfo_IP]
-              }
+              node.annotations[0].content += "_" + node.addInfo[addinfo_IP]
               found_component = true;
               reserved_index++
               break;
@@ -645,25 +641,22 @@ export class ToolBarComponent {
         })).subscribe(reserved_comps => {
           // this.status = "components reserved "
           this.reserved = true
-
+          this.error_reserved = false
           try {
             this.simComm.initSocket(this.file_id, "bind")
             // this.simComm.bindBoards(this.file_id)
             this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
               // console.log("bind fail")
-              this.designService.unreserve(this.file_id).subscribe(data => {
-                //  this.co
-                //TODO:
-                this.designService.unreserve(this.file_id).subscribe((data) => {
-                  alert(data)
-                  this.simComm.close()
-                }, error => {
-                  alert(error)
-                  this.simComm.close()
 
-                })
+              //TODO:
+              this.designService.unreserve(this.file_id).subscribe((data) => {
+                alert(data)
+
+                this.simComm.close()
               }, error => {
-                // console.log("error unreserve")
+                alert(error)
+                this.simComm.close()
+
               })
               this.simComm.close()
               this.error_binded = true
@@ -676,7 +669,6 @@ export class ToolBarComponent {
               this.binded = true
               try {
                 // console.log("after bind")
-                this.setComponentsReserveConfigs(reserved_comps)
                 this.configSamService.unBindAll().subscribe(data => {
                   if (data != "ok") {
                     this.simComm.close()
@@ -693,14 +685,24 @@ export class ToolBarComponent {
                   this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port).subscribe(data => {
                     if (data != "ok") {
                       this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].addInfo[addInfo_isBinded] = false
-
                       alert("can not bind to local port")
                     } else {
-
-                      this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].addInfo[addInfo_isBinded] = true
+                      this.configSamService.checkPort().subscribe(HW_ports => {
+                        this.binded = true
+                        this.error_binded = false
+                        this.sharedData
+                        this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].addInfo[addInfo_isBinded] = true
+                        this.sharedData.diagram.nodes[this.sharedData.nodeid_index[comp.id]].annotations[0].content += "_" + HW_ports[0]
+                      }, error => {
+                        this.binded = false
+                        this.error_binded = true
+                        alert("can not bind")
+                      })
                     }
                   })
                 });
+                this.setComponentsReserveConfigs(reserved_comps)
+
                 this.configured = true
                 this.error_config = false
 

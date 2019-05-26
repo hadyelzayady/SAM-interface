@@ -22,6 +22,14 @@ export enum SwitchValue { ON, OFF };
 export const PinType_GROUND = "GROUND"
 export const PinType_VCC = "VCC"
 export const PinType_IN_OUT = "I/O"
+
+export const annotationsStyle = {
+    color: 'black',
+    bold: true,
+    italic: true,
+    fontSize: 30,
+    fontFamily: 'TimesNewRoman'
+}
 export function setImageSize(width, height) {
     this.board_props.width = width
 }

@@ -5,7 +5,7 @@ import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
 import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { DesignService } from '../_services';
-import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue, addinfo_IP, addinfo_port, addInfo_isBinded, addInfo_reserved, UNDEFINED, addInfo_pinType, PinType_GROUND, PinType_VCC } from '../utils';
+import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue, addinfo_IP, addinfo_port, addInfo_isBinded, addInfo_reserved, UNDEFINED, addInfo_pinType, PinType_GROUND, PinType_VCC, addInfo_componentId, addInfo_type, ComponentType } from '../utils';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
@@ -189,15 +189,30 @@ export class DesignComponent extends CanDeactivateComponent {
               node.addInfo[addInfo_simValue] = false
               node.addInfo[addInfo_isBinded] = false
               node.addInfo[addInfo_reserved] = false
-              node.ports.forEach(element => {
+              console.log(node.addInfo[addInfo_componentId])
+              node.annotations = [{}]
+              node.addInfo = { [addInfo_name]: node.addInfo[addInfo_name], [addInfo_componentId]: node.id, [addInfo_reserved]: false, [addInfo_type]: ComponentType.Hardware }
+              // console.log("bar dports", board.ports)
+              node.ports.forEach(port => {
+                // console.log("port addino", port.addInfo)
                 let sim_value = UNDEFINED
-                if (element.addInfo[addInfo_pinType] == PinType_GROUND)
-                  sim_value = '0'
-                else if (element.addInfo[addInfo_pinType] == PinType_VCC)
+                if (port.addInfo[addInfo_pinType] == PinType_VCC)
                   sim_value = '1'
-
-                element.addInfo[addInfo_simValue] = sim_value
-              });
+                else if (port.addInfo[addInfo_pinType] == PinType_GROUND)
+                  sim_value = '0'
+                port.addInfo[addInfo_simValue] = sim_value
+              })
+              node.annotations = [{
+                content: node.addInfo[addInfo_name],
+                style: {
+                  color: 'black',
+                  bold: true,
+                  italic: true,
+                  fontSize: 20,
+                  fontFamily: 'TimesNewRoman'
+                }
+                // constraints: AnnotationConstraints.ReadOnly
+              }]
             })
             console.log("DDDDDDDDDDDDDDD")
 

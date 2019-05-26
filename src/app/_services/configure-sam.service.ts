@@ -28,6 +28,7 @@ const httpOptions = {
 export class ConfigureSamService {
 
 
+
     constructor(private http: HttpClient, private sharedData: SharedVariablesService) { }
     private baseurl = this.sharedData.baseurl + '/design'
 
@@ -101,6 +102,9 @@ export class ConfigureSamService {
     }
     sendBindIPPort(ip, port) {
         return this.http.post(`${this.sharedData.localhost_trayapp}Bind`, { ip: ip, port: port })
+    }
+    checkPort() {
+        return this.http.get<string[]>(`${this.sharedData.localhost_trayapp}checkports`)
     }
 }
 

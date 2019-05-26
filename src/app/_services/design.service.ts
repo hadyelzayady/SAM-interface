@@ -7,7 +7,7 @@ import { Components } from '../_models/Components';
 import { Observable } from 'rxjs';
 import { filter, map, flatMap, timestamp } from 'rxjs/operators';
 import { Board } from '../_models/board';
-import { NodeModel, PortModel, PortVisibility, PortConstraints } from '@syncfusion/ej2-angular-diagrams';
+import { NodeModel, PortModel, PortVisibility, PortConstraints, AnnotationConstraints } from '@syncfusion/ej2-angular-diagrams';
 import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType, setImageSize, addInfo_simValue, addInfo_pinType, PinType_VCC, UNDEFINED, PinType_GROUND } from '../utils';
 @Injectable()
 export class DesignService {
@@ -90,6 +90,14 @@ export class DesignService {
 
                 node.annotations = [{
                     content: node.id,
+                    style: {
+                        color: 'black',
+                        bold: true,
+                        italic: true,
+                        fontSize: 30,
+                        fontFamily: 'TimesNewRoman'
+                    }
+                    // constraints: AnnotationConstraints.ReadOnly
                 }]
                 if (board.UserId == null) {
                     builtin_boards.push(node)
