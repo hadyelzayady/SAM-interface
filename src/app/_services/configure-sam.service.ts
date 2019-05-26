@@ -11,6 +11,7 @@ import { Board } from '../_models/board';
 import { NodeModel, PortModel, PortVisibility } from '@syncfusion/ej2-angular-diagrams';
 import { nodeDesignConstraints, connectorDesignConstraints, addInfo_componentId, addInfo_name, addInfo_reserved, addInfo_type, ComponentType, setImageSize } from '../utils';
 import { board } from '../configure-sam/boards';
+import { isPending } from 'q';
 interface portresp {
     res: string
 
@@ -100,7 +101,7 @@ export class ConfigureSamService {
 
         })
     }
-    sendBindIPPort(ip, port) {
+    sendBindIPPort(ip, port, comp) {
         return this.http.post(`${this.sharedData.localhost_trayapp}Bind`, { ip: ip, port: port })
     }
     checkPort() {

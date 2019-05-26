@@ -89,7 +89,7 @@ export class DesignService {
                 }
 
                 node.annotations = [{
-                    content: node.id,
+                    content: "" + node.id,
                     style: {
                         color: 'black',
                         bold: true,
