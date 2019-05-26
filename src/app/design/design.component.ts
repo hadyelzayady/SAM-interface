@@ -47,8 +47,9 @@ export class DesignComponent extends CanDeactivateComponent {
 
 
   previousRoute: string;
+  constraints
   ngOnInit(): void {
-
+    this.constraints = DiagramConstraints.Default | DiagramConstraints.Bridging;
 
     this.previousRoute = this.routingState.getPreviousUrl();
     // console.log(this.previousRoute)
@@ -179,7 +180,7 @@ export class DesignComponent extends CanDeactivateComponent {
           // console.log(JSON.stringify(file))
 
           if (file != null) {
-            console.log("file: ",file)
+            console.log("file: ", file)
             this.diagram.loadDiagram(JSON.stringify(file))
             console.log("HHHHHHHHHHHHHHHHHH")
             this.diagram.nodes.forEach(node => {
@@ -189,11 +190,11 @@ export class DesignComponent extends CanDeactivateComponent {
               node.addInfo[addInfo_isBinded] = false
               node.addInfo[addInfo_reserved] = false
               node.ports.forEach(element => {
-                let sim_value=UNDEFINED
-                if(element.addInfo[addInfo_pinType]== PinType_GROUND)
-                  sim_value='0'
-                  else if (element.addInfo[addInfo_pinType]== PinType_VCC)
-                  sim_value='1'
+                let sim_value = UNDEFINED
+                if (element.addInfo[addInfo_pinType] == PinType_GROUND)
+                  sim_value = '0'
+                else if (element.addInfo[addInfo_pinType] == PinType_VCC)
+                  sim_value = '1'
 
                 element.addInfo[addInfo_simValue] = sim_value
               });

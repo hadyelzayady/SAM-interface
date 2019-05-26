@@ -504,7 +504,9 @@ export class ToolBarComponent {
     // this.unsubscribe.complete();
     this.simComm.close()
     this.LocalCommService.close()
-    this.resetComponents()
+    // this.resetComponents()
+    this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
+    this.sharedData.diagram.refresh()
   }
   isReservedBinded() {
     for (const node of this.sharedData.diagram.nodes) {
@@ -516,6 +518,7 @@ export class ToolBarComponent {
     }
     return true;
   }
+  diagram_before_sim = null
   toolbarClick(args: ClickEventArgs): void {
     switch (args.item.id) {
       case this.undo_id: {
@@ -552,6 +555,7 @@ export class ToolBarComponent {
           //parse
           this.configSamService.getUserIP().subscribe(data => {
             try {
+              this.diagram_before_sim = this.sharedData.diagram.saveDiagram()
               this.sharedData.ip = data["ip"]
               this.sharedData.port = data["port"]
               // console.log(this.sharedData.port)
