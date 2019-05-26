@@ -5,7 +5,7 @@ import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
 import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { DesignService } from '../_services';
-import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue, addinfo_IP, addinfo_port, addInfo_isBinded, addInfo_reserved, UNDEFINED, addInfo_pinType, PinType_GROUND, PinType_VCC, addInfo_componentId, addInfo_type, ComponentType } from '../utils';
+import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue, addinfo_IP, addinfo_port, addInfo_isBinded, addInfo_reserved, UNDEFINED, addInfo_pinType, PinType_GROUND, PinType_VCC, addInfo_componentId, addInfo_type, ComponentType, annotationsStyle } from '../utils';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
@@ -113,6 +113,7 @@ export class DesignComponent extends CanDeactivateComponent {
     this.sharedData
   }
   historyChange(args: IHistoryChangeArgs) {
+    console.log(args.cause)
     // console.log(args)
   }
 
@@ -185,7 +186,7 @@ export class DesignComponent extends CanDeactivateComponent {
             this.options = {};
             this.options.mode = 'Download';
             this.options.format = 'PNG'
-            this.diagram.exportDiagram(this.options);
+            // this.diagram.exportDiagram(this.options);
             // this.sharedData.diagram.print(this.options);
             // console.log("he", im.toString())
             console.log("HHHHHHHHHHHHHHHHHH")
@@ -195,7 +196,10 @@ export class DesignComponent extends CanDeactivateComponent {
               node.addInfo[addInfo_simValue] = false
               node.addInfo[addInfo_isBinded] = false
               node.addInfo[addInfo_reserved] = false
-              node.annotations[0].content = node.addInfo[addInfo_name]
+              node.annotations = [{
+                content: node.addInfo[addInfo_name],
+                style: annotationsStyle
+              }]
               console.log(node.addInfo[addInfo_componentId])
               // console.log("bar dports", board.ports)
               node.ports.forEach(port => {
@@ -211,7 +215,9 @@ export class DesignComponent extends CanDeactivateComponent {
             })
             console.log("DDDDDDDDDDDDDDD")
             this.diagram.dataBind()
+            this.diagram.refresh()
             this.diagram.refreshDiagram()
+            this.diagram.refreshCanvasLayers()
             console.log("HHHHHHHHHHHHHHHHHH")
 
           }
@@ -223,7 +229,7 @@ export class DesignComponent extends CanDeactivateComponent {
           }
         } catch (error) {
           console.log(error)
-          this.approute.navigate(["home"])
+          this.approute.navigate(["Dashboard"])
           alert("error on loading design ,fie reseted")
         }
       }, error => {

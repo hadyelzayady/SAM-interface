@@ -1,4 +1,4 @@
-import { ConnectorConstraints, NodeConstraints, NodeModel } from '@syncfusion/ej2-angular-diagrams';
+import { ConnectorConstraints, NodeConstraints, NodeModel, TextStyleModel } from '@syncfusion/ej2-angular-diagrams';
 
 export const connectorDesignConstraints = ConnectorConstraints.Default | ConnectorConstraints.Bridging | ConnectorConstraints.BridgeObstacle;
 export const connectorSimConstraints = ConnectorConstraints.None
@@ -24,7 +24,7 @@ export const PinType_GROUND = "GROUND"
 export const PinType_VCC = "VCC"
 export const PinType_IN_OUT = "I/O"
 
-export const annotationsStyle = {
+export const annotationsStyle: TextStyleModel = {
     color: 'black',
     bold: true,
     italic: true,

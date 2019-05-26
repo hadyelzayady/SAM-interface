@@ -665,7 +665,20 @@ export class ToolBarComponent {
               this.error_binded = true
               this.binded = false
             })
+            this.simComm.onEvent(SocketEvent.BIND_FAIL).subscribe(() => {
+              // console.log("bind fail")
 
+              //TODO:
+              this.designService.unreserve(this.file_id).subscribe((data) => {
+                alert(data)
+
+              }, error => {
+                alert(error)
+              })
+              this.simComm.close()
+              this.error_binded = true
+              this.binded = false
+            })
             this.simComm.onEvent(SocketEvent.BIND_SUCCESS).subscribe(() => {
               // console.log("bind succkes")
 
