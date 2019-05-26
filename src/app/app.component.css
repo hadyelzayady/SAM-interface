@@ -4,16 +4,19 @@
 }
 .logo{
 height: 50px;
-width: 10%;
+width: 15%;
 }
 .menuitem{
    padding: 0% 2%;
+   color: white;
 }
 .menucontainer{
-   background-color: antiquewhite;
+   background-color: #575954;
+   
 }
 .menubarLoginBtn{
    float: right;
+   
    
 }
 .btns{
@@ -21,4 +24,7 @@ width: 10%;
 }
 .accountbtns{
    float: right;
+   font-size: 12px;
+   background-color:#46a2a2; 
 }
+

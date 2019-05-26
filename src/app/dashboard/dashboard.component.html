@@ -1,43 +1,81 @@
 <div class="container-fluid">
-<div class="row">
-    <div class="col-sm-2 sidebar_dashboard">
-     <hr>
+    <div class="row">
+        <div class="col-sm-2 sidebar_dashboard">
+            <hr>
             <div class="nav flex-sm-column">
-                <a href="" class="nav-link d-none d-sm-inline">Sidebar</a>
-                <a href="" class="nav-link">Link</a>
-                <a href="" class="nav-link">Link</a>
-                <a href="" class="nav-link">Link</a>
-                <a href="" class="nav-link">Link</a>
-                <a href="" class="nav-link">Link</a>
+                <!-- <a href="" class="nav-link d-none d-sm-inline">Sidebar</a> -->
+                <a href="javascript:;" (click)="setview(1)" class="nav-link navlnk">Designs</a>
+                <hr class="sep">
+                <a href="javascript:;" (click)="setview(2)" class="nav-link navlnk">Boards</a>
+                <hr class="sep">
+                <a href="javascript:;" (click)="setview(2)" class="nav-link navlnk">Profile</a>
+                <!-- <a href="" class="nav-link">Link</a>
+                <a href="" class="nav-link">Link</a> -->
             </div>
-       
-    </div>
-    <div class="col-sm-5" style="background-color:yellow;">
-        <h2>Design Files</h2>
-        <button type="button" class="btn btn-outline-dark" (click)='createNewFile()'>create new file</button>
-        <ul>
-            <li *ngFor="let file of design_files">
-                <hr>
-                <a routerLink="/design/{{file.id}}"> {{file.original_file_name}}</a>
-                <br><small>id: {{file.id}}</small>
-                <button type="button" (click)='deleteDesignFile(file.id,file.original_file_name)' style="float: right;"
-                    class="btn-outline-danger">Delete</button>
-            </li>
-        </ul>
-    </div>
-    <div class="col-sm-5" style="background-color:pink;">
-        <h2>User Boards</h2>
-        <button type="button" class="btn btn-outline-dark" (click)='customBoardDesign()'>create new Board</button>
-        <ul>
-            <li *ngFor="let board of user_boards">
-                <hr>
-                <a [routerLink]="['/customboard']" [queryParams]="{board_id:board.id}"> {{board.name}}</a>
-                <br><small>id: {{board.id}}</small>
-                <button type="button" (click)='deleteBoard(board.id,board.name)' style="float: right;"
-                    class="btn-outline-danger">Delete</button>
 
-            </li>
-        </ul>
+        </div>
+        <div *ngIf="currentview==1" class="col-sm-10 " >
+            <div class="row rowtittle">
+                <div class="col-sm-12">
+                    <span class="title"> Design Files</span>
+
+                    <button type="button" class="btn btn-outline-dark newdesign" (click)='createNewFile()'>create new
+                        file</button>
+                </div>
+            </div>
+            <div class="row rowcontent">
+                <div class="col-sm-4" *ngFor="let file of design_files">
+
+                    <div class="card-coloumns">
+                       
+                            <div class="card">
+                                    <a routerLink="/design/{{file.id}}">
+                                <img class="card-img-top"
+                                    src='https://d1uvxqwmcz8fl1.cloudfront.net/tes/resources/6054132/39885051-d4a1-4414-9c86-b47ad5540758/image?width=1000&height=190&version=1537949314279'
+                                    alt="Card image cap">
+                                </a>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{file.original_file_name}}</h5>
+                                    <p class="card-text">This is a longer card with small description</p>
+                                    <!-- <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> -->
+                                </div>
+                                 <div class="card-footer">
+                                        <small>id: {{file.id}}</small>
+                                    <button type="button" (click)='deleteDesignFile(file.id,file.original_file_name)'
+                                style="float: right;" class="btn-outline-danger">Delete</button>
+                                </div>
+                            </div>
+                     
+                    </div>
+                    <!-- <ul>
+                        <li *ngFor="let file of design_files">
+                            <hr>
+                            <a routerLink="/design/{{file.id}}"> {{file.original_file_name}}</a>
+                            <br><small>id: {{file.id}}</small>
+                            <button type="button" (click)='deleteDesignFile(file.id,file.original_file_name)'
+                                style="float: right;" class="btn-outline-danger">Delete</button>
+                        </li>
+                    </ul> -->
+                </div>
+            </div>
+
+        </div>
+
+
+
+        <div *ngIf="currentview==2" class="col-sm-9" style="background-color:pink;">
+            <h2>User Boards</h2>
+            <button type="button" class="btn btn-outline-dark" (click)='customBoardDesign()'>create new Board</button>
+            <ul>
+                <li *ngFor="let board of user_boards">
+                    <hr>
+                    <a [routerLink]="['/customboard']" [queryParams]="{board_id:board.id}"> {{board.name}}</a>
+                    <br><small>id: {{board.id}}</small>
+                    <button type="button" (click)='deleteBoard(board.id,board.name)' style="float: right;"
+                        class="btn-outline-danger">Delete</button>
+
+                </li>
+            </ul>
+        </div>
     </div>
-</div>
 </div>
