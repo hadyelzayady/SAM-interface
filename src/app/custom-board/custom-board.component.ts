@@ -13,7 +13,7 @@ import { queryParams, select } from '@syncfusion/ej2-base';
 import { WidthTable } from '@syncfusion/ej2-pdf-export';
 import { BehaviorSubject } from 'rxjs';
 import { CanDeactivateComponent } from '../can-deactivate/can-deactivate.component';
-import { PinType_IN_OUT, nodeDesignConstraints } from 'dist/src/app/utils';
+import { PinType_IN_OUT, nodeDesignConstraints } from '../utils';
 
 @Component({
   selector: 'app-custom-board',

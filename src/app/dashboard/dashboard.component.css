@@ -1,7 +1,18 @@
 .sidebar_dashboard{
     background-color:antiquewhite;
+    padding-bottom: 50%;
+    text-align: center;
+
+    /* margin-bottom: -100%; */
 }
 .dashboard_main{
     background-image:url('../../PCB_Photos/IMG_7309.JPG') ;
     background-size: cover;
+}
+.newdesign{
+    float:right;
+}
+
+.card{
+    margin-bottom: 3%;
 }

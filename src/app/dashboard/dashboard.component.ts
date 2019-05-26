@@ -17,9 +17,14 @@ export class DashboardComponent implements OnInit {
 
   design_files: DesignFile[];
   user_boards: UserBoards[];
+  currentview: String;
+  
   constructor(private userService: UserService, private designService: DesignService, private customBoardService: CustomBoardService, private simpleModalService: SimpleModalService, private router: Router, private alertService: AlertService) { }
-
+setview(id){
+  this.currentview=id;
+}
   ngOnInit() {
+    this.currentview='1';
     this.loadUserDesigns();
     this.loadUserBoards()
   }
