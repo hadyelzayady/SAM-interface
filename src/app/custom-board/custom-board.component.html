@@ -1,5 +1,6 @@
+<div class="container-fluid">
 <div class="row " style="background-color:lightgray">
-  <div class="col-12">
+  <div class="col-sm-12">
     <ejs-toolbar #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
       <e-items>
         <e-item [id]="add_pin" tooltipText='add pin' prefixIcon='e-undo-icon'></e-item>
@@ -28,8 +29,8 @@
     </ejs-toolbar>
   </div>
 </div>
-<div class="row nopadding">
-  <div class="col-3 nopadding">
+<div class="row">
+  <div class="col-sm-3">
     <table>
       <tr>
         <th>Sam pin name</th>
@@ -55,7 +56,7 @@
 
     </table>
   </div>
-  <div class=" col-9 w-80 nopadding main-wrapper">
+  <div class=" col-sm-9  main-wrapper">
     <ejs-diagram #diagram id="diagram" width="100%" height="600px" (created)='diagramCreated()'
       (selectionChange)='selectionChangeEvent($event)' (historyChange)='historyChanged($event)'
       (textEdit)='EditBoardNameEvent($event)' [commandManager]="commandManager"
@@ -73,4 +74,4 @@
   <button (click)='customClose(save_custom_board_modal_id)' [hidden]="hide_modal_close_btn"> Close</button>
 
 </jw-modal>
-<router-outlet></router-outlet>
+</div>

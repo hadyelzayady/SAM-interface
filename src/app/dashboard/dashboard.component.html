@@ -61,8 +61,47 @@
 
         </div>
 
+        <div *ngIf="currentview==2" class="col-sm-10">
+            <div class="row rowtittle">
+                <div class="col-sm-12">
+                    <span class="title">User Boards</span>
 
+                    <button type="button" class="btn btn-outline-dark newdesign" (click)='customBoardDesign()'>create new Board</button>
+            
+                </div>
+            </div>
+            <div class="row rowcontent">
+                <div class="col-sm-4" *ngFor="let board of user_boards">
 
+                    <div class="card-coloumns">
+
+                        <div class="card">
+                            <a [routerLink]="['/customboard']" [queryParams]="{board_id:board.id}">
+                                <img class="card-img-top"
+                                    src='https://d1uvxqwmcz8fl1.cloudfront.net/tes/resources/6054132/39885051-d4a1-4414-9c86-b47ad5540758/image?width=1000&height=190&version=1537949314279'
+                                    alt="Card image cap">
+                            </a>
+                            <div class="card-body">
+                                <h5 class="card-title"> {{board.name}}</h5>
+                                <p class="card-text">This is a longer card with small description</p>
+                                <!-- <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> -->
+                            </div>
+                            <div class="card-footer">
+                                <small>id: {{board.id}}</small>
+                                <button type="button" (click)='deleteBoard(board.id,board.name)' style="float: right;"
+                                class="btn-outline-danger">Delete</button>
+        
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+          
+        </div>
+<!-- 
         <div *ngIf="currentview==2" class="col-sm-9" style="background-color:pink;">
             <h2>User Boards</h2>
             <button type="button" class="btn btn-outline-dark" (click)='customBoardDesign()'>create new Board</button>
@@ -76,6 +115,6 @@
 
                 </li>
             </ul>
-        </div>
+        </div> -->
     </div>
 </div>
