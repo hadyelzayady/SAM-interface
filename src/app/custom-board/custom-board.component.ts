@@ -13,6 +13,7 @@ import { queryParams, select } from '@syncfusion/ej2-base';
 import { WidthTable } from '@syncfusion/ej2-pdf-export';
 import { BehaviorSubject } from 'rxjs';
 import { CanDeactivateComponent } from '../can-deactivate/can-deactivate.component';
+import { PinType_IN_OUT, nodeDesignConstraints } from 'dist/src/app/utils';
 
 @Component({
   selector: 'app-custom-board',
@@ -29,26 +30,31 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   board_id = null
   map_table_rows_count = 10
   selected = false
-  SAM_pins = ['3',
+  SAM_pins = ['2',
+    '3',
     '4',
-    '17',
-    '27',
-    '22',
-    '10',
-    '9',
-    '11',
     '5',
     '6',
+    '7',
+    '8',
+    '9',
+    '10',
+    '11',
+    '12',
     '13',
-    '19',
-    '26',
     '14',
     '15',
+    '16',
+    '17',
+    '27',
     '18',
+    '19',
+    '22',
     '23',
     '24',
     '25',
-    '8']
+    '26',
+  ]
 
   public contextMenuSettings: ContextMenuSettingsModel;
   public commandManager: CommandManager;
@@ -137,19 +143,26 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
               }
 
             }
-            else {
-              // let node = diagram.selectedItems.nodes[0]
-              // let oldBoardPin_id = this.SAMPin_BoardPin[sam_pin_index] || null
-              // console.log("old pin_id", oldBoardPin_id)
-              // if (oldBoardPin_id != null) {
-              //   delete this.BoardPin_SAMPin[sam_pin_index]
-              //   this.boardPin_selected[oldBoardPin_id] = false
-              // }
-              // this.SAMPin_BoardPin[sam_pin_index] = ''
-              // console.log(this.SAMPin_BoardPin[sam_pin_index])
-              // mythis.SAMPin_BoardPin[node]
-              diagram.removeNode(diagram.selectedItems.nodes[0])
-              diagram.refresh()
+            else if (diagram.selectedItems.nodes.length == 1) {
+              let node = diagram.selectedItems.nodes[0]
+              if (node.addInfo[addInfo_pinType] == PinType_IN_OUT) {
+                let sam_pin = mythis.BoardPin_SAMPin[node.id]
+                let oldBoardPin_id = mythis.SAMPin_BoardPin[sam_pin] || null
+                console.log("old pin_id", oldBoardPin_id)
+                if (oldBoardPin_id != null) {
+                  delete mythis.BoardPin_SAMPin[sam_pin]
+                  delete mythis.boardPin_selected[oldBoardPin_id]
+                }
+                mythis.SAMPin_BoardPin[sam_pin] = ''
+                console.log(mythis.SAMPin_BoardPin[sam_pin])
+                diagram.removeNode(diagram.selectedItems.nodes[0])
+                diagram.refresh()
+
+              } else {
+                console.log("dleete")
+                diagram.removeNode(diagram.selectedItems.nodes[0])
+                diagram.refresh()
+              }
             }
           }
         },
@@ -301,7 +314,15 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   }
   changePinType(event) {
     console.log(event.target.value)
-    this.diagram.selectedItems.nodes[0].addInfo["pin_type"] = event.target.value
+    let selected_pin = this.diagram.selectedItems.nodes[0]
+    if (event.target.value != PinType_IN_OUT) {
+      console.log(selected_pin.annotations[0].content)
+      let sam_pin = this.BoardPin_SAMPin[selected_pin.annotations[0].content]
+      this.SAMPin_BoardPin[sam_pin] = ''
+      delete this.boardPin_selected[selected_pin.annotations[0].content]
+      console.log("changepin type", this.boardPin_selected)
+    }
+    selected_pin.addInfo["pin_type"] = event.target.value
   }
   hide_pin_type = true
   isVCC = false;
@@ -334,7 +355,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   getPins() {
     return this.diagram.nodes.filter(node => {
       let type = node.addInfo["type"] || null
-      return type == "pin" //&& (node.addInfo[addInfo_pinType] != PinType_VCC && node.addInfo[addInfo_pinType] != PinType_GROUND)
+      return type == "pin" && (node.addInfo[addInfo_pinType] != PinType_VCC && node.addInfo[addInfo_pinType] != PinType_GROUND)
     })
   }
 
@@ -376,6 +397,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     let y = board_corner_y + port_offsety_denormalize
     //
     let pin_type = port.addInfo ? port.addInfo["pin_type"] : "I/O"
+    let pin_annot = pinmap[port.id] || port.id
     let pin: NodeModel = {
       shape: {
         shape: 'Rectangle',
@@ -386,7 +408,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       width: port.width,
       height: port.height,
       annotations: [{
-        content: pinmap[port.id]
+        content: pin_annot
       }],
       addInfo: {
         type: "pin",
@@ -404,8 +426,19 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       this.BoardPin_SAMPin[pin_map[sam_pin]] = sam_pin
       this.boardPin_selected[pin_map[sam_pin]] = true
     })
+    console.log("init table board bin", this.boardPin_selected)
     //set
   }
+  makeid(length) {
+    let result = '';
+    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+
   diagramCreated() {
     // this.diagram.add(this.board_props)
     // this.board_node = this.diagram.nodes[0]
@@ -450,7 +483,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
         i.src = this.board_props.shape.source
         //end set dim
         // this.addBoard()
-
+        console.log("board pin selected", this.boardPin_selected)
 
       }, error => {
         this.router.navigate([this.router.url])
@@ -581,11 +614,13 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
 
           let SAM_pin = this.BoardPin_SAMPin[pin_id]
           console.log("helllllllllllllllllllll1", node.addInfo["pin_type"])
-          if (SAM_pin == null) //&& (node.addInfo["pin_type"] != PinType_VCC && node.addInfo["pin_type"] != PinType_GROUND))
+
+          if (SAM_pin == null && (node.addInfo["pin_type"] != PinType_VCC && node.addInfo["pin_type"] != PinType_GROUND))
             throw Error("SAM pin map not assigned")
           let [x, y] = this.getPinOffset(this.board_node, node.offsetX, node.offsetY)
+          let i = 0;
           ports.push({
-            id: this.BoardPin_SAMPin[pin_id],
+            id: this.BoardPin_SAMPin[pin_id] || node.addInfo["pin_type"] + i++,
             offset: {
               x: x,
               y: y
@@ -636,7 +671,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     console.log("nodes", this.diagram.nodes)
     console.log("board pn sele", this.boardPin_selected)
     console.log("nodes pins lenght", this.diagram.nodes.filter(node => {
-      return node.addInfo["type"] == "pin"// && (node.addInfo[addInfo_pinType] != PinType_GROUND && node.addInfo[addInfo_pinType] != PinType_VCC)
+      return node.addInfo["type"] == "pin" && (node.addInfo[addInfo_pinType] != PinType_GROUND && node.addInfo[addInfo_pinType] != PinType_VCC)
     }).length)
     console.log("selected pins", Object.keys(this.boardPin_selected).filter(pin_id => {
       return this.boardPin_selected[pin_id] == true
@@ -645,15 +680,15 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       return this.boardPin_selected[pin_id] == true
     }).length
       == this.diagram.nodes.filter(node => {
-        return node.addInfo["type"] == "pin" //&& (node.addInfo[addInfo_pinType] != PinType_GROUND && node.addInfo[addInfo_pinType] != PinType_VCC)
+        return node.addInfo["type"] == "pin" && (node.addInfo[addInfo_pinType] != PinType_GROUND && node.addInfo[addInfo_pinType] != PinType_VCC)
       }).length
   }
   getSAMMapping() {
     let map = {}
     Object.keys(this.SAMPin_BoardPin).forEach((sam_pin) => {
       let board_pin = this.SAMPin_BoardPin[sam_pin]
-      // if (board_pin != "" &&)
-      map[sam_pin] = board_pin
+      if (board_pin != "")
+        map[sam_pin] = board_pin
     })
     return map
   }
@@ -665,10 +700,11 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
           let [x, y] = this.getPinInitPosition()
           this.pin.offsetX = x
           this.pin.offsetY = y
-          this.pin.annotations[0].content = `pin${this.pin_number}`
+          this.pin.annotations[0].content = `pin${this.pin_number}${this.makeid(3)}`
           let node = this.diagram.add(this.pin)
-          this.pin_number += 1;
 
+          this.pin_number += 1;
+          this.diagram.nodes[this.diagram.nodes.length - 1]
           this.grouper_node.children.push(node.id)
           this.diagram.refresh()
         } else {
@@ -701,7 +737,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
                 console.log(data.id)
                 this.board_id = data.id
                 this.board_node.addInfo[addInfo_componentId] = data.id
-                this.router.navigate(["customboard"], { queryParams: { board_id: this.board_id }, skipLocationChange: true });
+                this.router.navigate(["customboard"], { queryParams: { board_id: this.board_id }, replaceUrl: true });
               }
 
             }, error => {

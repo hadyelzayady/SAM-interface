@@ -544,6 +544,7 @@ export class ToolBarComponent {
         break;
       }
       case this.connector_id: {
+        this.sharedData.diagram.fitToPage()
         this.sharedData.diagram.drawingObject = this.utils.getConnector() as unknown as ConnectorModel;
         this.sharedData.diagram.tool = DiagramTools.DrawOnce;
         break;

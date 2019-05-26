@@ -49,7 +49,7 @@ export class DesignComponent extends CanDeactivateComponent {
   previousRoute: string;
   constraints
   ngOnInit(): void {
-    this.constraints = DiagramConstraints.Default | DiagramConstraints.Bridging;
+    // this.constraints = DiagramConstraints.Default | DiagramConstraints.Bridging;
 
     this.previousRoute = this.routingState.getPreviousUrl();
     // console.log(this.previousRoute)
