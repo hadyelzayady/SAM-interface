@@ -1,19 +1,21 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-sm-3 sidebar_dashboard">
+        <div class="col-sm-2 sidebar_dashboard">
             <hr>
             <div class="nav flex-sm-column">
                 <!-- <a href="" class="nav-link d-none d-sm-inline">Sidebar</a> -->
-                <a href="javascript:;" (click)="setview(1)" class="nav-link">Designs</a>
-                <a href="javascript:;" (click)="setview(2)" class="nav-link">Boards</a>
-                <a href="javascript:;" (click)="setview(2)" class="nav-link">Profile</a>
+                <a href="javascript:;" (click)="setview(1)" class="nav-link navlnk">Designs</a>
+                <hr class="sep">
+                <a href="javascript:;" (click)="setview(2)" class="nav-link navlnk">Boards</a>
+                <hr class="sep">
+                <a href="javascript:;" (click)="setview(2)" class="nav-link navlnk">Profile</a>
                 <!-- <a href="" class="nav-link">Link</a>
                 <a href="" class="nav-link">Link</a> -->
             </div>
 
         </div>
-        <div *ngIf="currentview==1" class="col-sm-9 " style="background-color:yellow;">
-            <div class="row">
+        <div *ngIf="currentview==1" class="col-sm-10 " >
+            <div class="row rowtittle">
                 <div class="col-sm-12">
                     <span class="title"> Design Files</span>
 
@@ -21,7 +23,7 @@
                         file</button>
                 </div>
             </div>
-            <div class="row">
+            <div class="row rowcontent">
                 <div class="col-sm-4" *ngFor="let file of design_files">
 
                     <div class="card-coloumns">

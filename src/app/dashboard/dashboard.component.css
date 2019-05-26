@@ -1,5 +1,5 @@
 .sidebar_dashboard{
-    background-color:antiquewhite;
+    background-color:#575954;
     padding-bottom: 50%;
     text-align: center;
 
@@ -11,8 +11,26 @@
 }
 .newdesign{
     float:right;
+    background-color:#46a2a2  
 }
 
 .card{
     margin-bottom: 3%;
+}
+.title{
+font-size: 200%;
+}
+.rowtittle{
+    padding: 2%;    
+}
+.rowcontent{
+    padding: 2%;    
+}
+.navlnk{
+    color: white;
+}
+.sep{
+   
+    border-top: 1px solid rgba(250, 250, 250);
+
 }
