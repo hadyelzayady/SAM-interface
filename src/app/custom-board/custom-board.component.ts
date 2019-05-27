@@ -593,8 +593,13 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   }
   BoardPin_SAMPin: { [key: string]: string } = {}
   SAMPin_BoardPin: { [SAM_pin: string]: string } = {}
+  isPublic: boolean = true
 
+  togglePublic() {
+    this.isPublic = !this.isPublic
+    console.log("is my public", this.isPublic)
 
+  }
   create_board() {
     // board.ports = []
     // this.board.ports = []
@@ -697,6 +702,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     switch (args.item.id) {
       case this.add_pin: {
         //check if first if there is board in the diagram
+        console.log("is public", this.isPublic)
         if (this.diagram.getObject("board") != undefined) {
           let [x, y] = this.getPinInitPosition()
           this.pin.offsetX = x
@@ -725,7 +731,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
             let board_with_ports = this.create_board()
             let sam_maps = this.getSAMMapping()
             console.log("sent board", board_with_ports)
-            this.customBoardService.createCustomBoard(this.image, board_with_ports, sam_maps).pipe(finalize(() => {
+            this.customBoardService.createCustomBoard(this.image, board_with_ports, sam_maps, this.isPublic).pipe(finalize(() => {
               this.hide_modal_close_btn = false
             })).subscribe(data => {
               this.saved = true;
