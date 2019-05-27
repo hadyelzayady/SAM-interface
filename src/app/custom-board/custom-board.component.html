@@ -30,6 +30,16 @@
                 </div>
               </ng-template>
             </e-item>
+            <e-item>
+              <ng-template #template>
+                <div align="right">
+                  <label class="container">Public
+                    <input align="right" type="checkbox" [checked]="isPublic" (change)='togglePublic()'>
+                    <span align="right" class="checkmark"></span>
+                  </label>
+                </div>
+              </ng-template>
+            </e-item>
           </div>
         </e-items>
       </ejs-toolbar>
