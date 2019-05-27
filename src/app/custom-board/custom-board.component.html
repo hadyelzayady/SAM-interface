@@ -1,46 +1,51 @@
 <div class="container-fluid">
   <div class="row ">
     <div class="col-sm-12 bgcolor">
-
-
       <ejs-toolbar  #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
         <e-items class="toolbar">
           <e-item [id]="add_pin" tooltipText='add pin' prefixIcon='e-undo-icon'></e-item>
           <e-item [id]="save_board" tooltipText='save board' prefixIcon='glyphicon glyphicon-floppy-save'></e-item>
-          <div>
-            <e-item>
+          <e-item>
               <ng-template #template>
-                <label [for]="image_upload" class="upload_lbel ">upload board image</label>
-                <input #fileinput type="file" [id]="image_upload" (change)='fileInputChange($event)'
-                  accept="image/png, image/jpeg">
+              
+                <div class="custom-control custom-checkbox">
+                    <input width="100%" type="checkbox" [checked]="isPublic" (change)='togglePublic()' class="custom-control-input chkbox" id="defaultUnchecked">
+                    <label class="custom-control-label ispubliclbl" for="defaultUnchecked">Is Public</label>
+                </div>  
               </ng-template>
             </e-item>
-          </div>
-          <div>
+          <!-- <div >
+                  <label class="container_checked_lbel">Public
+                    <input  type="checkbox" [checked]="isPublic" (change)='togglePublic()'>
+                    <span class="checkmark"></span>
+                  </label>
+                </div> -->
+ 
             <e-item>
               <ng-template #template>
                 <div [hidden]="hide_pin_type" class="toolbar_radio">
-                  <label [for]="pin_type_id" class="upload_lbel">pin type</label>
+                    <label [for]="pin_type_id" class="upload_lbel">pin type</label>
+              
                   <!-- <input #fileinput type="file" [id]="pin_type_id" (change)='changePinType($event)'> -->
-                  <input type="radio" name="type" value="I/O" [checked]='! isVCC && ! isGROUND'
+                  <input  class="radiobtn" type="radio" name="type" value="I/O" [checked]='! isVCC && ! isGROUND'
                     (change)='changePinType($event)'> I/O
-                  <input type="radio" name="type" value="VCC" [checked]='isVCC' (change)='changePinType($event)'> VCC
-                  <input type="radio" name="type" value="GROUND" [checked]='isGROUND' (change)='changePinType($event)'>
+                  <input type="radio"class="radiobtn" name="type" value="VCC" [checked]='isVCC' (change)='changePinType($event)'> VCC
+                  <input type="radio"class="radiobtn" name="type" value="GROUND" [checked]='isGROUND' (change)='changePinType($event)'>
                   GROUND
                 </div>
               </ng-template>
             </e-item>
+          
+         
             <e-item>
-              <ng-template #template>
-                <div align="right">
-                  <label class="container">Public
-                    <input align="right" type="checkbox" [checked]="isPublic" (change)='togglePublic()'>
-                    <span align="right" class="checkmark"></span>
-                  </label>
-                </div>
-              </ng-template>
-            </e-item>
-          </div>
+                <ng-template #template>
+                  <label [for]="image_upload" class="upload_lbel ">upload board image</label>
+                  <input #fileinput type="file" [id]="image_upload" (change)='fileInputChange($event)'
+                    accept="image/png, image/jpeg">
+                </ng-template>
+              </e-item>
+           
+        
         </e-items>
       </ejs-toolbar>
     </div>

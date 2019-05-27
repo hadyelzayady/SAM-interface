@@ -7,6 +7,7 @@ import { SideBarComponent } from './side-bar/side-bar.component';
 import { ToolBarComponent } from './tool-bar/tool-bar.component';
 import { GridModule, ToolbarService } from '@syncfusion/ej2-angular-grids';
 import { ToolbarModule, MenuModule } from '@syncfusion/ej2-angular-navigations';
+import { CheckBoxModule } from '@syncfusion/ej2-angular-buttons';
 import { SharedVariablesService, UtilsService, AuthenticationService, DesignService } from './_services/';
 import { MenuBarComponent } from './menu-bar/menu-bar.component';
 import { FilenameDialogComponent } from './filename-dialog/filename-dialog.component';
@@ -63,6 +64,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
     FormsModule,
     NgbAlertModule,
     HttpClientModule,
+    CheckBoxModule,
   ],
 
   providers: [
