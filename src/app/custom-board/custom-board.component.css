@@ -8,6 +8,20 @@ table, th, td {
 th, td {
   padding: 15px;
 }
-.main-wrapper {
+/* .main-wrapper {
   height: 100vh;  
+} */
+.upload_lbel{
+  margin-bottom: 0%;
+  padding-right: 4%;
+  padding-left: 5%;
+}
+.pinselect{
+ width: 100%
+}
+.borderframe{
+border: 1px solid gray;
+}
+.paddingrows{
+padding-bottom:1% 
 }
