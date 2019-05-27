@@ -10,6 +10,7 @@ export enum SocketEvent {
     DISCONNECT = 'disconnect',
     CONNECTION_ERROR = 'connect_error',
     SUCCESSFULL = 'successful',
+    BOARD_NOT_START_SIM = 'simBoardNotStarted',
     //bind event 
     BIND_FAIL = "bind_error",
     BIND_SUCCESS = "bind_success",

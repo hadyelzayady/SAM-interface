@@ -101,8 +101,10 @@ export class ConfigureSamService {
 
         })
     }
-    sendBindIPPort(ip, port, comp) {
-        return this.http.post(`${this.sharedData.localhost_trayapp}Bind`, { ip: ip, port: port })
+    sendBindIPPort(ip, port, comp: ReserveComponentsResponse) {
+        return this.http.post<{ ok: string, board: NodeModel }>(`${this.sharedData.localhost_trayapp}Bind`, { ip: ip, port: port }).pipe(map(response => {
+            return { ok: response.ok, board: comp }
+        }))
     }
     checkPort() {
         return this.http.get<string[]>(`${this.sharedData.localhost_trayapp}checkports`)

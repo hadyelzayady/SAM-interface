@@ -1,50 +1,52 @@
 <div class="container-fluid">
-<div class="row " >
-  <div class="col-sm-12 bgcolor">
-    <ejs-toolbar #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
-      <e-items>
-        <e-item [id]="add_pin" tooltipText='add pin' prefixIcon='e-undo-icon'></e-item>
-        <e-item [id]="save_board" tooltipText='save board' prefixIcon='glyphicon glyphicon-floppy-save'></e-item>
-        <div>
-        <e-item>
-          <ng-template #template >
-            <label [for]="image_upload" class="upload_lbel ">upload board image</label>
-            <input #fileinput type="file" [id]="image_upload" (change)='fileInputChange($event)'
-              accept="image/png, image/jpeg">
-          </ng-template>
-        </e-item>
-      </div>
-      <div>
-        <e-item>
-          <ng-template #template>
-            <div [hidden]="hide_pin_type">
-              <label [for]="pin_type_id" class="upload_lbel">pin type</label>
-              <!-- <input #fileinput type="file" [id]="pin_type_id" (change)='changePinType($event)'> -->
-              <input type="radio" name="type" value="I/O" [checked]='! isVCC && ! isGROUND'
-                (change)='changePinType($event)'> I/O
-              <input type="radio" name="type" value="VCC" [checked]='isVCC' (change)='changePinType($event)'> VCC
-              <input type="radio" name="type" value="GROUND" [checked]='isGROUND' (change)='changePinType($event)'>
-              GROUND
-            </div>
-          </ng-template>
-        </e-item>
-      </div>
-      </e-items>
-    </ejs-toolbar>
+  <div class="row ">
+    <div class="col-sm-12 bgcolor">
+
+
+      <ejs-toolbar #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
+        <e-items>
+          <e-item [id]="add_pin" tooltipText='add pin' prefixIcon='e-undo-icon'></e-item>
+          <e-item [id]="save_board" tooltipText='save board' prefixIcon='glyphicon glyphicon-floppy-save'></e-item>
+          <div>
+            <e-item>
+              <ng-template #template>
+                <label [for]="image_upload" class="upload_lbel ">upload board image</label>
+                <input #fileinput type="file" [id]="image_upload" (change)='fileInputChange($event)'
+                  accept="image/png, image/jpeg">
+              </ng-template>
+            </e-item>
+          </div>
+          <div>
+            <e-item>
+              <ng-template #template>
+                <div [hidden]="hide_pin_type">
+                  <label [for]="pin_type_id" class="upload_lbel">pin type</label>
+                  <!-- <input #fileinput type="file" [id]="pin_type_id" (change)='changePinType($event)'> -->
+                  <input type="radio" name="type" value="I/O" [checked]='! isVCC && ! isGROUND'
+                    (change)='changePinType($event)'> I/O
+                  <input type="radio" name="type" value="VCC" [checked]='isVCC' (change)='changePinType($event)'> VCC
+                  <input type="radio" name="type" value="GROUND" [checked]='isGROUND' (change)='changePinType($event)'>
+                  GROUND
+                </div>
+              </ng-template>
+            </e-item>
+          </div>
+        </e-items>
+      </ejs-toolbar>
+    </div>
   </div>
-</div>
-<div class="row">
-  <div class="col-sm-3 borderframe">
-    <!-- <table> -->
+  <div class="row">
+    <div class="col-sm-3 borderframe">
+      <!-- <table> -->
       <div class="row paddingrows">
         <div class="col-sm-6">Sam pin name</div>
         <div class="col-sm-6">Board pin name</div>
       </div>
       <div class="row paddingrows" *ngFor="let pin of SAM_pins let i=index" [attr.data-index]="i">
-          <div class="col-sm-6">SAM pin:{{pin}}</div>
+        <div class="col-sm-6">SAM pin:{{pin}}</div>
         <!-- <td><input type="text" size="4" [(ngModel)]="SAMPin_BoardPin[i]"></td>
          -->
-         <div class="col-sm-6 ">
+        <div class="col-sm-6 ">
           <select class="pinselect" [ngModel]="SAMPin_BoardPin[pin]" (ngModelChange)="PinSelectedEvent(pin,$event)">
             <option value="" [selected]='selected'>none</option>
             <ng-container *ngFor="let node of getPins()">
@@ -57,26 +59,25 @@
           </select>
         </div>
       </div>
-    
 
-    <!-- </table> -->
-  </div>
-  <div class=" col-sm-9 borderframe main-wrapper">
-    <ejs-diagram #diagram id="diagram" width="100%" height="100%" (created)='diagramCreated()'
-      (selectionChange)='selectionChangeEvent($event)' (historyChange)='historyChanged($event)'
-      (textEdit)='EditBoardNameEvent($event)' [commandManager]="commandManager"
-      [contextMenuSettings]="contextMenuSettings">
-      <!-- (textEdit)='EditBoardNameEvent($event)' -->
-    </ejs-diagram>
-  </div>
-</div>
-<jw-modal id="{{save_custom_board_modal_id}}">
-  <h1>saving board</h1>
-  <p style="display:inline">saving board </p>
-  <span style="display:inline" [hidden]="!saved">&#9989;</span>
-  <span style="display:inline" [hidden]="!error_saved">&#10060;</span>
-  <p>{{error_message}}</p>
-  <button (click)='customClose(save_custom_board_modal_id)' [hidden]="hide_modal_close_btn"> Close</button>
 
-</jw-modal>
-</div>
+      <!-- </table> -->
+    </div>
+    <div class=" col-sm-9 borderframe main-wrapper">
+      <ejs-diagram #diagram id="diagram" width="100%" height="100%" (created)='diagramCreated()'
+        (selectionChange)='selectionChangeEvent($event)' (historyChange)='historyChanged($event)'
+        (textEdit)='EditBoardNameEvent($event)' [commandManager]="commandManager"
+        [contextMenuSettings]="contextMenuSettings">
+        <!-- (textEdit)='EditBoardNameEvent($event)' -->
+      </ejs-diagram>
+    </div>
+    <jw-modal id="{{save_custom_board_modal_id}}">
+      <h1>saving board</h1>
+      <p style="display:inline">saving board </p>
+      <span style="display:inline" [hidden]="!saved">&#9989;</span>
+      <span style="display:inline" [hidden]="!error_saved">&#10060;</span>
+      <p>{{error_message}}</p>
+      <button (click)='customClose(save_custom_board_modal_id)' [hidden]="hide_modal_close_btn"> Close</button>
+
+    </jw-modal>
+  </div>

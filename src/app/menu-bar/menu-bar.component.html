@@ -1,2 +1,11 @@
 <ejs-menu #menu [items]='menuItems' (select)="select($event)">
 </ejs-menu>
+
+<jw-modal id="{{save_modal_id}}">
+    <h1>Saving Design</h1>
+    <p style="display:inline">save status</p>
+    <span style="display:inline" [hidden]="!saved">&#9989;</span>
+    <span style="display:inline" [hidden]="!error_saved">&#10060;</span>
+    <br>
+    <button (click)='saveModalClose()' [hidden]="hide_modal_close_btn"> Close</button>
+</jw-modal>

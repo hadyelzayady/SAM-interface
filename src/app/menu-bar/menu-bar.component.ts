@@ -6,9 +6,11 @@ import { SimpleModalService } from 'ngx-simple-modal';
 import { SharedVariablesService } from '../_services/shared-variables.service';
 import { LoadFileComponent } from '../load-file/load-file.component';
 import { DesignService } from '../_services';
-import { first, takeUntil } from 'rxjs/operators';
+import { first, takeUntil, finalize } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { CanDeactivateComponent } from '../can-deactivate/can-deactivate.component';
+import { IExportOptions } from '@syncfusion/ej2-angular-diagrams';
+import { ModalService } from '../modal.service';
 
 @Component({
   selector: 'app-menu-bar',
@@ -31,7 +33,7 @@ export class MenuBarComponent implements OnInit {
       text: 'File',
       iconCss: 'em-icons e-file',
       items: [
-        { id: this.open_id, text: 'Open', iconCss: 'em-icons e-open' },
+        // { id: this.open_id, text: 'Open', iconCss: 'em-icons e-open' },
         { id: this.save_id, text: 'Save', iconCss: 'e-icons e-save' },
         { id: this.download_id, text: 'Download diagram on your computer', iconCss: 'e-icons e-save' },
         { id: this.load_id, text: 'Load Diagram from your computer', iconCss: 'e-icons e-load' },
@@ -43,8 +45,9 @@ export class MenuBarComponent implements OnInit {
     }
   ];
   @Input() file_id: number;
+  options: IExportOptions;
 
-  constructor(private simpleModalService: SimpleModalService, public sharedData: SharedVariablesService, private designService: DesignService, private router: Router) {
+  constructor(private simpleModalService: SimpleModalService, public sharedData: SharedVariablesService, private designService: DesignService, private router: Router, private modalService: ModalService) {
 
   }
   saved_undo_stack_length = 0
@@ -72,16 +75,39 @@ export class MenuBarComponent implements OnInit {
     }
   }
   //openadd file dialoge
+  save_modal_id = "save-diagram-id"
+  saved = false
+  error_saved = true
+  hide_modal_close_btn = true
+  saveModalClose() {
+    this.error_saved = false
+    this.saved = false
+    this.hide_modal_close_btn = true
+    this.modalService.close(this.save_modal_id)
+
+  }
   public select(args: MenuEventArgs): void {
     if (!this.sim_mode) {
       switch (args.item.id) {
         case this.save_id:
           {
+            // this.options = {};
+            // this.options.mode = 'Download';
+            // this.options.format = 'PNG'
+            // let im = this.sharedData.diagram.exportDiagram(this.options);
+            // // this.sharedData.diagram.print(this.options);
+            // console.log("he", im.toString())
 
-            this.designService.saveDesign(this.sharedData.diagram.saveDiagram(), this.file_id).subscribe(() => {
+            this.modalService.open(this.save_modal_id)
+            this.designService.saveDesign(this.sharedData.diagram.saveDiagram(), this.file_id).pipe(finalize(() => { this.hide_modal_close_btn = false })).subscribe(() => {
+              this.saved = true
+              this.error_saved = false
               this.setSaveStatus(true)
-              alert("file edited")
+              // alert("file edited")
+
             }, error => {
+              this.saved = false
+              this.error_saved = true
             });
             break;
           }
