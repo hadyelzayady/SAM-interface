@@ -3,8 +3,8 @@
     <div class="col-sm-12 bgcolor">
 
 
-      <ejs-toolbar #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
-        <e-items>
+      <ejs-toolbar  #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
+        <e-items class="toolbar">
           <e-item [id]="add_pin" tooltipText='add pin' prefixIcon='e-undo-icon'></e-item>
           <e-item [id]="save_board" tooltipText='save board' prefixIcon='glyphicon glyphicon-floppy-save'></e-item>
           <div>
@@ -19,7 +19,7 @@
           <div>
             <e-item>
               <ng-template #template>
-                <div [hidden]="hide_pin_type">
+                <div [hidden]="hide_pin_type" class="toolbar_radio">
                   <label [for]="pin_type_id" class="upload_lbel">pin type</label>
                   <!-- <input #fileinput type="file" [id]="pin_type_id" (change)='changePinType($event)'> -->
                   <input type="radio" name="type" value="I/O" [checked]='! isVCC && ! isGROUND'
@@ -63,7 +63,7 @@
 
       <!-- </table> -->
     </div>
-    <div class=" col-sm-9 borderframe main-wrapper">
+    <div class=" col-sm-9 nopadding borderframe main-wrapper">
       <ejs-diagram #diagram id="diagram" width="100%" height="100%" (created)='diagramCreated()'
         (selectionChange)='selectionChangeEvent($event)' (historyChange)='historyChanged($event)'
         (textEdit)='EditBoardNameEvent($event)' [commandManager]="commandManager"

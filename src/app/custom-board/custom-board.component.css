@@ -30,3 +30,24 @@ border-bottom: solid 1px gray;
 .bgcolor{
   background-color: #fafafa;
 }
+.nopadding{
+  padding:0px;
+}
+.toolbar{
+  width: 90%;
+}
+.toolbar_radio{
+  float: right;
+}
+.e-toolbar-items{
+  width: 100%;
+}
+#radio_btns{
+  float:right;
+}
+/* .e-toolbar-item.e-template{
+  float: right;
+} */
+/* .e-toolbar-item.e-template{
+  float: right;
+} */

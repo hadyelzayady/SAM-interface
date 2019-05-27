@@ -66,6 +66,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     //   console.log(params)
 
     // })
+    
     this.contextMenuSettings = {
       show: true,
     }
