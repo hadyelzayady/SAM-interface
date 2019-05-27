@@ -66,7 +66,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     //   console.log(params)
 
     // })
-    
+
     this.contextMenuSettings = {
       show: true,
     }
@@ -91,6 +91,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
     this.pin.height = pin["height"]
     this.pin.offsetX = pin["offsetX"] + .5 * pin["width"]
     this.pin.offsetY = pin["offsetY"] + .5 * pin["height"]
+    ////////////
     let node = this.diagram.add(this.pin)
     this.pin_number += 1;
     this.grouper_node.children.push(node.id)
@@ -147,13 +148,10 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
             else if (diagram.selectedItems.nodes.length == 1) {
               let node = diagram.selectedItems.nodes[0]
               if (node.addInfo[addInfo_pinType] == PinType_IN_OUT) {
-                let sam_pin = mythis.BoardPin_SAMPin[node.id]
-                let oldBoardPin_id = mythis.SAMPin_BoardPin[sam_pin] || null
-                console.log("old pin_id", oldBoardPin_id)
-                if (oldBoardPin_id != null) {
-                  delete mythis.BoardPin_SAMPin[sam_pin]
-                  delete mythis.boardPin_selected[oldBoardPin_id]
-                }
+                let sam_pin = mythis.BoardPin_SAMPin[node.annotations[0].content]
+                console.log("old pin_id", node.id)
+                delete mythis.BoardPin_SAMPin[sam_pin]
+                delete mythis.boardPin_selected[node.annotations[0].content]
                 mythis.SAMPin_BoardPin[sam_pin] = ''
                 console.log(mythis.SAMPin_BoardPin[sam_pin])
                 diagram.removeNode(diagram.selectedItems.nodes[0])
@@ -465,6 +463,7 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
         open.subscribe(dim => {
           this.board_props.width = dim["width"]
           this.board_props.height = dim["height"]
+
           // this.new_image = true
           this.addBoard()
 
@@ -626,6 +625,9 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
           let [x, y] = this.getPinOffset(this.board_node, node.offsetX, node.offsetY)
           let i = 0;
           let tempname = node.annotations[0].content || node.addInfo[addInfo_pinType] + i++
+          console.log("creae oard", this.board_props)
+          let width = node.width * (this.board_props.width / this.board_node.width)
+          let height = node.height * (this.board_props.height / this.board_node.height)
           ports.push({
             id: this.BoardPin_SAMPin[pin_id] || tempname,
             offset: {
@@ -633,8 +635,8 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
               y: y
             },
             shape: 'Square',
-            width: node.width,
-            height: node.height,
+            width: width,
+            height: height,
             addInfo: {
               pin_type: node.addInfo["pin_type"]
             }
@@ -723,6 +725,9 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
       }
       case this.save_board: {
         console.log("boardpin sampin:", this.BoardPin_SAMPin)
+        let sam_maps = this.getSAMMapping()
+        console.log("Sam maps", sam_maps)
+
         if (!this.checkAllPinMapped()) {
           alert("please set mapping pins for each pin in board to SAM pin number")
         } else {
