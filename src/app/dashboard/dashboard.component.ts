@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService, DesignService, AlertService } from '../_services';
+import { UserService, DesignService, AlertService, SharedVariablesService } from '../_services';
 import { DesignFile } from '../_models/DesignFile'
 import { first } from 'rxjs/operators';
 import { FilenameDialogComponent } from '../filename-dialog/filename-dialog.component';
@@ -18,13 +18,14 @@ export class DashboardComponent implements OnInit {
   design_files: DesignFile[];
   user_boards: UserBoards[];
   currentview: String;
-  
-  constructor(private userService: UserService, private designService: DesignService, private customBoardService: CustomBoardService, private simpleModalService: SimpleModalService, private router: Router, private alertService: AlertService) { }
-setview(id){
-  this.currentview=id;
-}
+  image_url
+  constructor(private userService: UserService, private designService: DesignService, private customBoardService: CustomBoardService, private simpleModalService: SimpleModalService, private router: Router, private alertService: AlertService, private sharedData: SharedVariablesService) { }
+  setview(id) {
+    this.currentview = id;
+  }
   ngOnInit() {
-    this.currentview='1';
+    this.currentview = '1';
+    this.image_url = this.sharedData.imageUrl
     this.loadUserDesigns();
     this.loadUserBoards()
   }

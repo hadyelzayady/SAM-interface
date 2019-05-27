@@ -19,7 +19,8 @@ export interface CustomBoard {
 }
 export interface UserBoards {
     id: number,
-    name: string
+    name: string,
+    is_public: boolean
 }
 
 export interface OutputEvent {
