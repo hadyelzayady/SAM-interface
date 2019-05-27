@@ -619,8 +619,9 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
             throw Error("SAM pin map not assigned")
           let [x, y] = this.getPinOffset(this.board_node, node.offsetX, node.offsetY)
           let i = 0;
+          let tempname = node.annotations[0].content || node.addInfo[addInfo_pinType] + i++
           ports.push({
-            id: this.BoardPin_SAMPin[pin_id] || node.addInfo["pin_type"] + i++,
+            id: this.BoardPin_SAMPin[pin_id] || tempname,
             offset: {
               x: x,
               y: y

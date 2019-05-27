@@ -197,7 +197,7 @@ export class DesignComponent extends CanDeactivateComponent {
               node.addInfo[addInfo_isBinded] = false
               node.addInfo[addInfo_reserved] = false
               node.annotations = [{
-                content: node.addInfo[addInfo_name],
+                content: node.id,
                 style: annotationsStyle
               }]
               console.log(node.addInfo[addInfo_componentId])

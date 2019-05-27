@@ -217,7 +217,7 @@ export class ToolBarComponent {
           node.addInfo[addInfo_connectedComponentId] = reserved_comps[cache[componentId]].id
           node.addInfo[addinfo_IP] = reserved_comps[cache[componentId]].IP;
           node.addInfo[addinfo_port] = reserved_comps[cache[componentId]].udp_port;
-          node.annotations[0].content += "_" + node.addInfo[addinfo_IP]
+          // node.annotations[0].content += "_" + node.addInfo[addinfo_IP]
           delete cache[componentId]
         }
         else {
@@ -228,7 +228,7 @@ export class ToolBarComponent {
               node.addInfo[addInfo_connectedComponentId] = reserved_comps[reserved_index].id
               node.addInfo[addinfo_IP] = reserved_comps[reserved_index].IP
               node.addInfo[addinfo_port] = reserved_comps[reserved_index].udp_port
-              node.annotations[0].content = node.addInfo[addInfo_componentId] + "_" + node.addInfo[addinfo_IP]
+              // node.annotations[0].content = node.addInfo[addInfo_componentId] + "_" + node.addInfo[addinfo_IP]
               found_component = true;
               reserved_index++
               break;
@@ -736,10 +736,9 @@ export class ToolBarComponent {
 
                       this.configSamService.checkPort().subscribe(HW_ports => {
                         console.log(HW_ports)
-
                         let board = this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[reserved_board.id]]
                         board.addInfo[addInfo_isBinded] = true
-                        board.annotations[0].content = board.addInfo[addInfo_name] + "_" + HW_ports[0]
+                        board.annotations[0].content = board.id + "_" + HW_ports[0]
                         binded_count++
                         if (index == reserved_comps.length - 1) {
                           console.log("binded count,reserved count", binded_count, reserved_comps.length)
