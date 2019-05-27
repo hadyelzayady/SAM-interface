@@ -361,19 +361,22 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
   boardPin_selected: { [key: string]: boolean } = {}
   PinSelectedEvent(sam_pin_index, pin_id: string) {
     console.log("change sele", sam_pin_index)
+    let oldBoardPin_id = this.SAMPin_BoardPin[sam_pin_index] || null
+    console.log("old pin_id", oldBoardPin_id)
+    if (oldBoardPin_id != null) {
+      delete this.BoardPin_SAMPin[oldBoardPin_id]
+      this.boardPin_selected[oldBoardPin_id] = false
+    }
     if (pin_id == "") {
       console.log("pin is null")
       let oldBoardPin_id = this.SAMPin_BoardPin[sam_pin_index] || null
       console.log("old pin_id", oldBoardPin_id)
-      if (oldBoardPin_id != null) {
-        delete this.BoardPin_SAMPin[sam_pin_index]
-        this.boardPin_selected[oldBoardPin_id] = false
-      }
       this.SAMPin_BoardPin[sam_pin_index] = ''
       console.log(this.SAMPin_BoardPin[sam_pin_index])
       // this.SAMPin_BoardPin[sam_pin_index] = "none"
     }
     else {
+      this.boardPin_selected
       this.BoardPin_SAMPin[pin_id] = sam_pin_index
       this.boardPin_selected[pin_id] = true
       this.SAMPin_BoardPin[sam_pin_index] = pin_id
