@@ -79,6 +79,7 @@ export class ToolBarComponent {
   reserve_id = "reserve"
   reset_id = "reset"
   upload_firmware_id = "upload_id"
+  fit_diagram_id = 'fitDiagram_id'
   // to unsubscribe from observables when sim ends
   private unsubscribe: Subject<void> = new Subject();
 
@@ -544,10 +545,15 @@ export class ToolBarComponent {
         this.sharedData.diagram.zoom(.5);
         break;
       }
-      case this.connector_id: {
+      // case this.connector_id: {
+      //   // this.sharedData.diagram.drawingObject = this.utils.getConnector() as unknown as ConnectorModel;
+      //   // this.sharedData.diagram.tool = DiagramTools.DrawOnce;
+      //   break;
+      // }
+      case this.fit_diagram_id: {
+        console.log("fit diagram")
         this.sharedData.diagram.fitToPage()
-        this.sharedData.diagram.drawingObject = this.utils.getConnector() as unknown as ConnectorModel;
-        this.sharedData.diagram.tool = DiagramTools.DrawOnce;
+
         break;
       }
       case this.simulate_id: {

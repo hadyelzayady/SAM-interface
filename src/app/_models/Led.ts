@@ -12,8 +12,8 @@ export class Led extends Board {
         else {
             value = true
         }
-        console.log("led sim behavur", value,led_node.id)
-        console.log(led_node.ports[0].addInfo[addInfo_simValue],led_node.ports[1].addInfo[addInfo_simValue])
+        // console.log("led sim behavur", value,led_node.id)
+        console.log(led_node.ports[0].addInfo[addInfo_simValue], led_node.ports[1].addInfo[addInfo_simValue])
         if (value)
             source = led_on_source
         else
