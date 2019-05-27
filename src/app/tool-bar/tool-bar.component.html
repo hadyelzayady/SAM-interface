@@ -1,5 +1,5 @@
 <div class="control-section e-tbar-section">
-  <div class="e-sample-container" style="  padding-bottom: 5px;  margin-right: 0px;">
+  <div class="e-sample-container">
     <div [hidden]="sim_mode">
       <ejs-toolbar #toolbar_design class="toggle" (clicked)='toolbarClick($event)' (created)="created()">
         <e-items>
@@ -9,7 +9,7 @@
           <e-item [id]="zoomin_id" tooltipText='Zoom In' prefixIcon='e-zoomin-icon'></e-item>
           <e-item [id]="zoomout_id" tooltipText='Zoom Out' prefixIcon='e-zoomout-icon'></e-item>
           <e-item type='Separator'></e-item>
-          <e-item [id]="connector_id" tooltipText='Draw Connector' prefixIcon='icon-Con__Orthogonal  tb-icon'>
+          <e-item [id]="connector_id" tooltipText='Draw Connector' prefixIcon='glyphicon glyphicon-resize-horizontal'>
           </e-item>
           <e-item type='Separator'></e-item>
           <!-- <e-item>

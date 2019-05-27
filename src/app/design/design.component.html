@@ -1,25 +1,31 @@
-<div class="row " style="background-color:lightgray">
-  <div class="col-6">
-    <app-menu-bar [file_id]="file_id"></app-menu-bar>
-  </div>
+<div class="container-fluid">
+  <!-- <div class="row " style="background-color:lightgray">
+    <div class="col-sm-12">
+    
+    </div>
+  </div> -->
+  <div class="row ">
+      <div class="col-sm-6 bgcolor">
+    
+        
+        <app-menu-bar [file_id]="file_id"></app-menu-bar>
+      </div>
+  
+      <div class="col-sm-6 bgcolor">
+          <app-tool-bar class="toolbar" [file_id]="file_id"></app-tool-bar>
+    </div>
 </div>
-<div class="row " style="background-color:lightgray">
-  <div class="col-12">
-    <app-tool-bar [file_id]="file_id"></app-tool-bar>
-  </div>
-</div>
-<div class="row nopadding">
-  <div class="col-3 nopadding">
-    <app-side-bar></app-side-bar>
-  </div>
-  <div class="col-9 w-80 nopadding main-wrapper">
-    <ejs-diagram #diagram id="diagram" width="100%" height="600px" (connectionChange)='connectorEvent($event)'
-      (selectionChange)='selectionChangeEvent($event)' [contextMenuSettings]="contextMenuSettings"
-      (contextMenuClick)='contextClick($event)' (created)='diagramCreated()' (historyChange)='historyChange($event)'
-      [commandManager]="commandManager" (doubleClick)='doubleClick($event)' [constraints]='constraints'>
+  <div class="row nopadding">
+    <div class="col-3 nopadding">
+      <app-side-bar></app-side-bar>
+    </div>
+    <div class="col-9 w-80 nopadding main-wrapper">
+      <ejs-diagram #diagram id="diagram" width="100%" height="600px" (connectionChange)='connectorEvent($event)'
+        (selectionChange)='selectionChangeEvent($event)' [contextMenuSettings]="contextMenuSettings"
+        (contextMenuClick)='contextClick($event)' (created)='diagramCreated()' (historyChange)='historyChange($event)'
+        [commandManager]="commandManager" (doubleClick)='doubleClick($event)' [constraints]='constraints'>
 
-    </ejs-diagram>
+      </ejs-diagram>
+    </div>
   </div>
 </div>
-
-<router-outlet></router-outlet>
