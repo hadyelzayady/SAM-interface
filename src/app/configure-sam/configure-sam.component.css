@@ -45,6 +45,10 @@
     background-color: #DDD;
     left: .1em;
   }
+  .bg{
+    background-color: #575954;
+    height: 100%;
+  }
   .boards .text {
     position: relative;
     top: -3px;
@@ -57,11 +61,10 @@
     background-color: #607D8B;
     line-height: 1em;
     position: relative;
-    left: -1px;
-    top: -4px;
+   
     height: 1.8em;
     margin-right: .8em;
-    border-radius: 4px 0 0 4px;
+    border-radius: 10px;
   }
   .welcome_title{
     color: #607D8B;
@@ -77,8 +80,16 @@
 
   }
   .container{
+
+    
+  }
+  .containerholder{
     border-style: outset;
     border-width: 10px;
+    border-radius: 25px;
+    background-color: white;
+    margin-top: 10%;
+    height: 500px;
   }
   .boardimg
   {
@@ -87,9 +98,11 @@
     width: 100px;
     height: 100px;
   }
-  nav ul{
-    height: 400px;
-    overflow:hidden; overflow-y:scroll;
+  ul{   
+    height: 200px;
+    overflow: hidden;
+    overflow-y: scroll;
+    margin-top: 5%;
   }
   li{
     clear: right;
