@@ -174,7 +174,6 @@ export class DesignComponent extends CanDeactivateComponent {
   loadDesignFile(): void {
 
     // this.file_id = +this.route.snapshot.paramMap.get('id');
-    //TODO: reset addinfo for component like binded and etc
     this.designService.getDesignFileById(this.file_id)
       .subscribe(file => {
         try {

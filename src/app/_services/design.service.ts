@@ -59,7 +59,8 @@ export class DesignService {
         return this.http.post(endpoint, connections)
     }
     getSideBarItems(): Observable<NodeModel[][]> {
-        return this.http.get(`${this.baseurl}/components`).pipe(map(response => {
+        return this.http.get(`${this.baseurl}/connectedcomponents`).pipe(map(response => {
+            console.log(response)
             let components = response as Components;
             let i = 0;
             // console.log(response)

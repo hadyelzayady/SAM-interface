@@ -558,7 +558,6 @@ export class ToolBarComponent {
         break;
       }
       case this.simulate_id: {
-        //TODO: what about bind in reserve
         if (!this.sim_mode) {
           this.modalService.open(this.simulate_modal_id)
           //parse
@@ -660,8 +659,6 @@ export class ToolBarComponent {
             // this.simComm.bindBoards(this.file_id)
             this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
               // console.log("bind fail")
-
-              //TODO:
               this.designService.unreserve(this.file_id).subscribe((data) => {
                 alert(data)
 

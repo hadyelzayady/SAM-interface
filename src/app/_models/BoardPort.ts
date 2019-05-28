@@ -32,6 +32,8 @@ export class BoardPort implements PointPortModel {
             },
             visibility: this.visibility,
             constraints: this.constraints,
+            // verticalAlignment: 'Auto',
+            // horizontalAlignment: 'Auto',
             addInfo: {
                 [addInfo_simValue]: UNDEFINED
             }

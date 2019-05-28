@@ -1,51 +1,55 @@
 <div class="container-fluid">
   <div class="row ">
     <div class="col-sm-12 bgcolor">
-      <ejs-toolbar  #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
+      <ejs-toolbar #toolbar_design class="toggle" (clicked)='toolbarClick($event)'>
         <e-items class="toolbar">
           <e-item [id]="add_pin" tooltipText='add pin' prefixIcon='e-undo-icon'></e-item>
           <e-item [id]="save_board" tooltipText='save board' prefixIcon='glyphicon glyphicon-floppy-save'></e-item>
+          <e-item [id]="fit_diagram" tooltipText='Fit Diagram in page' text="Fit Diagram"></e-item>
           <e-item>
-              <ng-template #template>
-              
-                <div class="custom-control custom-checkbox">
-                    <input width="100%" type="checkbox" [checked]="isPublic" (change)='togglePublic()' class="custom-control-input chkbox" id="defaultUnchecked">
-                    <label class="custom-control-label ispubliclbl" for="defaultUnchecked">Is Public</label>
-                </div>  
-              </ng-template>
-            </e-item>
+            <ng-template #template>
+
+              <div class="custom-control custom-checkbox">
+                <input width="100%" type="checkbox" [checked]="isPublic" (change)='togglePublic()'
+                  class="custom-control-input chkbox" id="defaultUnchecked">
+                <label class="custom-control-label ispubliclbl" for="defaultUnchecked">Is Public</label>
+              </div>
+            </ng-template>
+          </e-item>
           <!-- <div >
                   <label class="container_checked_lbel">Public
                     <input  type="checkbox" [checked]="isPublic" (change)='togglePublic()'>
                     <span class="checkmark"></span>
                   </label>
                 </div> -->
- 
-            <e-item>
-              <ng-template #template>
-                <div [hidden]="hide_pin_type" class="toolbar_radio">
-                    <label [for]="pin_type_id" class="upload_lbel">pin type</label>
-              
-                  <!-- <input #fileinput type="file" [id]="pin_type_id" (change)='changePinType($event)'> -->
-                  <input  class="radiobtn" type="radio" name="type" value="I/O" [checked]='! isVCC && ! isGROUND'
-                    (change)='changePinType($event)'> I/O
-                  <input type="radio"class="radiobtn" name="type" value="VCC" [checked]='isVCC' (change)='changePinType($event)'> VCC
-                  <input type="radio"class="radiobtn" name="type" value="GROUND" [checked]='isGROUND' (change)='changePinType($event)'>
-                  GROUND
-                </div>
-              </ng-template>
-            </e-item>
-          
-         
-            <e-item>
-                <ng-template #template>
-                  <label [for]="image_upload" class="upload_lbel ">upload board image</label>
-                  <input #fileinput type="file" [id]="image_upload" (change)='fileInputChange($event)'
-                    accept="image/png, image/jpeg">
-                </ng-template>
-              </e-item>
-           
-        
+
+          <e-item>
+            <ng-template #template>
+              <div [hidden]="hide_pin_type" class="toolbar_radio">
+                <label [for]="pin_type_id" class="upload_lbel">pin type</label>
+
+                <!-- <input #fileinput type="file" [id]="pin_type_id" (change)='changePinType($event)'> -->
+                <input class="radiobtn" type="radio" name="type" value="I/O" [checked]='! isVCC && ! isGROUND'
+                  (change)='changePinType($event)'> I/O
+                <input type="radio" class="radiobtn" name="type" value="VCC" [checked]='isVCC'
+                  (change)='changePinType($event)'> VCC
+                <input type="radio" class="radiobtn" name="type" value="GROUND" [checked]='isGROUND'
+                  (change)='changePinType($event)'>
+                GROUND
+              </div>
+            </ng-template>
+          </e-item>
+
+
+          <e-item>
+            <ng-template #template>
+              <label [for]="image_upload" class="upload_lbel ">upload board image</label>
+              <input #fileinput type="file" [id]="image_upload" (change)='fileInputChange($event)'
+                accept="image/png, image/jpeg">
+            </ng-template>
+          </e-item>
+
+
         </e-items>
       </ejs-toolbar>
     </div>
@@ -65,8 +69,7 @@
           <select class="pinselect" [ngModel]="SAMPin_BoardPin[pin]" (ngModelChange)="PinSelectedEvent(pin,$event)">
             <option value="" [selected]='selected'>none</option>
             <ng-container *ngFor="let node of getPins()">
-              <option
-                *ngIf="node.annotations[0].content== SAMPin_BoardPin[pin] || boardPin_selected[node.annotations[0].content] ==undefined || !boardPin_selected[node.annotations[0].content]">
+              <option *ngIf="node.annotations[0].content== SAMPin_BoardPin[pin] || !node.addInfo['selected']">
                 {{node.annotations[0].content}}</option>
             </ng-container>
             <!-- <option *ngFor="let node of getPins()" [ngValue]="node">{{node.annotations[0].content}}
@@ -80,9 +83,9 @@
     </div>
     <div class=" col-sm-9 nopadding borderframe main-wrapper">
       <ejs-diagram #diagram id="diagram" width="100%" height="100%" (created)='diagramCreated()'
-        (selectionChange)='selectionChangeEvent($event)' (historyChange)='historyChanged($event)'
-        (textEdit)='EditBoardNameEvent($event)' [commandManager]="commandManager"
-        [contextMenuSettings]="contextMenuSettings">
+        (selectionChange)='selectionChangeEvent($event)' (textEdit)='EditBoardNameEvent($event)'
+        [commandManager]="commandManager" [contextMenuSettings]="contextMenuSettings"
+        (contextMenuClick)='contextClick($event)'>
         <!-- (textEdit)='EditBoardNameEvent($event)' -->
       </ejs-diagram>
     </div>

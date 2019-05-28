@@ -62,8 +62,7 @@ export class ConfigureSamComponent implements OnInit {
       }
     }, error => {
       // console.log("the error is "+error);
-      this.EthernetAvailable = true;
-      this.next();
+      alert("please make sure tray app is opened")
       // alert("please plugin your sam and make sure its connected and selected in the tray app");
 
     })
