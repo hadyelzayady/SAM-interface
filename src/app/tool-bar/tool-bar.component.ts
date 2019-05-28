@@ -972,9 +972,8 @@ export class ToolBarComponent {
       })
       this.simComm.onEvent(SocketEvent.BOARD_NOT_START_SIM).subscribe((coonected_component_id) => {
         //console.log(data)
-        let node_name = this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[coonected_component_id]].annotations[0].content
-        if (confirm(`board ${node_name} simulation has stoped, stop simulation?`)) {
-          this.closeSimulationMode();
+        this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[coonected_component_id]].style = {
+          fill: "red"
         }
         //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
         // if (this.sim_mode) {

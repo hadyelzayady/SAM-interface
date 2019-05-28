@@ -1,111 +1,160 @@
 <div class="bg">
-<div class="container">
+  <div class="container">
     <div class="row welcome_title">
-        <div class="col-xl-12">
-          <h1 >welcome to SAM configuration menu</h1>
-        </div>
+      <div class="col-xl-12">
+        <h1>welcome to SAM configuration menu</h1>
+      </div>
     </div>
     <div class="row mainSection">
-        <div class="col-xl-2"></div>
-        <div class="col-xl-8">
-        <div id="carouselExampleControls" class="carousel slide"  data-interval="false"data-ride="carousel">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                   <div class=instruction_block>
-                    <div>
-                    <span class="badge">1</span> 
-                    <span class="instruction_text">please connect your sam board to electrical outlet and make sure the red led is on</span>
-                    <img class ="boardimg"src='https://static.dezeen.com/uploads/2018/04/tug-plug-design-technology_dezeen_sq.gif'>
-                  </div>
-                    <button type="button" class="btn" (click)="next()">Next</button>                   
-                  </div>   
-                  </div>
-                  <div class="carousel-item ">
-                      <div class=instruction_block>
-                       <div>
-                       <span class="badge">2</span> 
-                       <span class="instruction_text">please connect your sam board to usb cable with your computer using cable included</span>
-                       <img class ="boardimg"src='https://i.stack.imgur.com/Bnx0H.gif'>
-                     </div>
-                       <button type="button" class="btn" (click)="getversion()">Next</button>                   
-                     </div>   
-                     </div>
-                     <div class="carousel-item ">
-                        <div class=instruction_block>
-                         <div>
-                         <span class="badge">3</span> 
-                         <span class="instruction_text">please enter your wifi cridentials</span>
-                         <img class ="boardimg"src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTime7aH4loQkjXri7Ybz9-Xfqkn7zZCLL7-ZAVPOY5txDhjbvB1A'>
-                         <span>Wifi Name :</span>
-                         <input type="text" class="form-control" placeholder="Wifi Name"  [(ngModel)]="wifinamevar" aria-label="Wifi Name" aria-describedby="basic-addon1">    
-                         <br>                      
-                         <span>Wifi Password</span>
-                         <input type="password" class="form-control" placeholder="Wifi password"  [(ngModel)]="wifipassvar" aria-label="Wifi password" aria-describedby="basic-addon1">    
-                         <br>   
-                        </div>
-                        <button type="button" class="btn" (click)="setwifi()">Next</button> 
-                        <button *ngIf="EthernetAvailable" type="button" class="btn" (click)="next()">Use Ethernet</button>                   
-                       </div>   
-                       </div>
-                       <div class="carousel-item ">
-                          <div class=instruction_block>
-                           <div>
-                           <span class="badge">4</span> 
-                           <span class="instruction_text">Please enable port forwarding in your router configuration and write ports here</span>
-                           <a href='https://www.lifewire.com/how-to-port-forward-4163829'>How to Port Forward</a>
-                           <img class ="boardimg"src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Internet_port_forwarding.png/1200px-Internet_port_forwarding.png'>
-                          </div>
-                          <br>
-                                    <span>UDPPort</span>
-                                    <input #UDPport type="text" class="form-control" placeholder="UDPPort" [(ngModel)]="portvarUDP" aria-label="Port" aria-describedby="basic-addon1">
-                                    <span>USBPort</span>
-                                    <input #USBport type="text" class="form-control" placeholder="USBPort" [(ngModel)]="portvarUSB" aria-label="Port" aria-describedby="basic-addon1">
-                                    <br>    
-                                    <button type="button" class="btn" (click)="setport()">Next</button>                   
-                                </div>   
-                         </div>
-                     
-              <div class="carousel-item">
-                <!-- <div class="col-md-3"></div> -->
-                  <div class="connectedTo">
-                      <h2 class="sectionTitle">What will you connect the SAM to ?</h2>
-                      <!-- <nav> -->
-                        <ul class="boards">
-                            <li *ngFor="let board of boards"
-                            [class.selected]="board === selectedBoard"
-                            (click)="onSelect(board)">
-                            <span class="badge">{{board.id}}</span> 
-                            <span >{{board.name}}</span>
-                            <!-- <img class ="boardimg"src={{board.image_path}}> -->
-                            <img class ="boardimg" [src]="getimage(board.id)">
-                          </li>
-                <li *ngIf="selectedBoard">
-                          <button type="button" class="btn" (click)="setcomponent(selectedBoard.id)">Next</button>                   
-                        </li>
-                        </ul>
-                      <!-- </nav> -->
-                             
-                  </div>
-                  <!-- <div class="col-md-3"></div> -->
+      <div class="col-xl-2"></div>
+      <div class="col-xl-8">
+        <div id="carouselExampleControls" class="carousel slide" data-interval="false" data-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <div class=instruction_block>
+                <div>
+                  <span class="badge">1</span>
+                  <span class="instruction_text">please connect your sam board to electrical outlet and make sure the
+                    red led is on</span>
+                  <img class="boardimg"
+                    src='https://static.dezeen.com/uploads/2018/04/tug-plug-design-technology_dezeen_sq.gif'>
+                </div>
+                <button type="button" class="btn" (click)="next()">Next</button>
               </div>
             </div>
-            <a  style="display: none;"class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
-              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-              <span class="sr-only">Previous</span>
-            </a>
-            <a id='carousel_next' style="display: none;"class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-              <span class="carousel-control-next-icon" aria-hidden="true"></span>
-              <span class="sr-only">Next</span>
-            </a>
+            <div class="carousel-item ">
+              <div class=instruction_block>
+                <div>
+                  <span class="badge">2</span>
+                  <span class="instruction_text">please connect your sam board to usb cable with your computer using
+                    cable included</span>
+                  <img class="boardimg" src='https://i.stack.imgur.com/Bnx0H.gif'>
+                </div>
+                <button type="button" class="btn" (click)="getversion()">Next</button>
+              </div>
+            </div>
+            <div class="carousel-item ">
+              <div class=instruction_block>
+                <div>
+                  <span class="badge">3</span>
+                  <span class="instruction_text">please enter your wifi cridentials</span>
+                  <img class="boardimg"
+                    src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTime7aH4loQkjXri7Ybz9-Xfqkn7zZCLL7-ZAVPOY5txDhjbvB1A'>
+                  <span>Wifi Name :</span>
+                  <input type="text" class="form-control" placeholder="Wifi Name" [(ngModel)]="wifinamevar"
+                    aria-label="Wifi Name" aria-describedby="basic-addon1">
+                  <br>
+                  <span>Wifi Password</span>
+                  <input type="password" class="form-control" placeholder="Wifi password" [(ngModel)]="wifipassvar"
+                    aria-label="Wifi password" aria-describedby="basic-addon1">
+                  <br>
+                </div>
+                <button type="button" class="btn" (click)="setwifi()">Next</button>
+                <button *ngIf="EthernetAvailable" type="button" class="btn" (click)="next()">Use Ethernet</button>
+              </div>
+            </div>
+            <div class="carousel-item ">
+              <div class=instruction_block>
+                <div>
+                  <span class="badge">4</span>
+                  <span class="instruction_text">Please enable port forwarding in your router configuration and write
+                    ports here</span>
+                  <a href='https://www.lifewire.com/how-to-port-forward-4163829'>How to Port Forward</a>
+                  <img class="boardimg"
+                    src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Internet_port_forwarding.png/1200px-Internet_port_forwarding.png'>
+                </div>
+                <br>
+                <span>UDPPort</span>
+                <input #UDPport type="text" class="form-control" placeholder="UDPPort" [(ngModel)]="portvarUDP"
+                  aria-label="Port" aria-describedby="basic-addon1">
+                <span>USBPort</span>
+                <input #USBport type="text" class="form-control" placeholder="USBPort" [(ngModel)]="portvarUSB"
+                  aria-label="Port" aria-describedby="basic-addon1">
+                <br>
+                <button type="button" class="btn" (click)="setport()">Next</button>
+              </div>
+            </div>
+
+            <div class="carousel-item">
+              <!-- <div class="col-md-3"></div> -->
+              <div class="connectedTo">
+                <h2 class="sectionTitle">What will you connect the SAM to ?</h2>
+                <!-- <nav> -->
+                <ul class="boards">
+                  <li *ngFor="let board of boards" [class.selected]="board === selectedBoard" (click)="onSelect(board)">
+                    <span class="badge">{{board.id}}</span>
+                    <span>{{board.name}}</span>
+                    <!-- <img class ="boardimg"src={{board.image_path}}> -->
+                    <img class="boardimg" [src]="getimage(board.id)">
+                  </li>
+                  <li *ngIf="selectedBoard">
+                    <button type="button" class="btn" (click)="setcomponent(selectedBoard.id)">Next</button>
+                  </li>
+                </ul>
+                <!-- </nav> -->
+
+              </div>
+              <!-- <div class="col-md-3"></div> -->
+            </div>
           </div>
-        </div>  
-    <div class="col-xl-2"></div>
+          <a style="display: none;" class="carousel-control-prev" href="#carouselExampleControls" role="button"
+            data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+          </a>
+          <a id='carousel_next' style="display: none;" class="carousel-control-next" href="#carouselExampleControls"
+            role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+          </a>
+        </div>
+      </div>
+      <div class="col-xl-2"></div>
     </div>
-</div>
+  </div>
 
+  <jw-modal id="{{modal_id}}">
+    <h1>Adding Component</h1>
+    <ul>
+      <li>
+        <p style="display:inline">Setting component id</p>
+        <span style="display:inline" [hidden]="!id_setted">&#9989;</span>
+        <span style="display:inline" [hidden]="!error_id">&#10060;</span>
+      </li>
+      <li>
+        <p style="display:inline">Setting server </p>
+        <span style="display:inline" [hidden]="!server_setted">&#9989;</span>
+        <span style="display:inline" [hidden]="!error_server">&#10060;</span>
+      </li>
+      <li>
+        <p style="display:inline">Setting hello message </p>
+        <span style="display:inline" [hidden]="!hello_setted">&#9989;</span>
+        <span style="display:inline" [hidden]="!error_hello_set">&#10060;</span>
+      </li>
+      <li>
+        <p style="display:inline">Adding component</p>
+        <span style="display:inline" [hidden]="!component_added">&#9989;</span>
+        <span style="display:inline" [hidden]="!error_component">&#10060;</span>
 
+      </li>
+      <li>
+        <p style="display:inline">Sending hello</p>
+        <span style="display:inline" [hidden]="!hello_sent">&#9989;</span>
+        <span style="display:inline" [hidden]="!error_hello_send">&#10060;</span>
 
-<!-- 
+      </li>
+      <li>
+        <p style="display:inline">Sending finished</p>
+        <span style="display:inline" [hidden]="!finish_sent">&#9989;</span>
+        <span style="display:inline" [hidden]="!error_finish">&#10060;</span>
+
+      </li>
+    </ul>
+    <button (click)='customClose()' [hidden]="hide_modal_close_btn"> Close</button>
+
+  </jw-modal>
+
+  <!-- 
 <div *ngIf="selectedBoard">
 
   <h2>{{selectedBoard.name | uppercase}} Details</h2>
@@ -117,8 +166,8 @@
   </div>
 
 </div> -->
-<!-- </div> -->
-<!-- 
+  <!-- </div> -->
+  <!-- 
  <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
     <div class="carousel-inner">
       <div class="carousel-item active">
@@ -146,7 +195,7 @@
 
 
 
-<!-- 
+  <!-- 
 
             
   <div class="carousel-item">
