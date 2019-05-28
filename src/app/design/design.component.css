@@ -6,7 +6,6 @@
 }
 .toolbar{
   float: right;
-  position: sticky;
 }
 .nopadding{
   padding:0px;

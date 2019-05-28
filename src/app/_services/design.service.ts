@@ -33,10 +33,11 @@ export class DesignService {
     reserve(reservecomps: {}, fileid: number) {
         return this.http.post<ReserveComponentsResponse[]>(`${this.baseurl}/${fileid}/reserve`, reservecomps)
     }
-    saveDesign(file_data: string, fileid: number) {
+    saveDesign(file_data: string, diagram_image: any, fileid: number) {
         const formData: FormData = new FormData();
 
-        formData.append("file", file_data)
+        formData.append("files[]", file_data)
+        formData.append("files[]", diagram_image)
         return this.http.put(`${this.baseurl}/designfile/${fileid}`, formData);
     }
 

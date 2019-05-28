@@ -45,7 +45,7 @@ export class MenuBarComponent implements OnInit {
     }
   ];
   @Input() file_id: number;
-  options: IExportOptions;
+
 
   constructor(private simpleModalService: SimpleModalService, public sharedData: SharedVariablesService, private designService: DesignService, private router: Router, private modalService: ModalService) {
 
@@ -63,6 +63,13 @@ export class MenuBarComponent implements OnInit {
     this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
       this.sim_mode = sim_mode;
     });
+
+    this.options = {};
+    this.options.mode = 'Data';
+    // this.options.margin = { left: 10, right: 10, top: 10, bottom: 10 };
+    this.options.fileName = 'format';
+    this.options.format = 'JPG';
+    this.options.region = 'Content';
   }
   setSaveStatus(saved: boolean) {
     this.sharedData.saved_design = saved
@@ -86,6 +93,8 @@ export class MenuBarComponent implements OnInit {
     this.modalService.close(this.save_modal_id)
 
   }
+  public options: IExportOptions;
+
   public select(args: MenuEventArgs): void {
     if (!this.sim_mode) {
       switch (args.item.id) {
@@ -99,7 +108,9 @@ export class MenuBarComponent implements OnInit {
             // console.log("he", im.toString())
 
             this.modalService.open(this.save_modal_id)
-            this.designService.saveDesign(this.sharedData.diagram.saveDiagram(), this.file_id).pipe(finalize(() => { this.hide_modal_close_btn = false })).subscribe(() => {
+
+            let diagram_image = this.sharedData.diagram.exportDiagram(this.options);
+            this.designService.saveDesign(this.sharedData.diagram.saveDiagram(), diagram_image, this.file_id).pipe(finalize(() => { this.hide_modal_close_btn = false })).subscribe(() => {
               this.saved = true
               this.error_saved = false
               this.setSaveStatus(true)

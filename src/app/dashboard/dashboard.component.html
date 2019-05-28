@@ -30,9 +30,8 @@
 
                         <div class="card">
                             <a routerLink="/design/{{file.id}}">
-                                <img class="card-img-top"
-                                    src='https://d1uvxqwmcz8fl1.cloudfront.net/tes/resources/6054132/39885051-d4a1-4414-9c86-b47ad5540758/image?width=1000&height=190&version=1537949314279'
-                                    alt="Card image cap">
+                                <img class="card-img-top" src='{{designFile_image_url}}/{{file.id}}/image'
+                                    alt="design file image">
                             </a>
                             <div class="card-body">
                                 <h5 class="card-title">{{file.original_file_name}}</h5>

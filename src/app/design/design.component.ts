@@ -1,5 +1,5 @@
 import { Component, ViewChild, EventEmitter, Output, OnInit, AfterViewInit } from '@angular/core';
-import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuItemModel, IHistoryChangeArgs, UndoRedo, ConnectorConstraints, NodeConstraints, DiagramConstraints, Keys, CommandManager, KeyModifiers, ContextMenuSettings, ContextMenuSettingsModel, IDoubleClickEventArgs, IExportOptions } from '@syncfusion/ej2-angular-diagrams';
+import { DiagramModule, DiagramComponent, ConnectorModel, PointPortModel, IConnectionChangeEventArgs, Connector, ISelectionChangeEventArgs, ContextMenuItemModel, IHistoryChangeArgs, UndoRedo, ConnectorConstraints, NodeConstraints, DiagramConstraints, Keys, CommandManager, KeyModifiers, ContextMenuSettings, ContextMenuSettingsModel, IDoubleClickEventArgs, IExportOptions, PrintAndExport } from '@syncfusion/ej2-angular-diagrams';
 import { ClickEventArgs, ToolbarComponent, ContextMenu, MenuEventArgs } from '@syncfusion/ej2-angular-navigations';
 import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
@@ -39,7 +39,7 @@ export class DesignComponent extends CanDeactivateComponent {
   public file_id: number;
   public contextMenuSettings: ContextMenuSettingsModel;
   title = 'SAM-interface';
-  constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, private designService: DesignService, private approute: Router, private localSocketService: LocalWebSocketService, private routingState: RoutingStateService) {
+  constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, public designService: DesignService, private approute: Router, private localSocketService: LocalWebSocketService, private routingState: RoutingStateService) {
     super()
 
   }
@@ -57,7 +57,6 @@ export class DesignComponent extends CanDeactivateComponent {
     this.contextMenuSettings = {
       show: true,
     }
-
     this.setCommandManager()
     this.file_id = +this.route.snapshot.paramMap.get('id');
     this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
@@ -129,6 +128,7 @@ export class DesignComponent extends CanDeactivateComponent {
   }
   contextClick(args: ContextMenuClickEventArgs) {
     // console.log("context menu click", args)
+
   }
   doubleClick(args: IDoubleClickEventArgs) {
     // console.log("double click", args)
@@ -179,7 +179,6 @@ export class DesignComponent extends CanDeactivateComponent {
       .subscribe(file => {
         try {
           // console.log(JSON.stringify(file))
-
           if (file != null) {
             console.log("file: ", file)
             this.diagram.loadDiagram(JSON.stringify(file))
@@ -233,7 +232,8 @@ export class DesignComponent extends CanDeactivateComponent {
           alert("error on loading design ,fie reseted")
         }
       }, error => {
-        this.approute.navigate(["home"])
+        console.log("errrrrr", error)
+        this.approute.navigate(["Dashboard"])
       });
   }
 
