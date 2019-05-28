@@ -349,7 +349,7 @@ export class ToolBarComponent {
 
     if (this.VCC_pins.length != 0) {
 
-      interval(8000).pipe(takeUntil(this.unsubscribe), startWith(0))
+      interval(10000).pipe(takeUntil(this.unsubscribe), startWith(0))
         .subscribe(() => {
           // console.log("time", this.VCC_pins)
           this.VCC_pins.forEach(pin => {
@@ -364,7 +364,7 @@ export class ToolBarComponent {
     }
     if (this.GND_pins.length != 0) {
 
-      interval(8000).pipe(takeUntil(this.unsubscribe), startWith(0))
+      interval(10000).pipe(takeUntil(this.unsubscribe), startWith(0))
         .subscribe(() => {
           // // console.log("time", this.VCC_pins)
           this.GND_pins.forEach(pin => {
@@ -503,6 +503,7 @@ export class ToolBarComponent {
     this.LocalCommService.close()
     // this.resetComponents()
     this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
+    this.sharedData.diagram.refreshDiagram()
     this.sharedData.diagram.refresh()
   }
   isReservedBinded() {
@@ -905,10 +906,11 @@ export class ToolBarComponent {
       this.error_local_connected = true
       this.closeSimulationMode()
     })
+
     this.LocalCommService.onMessage().subscribe(msg => {
       //console.log("received mesage", msg)
       //console.log(this.sharedData.connected_component_id_index)
-      // let component_index = this.sharedData.connected_component_id_index[msg.connected_component_id]
+      // let component_index = this.sharledData.connected_component_id_index[msg.connected_component_id]
       // let source_node = this.sharedData.diagram.nodes[component_index]
       // let port_index = source_node.ports.findIndex(port => {
       //   return port.id == "" + msg.port_id
@@ -961,6 +963,12 @@ export class ToolBarComponent {
         // } else {
         // this.simComm.close()
         // }
+      })
+      this.simComm.onEvent(SocketEvent.BoardStartedSimulation).subscribe((connected_component_id) => {
+        console.log("stoped")
+        this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[connected_component_id]].style = {
+          fill: "green"
+        }
       })
       this.simComm.onEvent(SocketEvent.BOARD_NOT_START_SIM).subscribe((coonected_component_id) => {
         //console.log(data)
