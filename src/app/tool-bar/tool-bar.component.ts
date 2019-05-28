@@ -23,8 +23,6 @@ import { Switch } from '../_models/Switch';
 import { BoardMessage } from '../_models/local_message';
 import { ConfigureSamService } from '../_services/configure-sam.service';
 
-//TODO: if connected to vcc send 1 ,if GND send 0 in intervals
-//TODO: validate design
 @Component({
   selector: 'app-tool-bar',
   templateUrl: './tool-bar.component.html',
@@ -80,6 +78,7 @@ export class ToolBarComponent {
   reset_id = "reset"
   upload_firmware_id = "upload_id"
   fit_diagram_id = 'fitDiagram_id'
+  refresh = 'refresh'
   // to unsubscribe from observables when sim ends
   private unsubscribe: Subject<void> = new Subject();
 
@@ -546,6 +545,11 @@ export class ToolBarComponent {
         this.sharedData.diagram.zoom(.5);
         break;
       }
+      case this.refresh: {
+        this.sharedData.diagram.refresh()
+        break
+      }
+
       // case this.connector_id: {
       //   // this.sharedData.diagram.drawingObject = this.utils.getConnector() as unknown as ConnectorModel;
       //   // this.sharedData.diagram.tool = DiagramTools.DrawOnce;
