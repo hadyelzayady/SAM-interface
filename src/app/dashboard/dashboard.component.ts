@@ -19,14 +19,14 @@ export class DashboardComponent implements OnInit {
   user_boards: UserBoards[];
   currentview: String;
   image_url
-  // designFile_image_url
+  designFile_image_url
   constructor(private userService: UserService, private designService: DesignService, private customBoardService: CustomBoardService, private simpleModalService: SimpleModalService, private router: Router, private alertService: AlertService, private sharedData: SharedVariablesService) { }
   setview(id) {
     this.currentview = id;
   }
   ngOnInit() {
-    // this.image_url = this.sharedData.imageUrl
-    // this.designFile_image_url = `${this.sharedData.baseurl}/design/designfile`
+    this.image_url = this.sharedData.imageUrl
+    this.designFile_image_url = `${this.sharedData.baseurl}/design/designfile`
     this.currentview = '1';
 
     this.loadUserDesigns();
