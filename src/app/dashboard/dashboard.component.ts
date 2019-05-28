@@ -25,8 +25,7 @@ export class DashboardComponent implements OnInit {
     this.currentview = id;
   }
   ngOnInit() {
-    // this.image_url = this.sharedData.imageUrl
-    // this.designFile_image_url = `${this.sharedData.baseurl}/design/designfile`
+    this.image_url = this.sharedData.imageUrl
     this.currentview = '1';
 
     this.loadUserDesigns();
