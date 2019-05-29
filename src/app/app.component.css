@@ -9,6 +9,12 @@ width: 15%;
 .menuitem{
    padding: 0% 2%;
    color: white;
+
+}
+.menuitem:hover{
+   background-color: #46a2a2;
+   text-decoration: none;
+   padding: 2%;
 }
 .menucontainer{
    background-color: #575954;
