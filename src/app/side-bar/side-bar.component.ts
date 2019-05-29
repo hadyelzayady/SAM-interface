@@ -50,6 +50,7 @@ export class SideBarComponent implements OnInit {
       sourceDecorator: {
         shape: "Circle"
       },
+      constraints: connectorDesignConstraints
     },
     ];
     return connectorSymbols;
