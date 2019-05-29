@@ -17,7 +17,7 @@ export class ConfigureSamComponent implements OnInit {
   // @ViewChild("carousel_next") carousel_next:ElementRef;
   /// remember this is important
   // serverurl="thesambackend.herokuapp.com";
-  serverurl = "192.168.1.30/SAM";
+  serverurl = "192.168.1.113/SAM";
   boards = BOARDS;
   selectedBoard: board;
 
@@ -58,7 +58,7 @@ export class ConfigureSamComponent implements OnInit {
 
       }
       else {
-        this.next();
+        alert("please check that you are connected to sam and tray application is on" )
       }
     }, error => {
       // console.log("the error is "+error);
