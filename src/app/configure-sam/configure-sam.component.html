@@ -109,6 +109,20 @@
                         </div>
                         <!-- <div class="col-md-3"></div> -->
                       </div>
+                      <div class="carousel-item ">
+                        <div class=instruction_block>
+                          <div>
+                            <span class="badge">6</span>
+                            <span class="instruction_text">please switch sam board to running mode by turning switch back</span>
+                              <div class="imagecontainer">
+                            <img class="boardimg" src='https://i.stack.imgur.com/Bnx0H.gif'>
+                            </div>
+
+                          </div>
+                          <button type="button" class="btn" (click)="sendfinished()">Next</button>
+                        </div>
+                      </div>
+
                     </div>
                     <a style="display: none;" class="carousel-control-prev" href="#carouselExampleControls" role="button"
                       data-slide="prev">
@@ -158,12 +172,7 @@
         <span style="display:inline" [hidden]="!error_hello_send">&#10060;</span>
 
       </li>
-      <li>
-        <p style="display:inline">Sending finished</p>
-        <span style="display:inline" [hidden]="!finish_sent">&#9989;</span>
-        <span style="display:inline" [hidden]="!error_finish">&#10060;</span>
-
-      </li>
+   
     </ul>
     <button (click)='customClose()' [hidden]="hide_modal_close_btn"> Close</button>
 

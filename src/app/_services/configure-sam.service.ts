@@ -79,7 +79,7 @@ export class ConfigureSamService {
         }, httpOptions)
     }
     getVersion() {
-        return this.http.get<String>(`${this.sharedData.localhost_trayapp}GET_BOARD_TYPE`, {
+        return this.http.get<portresp>(`${this.sharedData.localhost_trayapp}GET_BOARD_TYPE`, {
         })
     }
     sethellomsg(helloMessage: String) {
@@ -88,10 +88,10 @@ export class ConfigureSamService {
         }, httpOptions)
     }
     Sendhellomsg() {
-        return this.http.get<String>(`${this.sharedData.localhost_trayapp}SEND_HELLO_MESSAGE`, httpOptions)
+        return this.http.get<portresp>(`${this.sharedData.localhost_trayapp}SEND_HELLO_MESSAGE`, httpOptions)
     }
     sendfinish() {
-        return this.http.get<String>(`${this.sharedData.localhost_trayapp}FINISH_CONFIGURATIONS`, httpOptions)
+        return this.http.get<portresp>(`${this.sharedData.localhost_trayapp}FINISH_CONFIGURATIONS`, httpOptions)
     }
     unBindAll() {
         return this.http.post(`${this.sharedData.localhost_trayapp}UnBindAll`, "", {
