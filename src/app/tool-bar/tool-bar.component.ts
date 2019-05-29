@@ -879,8 +879,10 @@ export class ToolBarComponent {
       //end validate no ground connected to VCC
       // no inpurt to VCC
       let target_port = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[connector.targetID]].ports.find(port => { return port.id == connector.targetPortID })
-      if (target_port.addInfo[addInfo_pinType] == PinType_VCC)
-        throw Error("VCC should be input pin")
+      if (target_port.addInfo[addInfo_pinType] == PinType_VCC || target_port.addInfo[addInfo_pinType] == PinType_GROUND)
+        throw Error("VCC and GROUND should be output pins")
+      //no input to ground
+
     }
     //validate leds
     // let leds = this.sharedData.diagram.nodes.filter(node => {
