@@ -18,9 +18,11 @@
                             <span class="badge">1</span>
                             <span class="instruction_text">please connect your sam board to electrical outlet and make sure the
                               red led is on</span>
+                              <div class="imagecontainer">
                             <img class="boardimg"
                               src='https://static.dezeen.com/uploads/2018/04/tug-plug-design-technology_dezeen_sq.gif'>
-                          </div>
+                            </div>
+                            </div>
                           <button type="button" class="btn" (click)="next()">Next</button>
                         </div>
                       </div>
@@ -30,7 +32,10 @@
                             <span class="badge">2</span>
                             <span class="instruction_text">please connect your sam board to usb cable with your computer using
                               cable included</span>
+                              <div class="imagecontainer">
                             <img class="boardimg" src='https://i.stack.imgur.com/Bnx0H.gif'>
+                            </div>
+
                           </div>
                           <button type="button" class="btn" (click)="getversion()">Next</button>
                         </div>
@@ -40,9 +45,12 @@
                             <div>
                               <span class="badge">3</span>
                               <span class="instruction_text">please enter your wifi cridentials</span>
+                              <div class="imagecontainer">
                               <img class="boardimg"
                                 src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTime7aH4loQkjXri7Ybz9-Xfqkn7zZCLL7-ZAVPOY5txDhjbvB1A'>
-                              <span>Wifi Name :</span>
+                             </div>
+
+                                <span>Wifi Name :</span>
                               <input type="text" class="form-control" placeholder="Wifi Name" [(ngModel)]="wifinamevar"
                                 aria-label="Wifi Name" aria-describedby="basic-addon1">
                               <br>
@@ -62,10 +70,12 @@
                             <span class="instruction_text">Please enable port forwarding in your router configuration and write
                               ports here</span>
                             <a href='https://www.lifewire.com/how-to-port-forward-4163829'>How to Port Forward</a>
+                            </div>
+                            <div class="imagecontainer">
                             <img class="boardimg"
-                              src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Internet_port_forwarding.png/1200px-Internet_port_forwarding.png'>
-                          </div>
-                          <br>
+                            src='https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Internet_port_forwarding.png/1200px-Internet_port_forwarding.png'>
+                       
+                            </div>
                           <span>UDPPort</span>
                           <input #UDPport type="text" class="form-control" placeholder="UDPPort" [(ngModel)]="portvarUDP"
                             aria-label="Port" aria-describedby="basic-addon1">
@@ -87,12 +97,13 @@
                               <span class="badge">{{board.id}}</span>
                               <span>{{board.name}}</span>
                               <!-- <img class ="boardimg"src={{board.image_path}}> -->
-                              <img class="boardimg" [src]="getimage(board.id)">
+                              <img class="boardimg1" [src]="getimage(board.id)">
                             </li>
-                            <li *ngIf="selectedBoard">
-                              <button type="button" class="btn" (click)="setcomponent(selectedBoard.id)">Next</button>
-                            </li>
+                            <!-- <li >
+                             
+                            </li> -->
                           </ul>
+                          <button *ngIf="selectedBoard" type="button" class="btn" (click)="setcomponent(selectedBoard.id)">Next</button>
                           <!-- </nav> -->
           
                         </div>

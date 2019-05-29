@@ -30,12 +30,12 @@
 
                         <div class="card">
                             <a routerLink="/design/{{file.id}}">
-                                <img class="card-img-top" src='{{designFile_image_url}}/{{file.id}}/image'
+                                <img class="card-img-top imgcard" src='{{designFile_image_url}}/{{file.id}}/image'
                                     alt="design file image">
                             </a>
                             <div class="card-body">
                                 <h5 class="card-title">{{file.original_file_name}}</h5>
-                                <p class="card-text">This is a longer card with small description</p>
+                                <!-- <p class="card-text">This is a longer card with small description</p> -->
                                 <!-- <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p> -->
                             </div>
                             <div class="card-footer">
@@ -77,7 +77,7 @@
 
                         <div class="card">
                             <a [routerLink]="['/customboard']" [queryParams]="{board_id:board.id}">
-                                <img class="card-img-top" src='{{image_url}}{{board.id}}/image'
+                                <img class="card-img-top imgcard" src='{{image_url}}{{board.id}}/image'
                                     alt="{{board.name}} image">
                             </a>
                             <div class="card-body">
