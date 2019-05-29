@@ -940,8 +940,10 @@ export class ToolBarComponent {
       })
     })
     this.LocalCommService.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
-
-      // alert("local socket disconnected")
+      if (this.sim_mode) {
+        this.closeSimulationMode()
+      }
+      alert("local socket disconnected")
     })
 
     //socket with server to start and end sim
@@ -957,6 +959,9 @@ export class ToolBarComponent {
       this.simComm.onEvent(SocketEvent.SUCCESSFULL).subscribe(() => {
         this.connected = true
         this.error_connected = false
+      })
+      this.simComm.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
+        this.closeSimulationMode()
       })
       this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe((data) => {
         //console.log(data)
