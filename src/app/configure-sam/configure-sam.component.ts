@@ -18,7 +18,7 @@ export class ConfigureSamComponent implements OnInit {
   // @ViewChild("carousel_next") carousel_next:ElementRef;
   /// remember this is important
   // serverurl="thesambackend.herokuapp.com";
-  serverurl = "192.168.1.113/SAM";
+  serverurl = this.sharedData.domainbaseurl+"SAM";
   boards = BOARDS;
   selectedBoard: board;
 
