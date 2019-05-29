@@ -10,7 +10,7 @@ import { DiagramApiService } from '../_services/diagram-api.service';
 import { ReserveComponentsResponse, OutputEvent } from '../_models';
 import { addInfo_componentId, addInfo_reserved, addInfo_connectedComponentId, addInfo_name, addInfo_type, ComponentType, addinfo_IP, addinfo_port, addInfo_simValue, SwitchValue, addInfo_pinType, PinType_VCC, PinType_GROUND, addInfo_isBinded, connectorDesignConstraints, UNDEFINED, addinfo_BindedPort } from '../utils';
 import { ModalService } from '../modal.service';
-import { finalize, takeUntil, startWith, first } from 'rxjs/operators';
+import { finalize, takeUntil, startWith, first, filter } from 'rxjs/operators';
 import { WebSocketService } from '../_services/web-socket.service';
 import { SimCommunicationService } from '../_services/sim-communication.service';
 import { Led } from '../_models/Led';
@@ -91,6 +91,168 @@ export class ToolBarComponent {
       this.sim_mode = sim_mode;
       this.resetToolBar()
     });
+    this.simComm.initSocket(this.file_id)
+    this.startSocketWithServer()
+  }
+
+  startSocketWithServer() {
+    this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
+      alert("couldn't connect to server sockets")
+    })
+    //********************* */simulation
+    this.simComm.onEvent(SocketEvent.SIM_CONNECTION_ERROR).pipe(filter(x => this.sim_mode)).subscribe((data) => {
+      //console.log(data)
+      this.error_connected = true
+      this.connected = false
+
+      //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
+      // if (this.sim_mode) {
+      this.closeSimulationMode();
+      // } else {
+      // this.simComm.close()
+      // }
+    })
+
+    this.simComm.onEvent(SocketEvent.BoardStartedSimulation).pipe(filter(x => this.sim_mode)).subscribe((connected_component_id) => {
+      console.log("stoped")
+      this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[connected_component_id]].style = {
+        fill: "green"
+      }
+    })
+
+    this.simComm.onEvent(SocketEvent.BOARD_NOT_START_SIM).pipe(filter(x => this.sim_mode)).subscribe((coonected_component_id) => {
+      //console.log(data)
+      this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[coonected_component_id]].style = {
+        fill: "red"
+      }
+    })
+    //***************************** */
+    this.simComm.onEvent(SocketEvent.BOARD_UNRESERVED).subscribe((coonected_component_id) => {
+      //console.log(data)
+      this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[coonected_component_id]].style = {
+        fill: "black"
+      }
+      //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
+      // if (this.sim_mode) {
+      // } else {
+      // this.simComm.close()
+      // }
+    })
+
+    try {
+      this.simComm.onEvent(SocketEvent.BIND_FAIL).subscribe(() => {
+        // console.log("bind fail")
+
+        //TODO:
+        this.designService.unreserve(this.file_id).subscribe((data) => {
+          alert(data)
+
+        }, error => {
+          alert(error)
+        })
+        this.error_binded = true
+        this.binded = false
+      })
+      this.simComm.onEvent(SocketEvent.BIND_SUCCESS).subscribe(() => {
+        console.log("bind succkes")
+
+        try {
+          // console.log("after bind")
+
+          this.configSamService.unBindAll().subscribe(data => {
+            if (data != "ok") {
+              this.binded = false
+              this.error_binded = true
+              this.designService.unreserve(this.file_id).subscribe((data) => {
+                alert(data)
+              }, error => {
+
+              })
+            }
+          })
+          this.setComponentsReserveConfigs(this.reserved_comps)
+          let allBindedEvent = new EventEmitter()
+          allBindedEvent.pipe(first()).subscribe(() => {
+            this.error_binded = false
+            this.binded = true
+            try {
+              this.configured = true
+              this.error_config = false
+            } catch (error) {
+              this.configured = false
+              this.error_config = true;
+            }
+            allBindedEvent.unsubscribe()
+          })
+          let NoBindedEvent = new EventEmitter()
+          NoBindedEvent.pipe(first()).subscribe(() => {
+            this.error_binded = true
+            this.binded = false
+            this.setUnBindAll()
+            this.configSamService.unBindAll()
+            this.designService.unreserve(this.file_id).subscribe((data) => {
+            }, error => {
+
+            })
+            NoBindedEvent.unsubscribe()
+          })
+          let binded_count = 0
+          this.reserved_comps.forEach((comp, index) => {
+            // console.log("usb ip port", comp.usb_ip_port)
+            console.log("FUCKCKKCCCK", comp)
+            this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port, comp).subscribe(data => {
+              let reserved_board = data.board
+              console.log("send bind io ", data, reserved_board)
+              if (data.ok != "ok") {
+                alert("can not bind to local port")
+              } else {
+
+                this.configSamService.checkPort().subscribe(HW_ports => {
+                  console.log(HW_ports)
+                  let board = this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[reserved_board.id]]
+                  board.addInfo[addInfo_isBinded] = true
+                  board.annotations[0].content = board.id + "_" + HW_ports[0]
+                  binded_count++
+                  if (index == this.reserved_comps.length - 1) {
+                    console.log("binded count,reserved count", binded_count, this.reserved_comps.length)
+                    if (binded_count == this.reserved_comps.length) {
+                      allBindedEvent.emit()
+                    } else {
+                      NoBindedEvent.emit()
+                    }
+                  }
+                }, error => {
+                  console.log(error)
+                  this.error_binded = false
+                  this.binded = true
+
+                  alert("can not bind")
+                })
+              }
+            }, error => {
+              //error in sendbindipport
+              console.log("error i  sendip poirt", error)
+              this.error_binded = true
+              this.binded = false
+              this.designService.unreserve(this.file_id).subscribe((data) => {
+              }, error => {
+
+              })
+
+            })
+
+          });
+
+
+
+        } catch (error) {
+
+        }
+      })
+    } catch (error) {
+
+    }
+
   }
   resetToolBar() {
     if (this.sim_mode) {
@@ -494,16 +656,15 @@ export class ToolBarComponent {
 
   }
   closeSimulationMode() {
-
+    console.log("close sim mode")
     this.sharedData.changeMode(false)
     this.unsubscribe.next()
     // this.unsubscribe.complete();
-    this.simComm.close()
     this.LocalCommService.close()
     // this.resetComponents()
+    this.simComm.sendEndSimulation()
     this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
     this.sharedData.diagram.refreshDiagram()
-    this.sharedData.diagram.refresh()
   }
   isReservedBinded() {
     for (const node of this.sharedData.diagram.nodes) {
@@ -521,6 +682,7 @@ export class ToolBarComponent {
     })
   }
   diagram_before_sim = null
+  reserved_comps
   toolbarClick(args: ClickEventArgs): void {
     switch (args.item.id) {
       case this.undo_id: {
@@ -660,135 +822,9 @@ export class ToolBarComponent {
           this.error_reserved = false
           console.log("reserveing", reserved_comps)
           try {
-            this.simComm.initSocket(this.file_id, "bind")
             // this.simComm.bindBoards(this.file_id)
-            this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
-              // console.log("bind fail")
-
-              //TODO:
-              this.designService.unreserve(this.file_id).subscribe((data) => {
-                alert(data)
-
-              }, error => {
-                alert(error)
-              })
-              this.simComm.close()
-              this.error_binded = true
-              this.binded = false
-            })
-            this.simComm.onEvent(SocketEvent.BIND_FAIL).subscribe(() => {
-              // console.log("bind fail")
-
-              //TODO:
-              this.designService.unreserve(this.file_id).subscribe((data) => {
-                alert(data)
-
-              }, error => {
-                alert(error)
-              })
-              this.simComm.close()
-              this.error_binded = true
-              this.binded = false
-            })
-            this.simComm.onEvent(SocketEvent.BIND_SUCCESS).subscribe(() => {
-              // console.log("bind succkes")
-
-              try {
-                // console.log("after bind")
-
-                this.configSamService.unBindAll().subscribe(data => {
-                  if (data != "ok") {
-                    this.simComm.close()
-                    this.binded = false
-                    this.error_binded = true
-                    this.designService.unreserve(this.file_id).subscribe((data) => {
-                      alert(data)
-                    }, error => {
-
-                    })
-                  }
-                })
-                this.setComponentsReserveConfigs(reserved_comps)
-                let allBindedEvent = new EventEmitter()
-                allBindedEvent.pipe(first()).subscribe(() => {
-                  this.error_binded = false
-                  this.binded = true
-                  try {
-                    this.configured = true
-                    this.error_config = false
-                  } catch (error) {
-                    this.configured = false
-                    this.error_config = true;
-                  }
-                  allBindedEvent.unsubscribe()
-                })
-                let NoBindedEvent = new EventEmitter()
-                NoBindedEvent.pipe(first()).subscribe(() => {
-                  this.error_binded = true
-                  this.binded = false
-                  this.setUnBindAll()
-                  this.configSamService.unBindAll()
-                  this.designService.unreserve(this.file_id).subscribe((data) => {
-                  }, error => {
-
-                  })
-                  NoBindedEvent.unsubscribe()
-                })
-                let binded_count = 0
-                reserved_comps.forEach((comp, index) => {
-                  // console.log("usb ip port", comp.usb_ip_port)
-                  console.log("FUCKCKKCCCK", comp)
-                  this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port, comp).subscribe(data => {
-                    let reserved_board = data.board
-                    console.log("send bind io ", data, reserved_board)
-                    if (data.ok != "ok") {
-                      alert("can not bind to local port")
-                    } else {
-
-                      this.configSamService.checkPort().subscribe(HW_ports => {
-                        console.log(HW_ports)
-                        let board = this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[reserved_board.id]]
-                        board.addInfo[addInfo_isBinded] = true
-                        board.annotations[0].content = board.id + "_" + HW_ports[0]
-                        binded_count++
-                        if (index == reserved_comps.length - 1) {
-                          console.log("binded count,reserved count", binded_count, reserved_comps.length)
-                          if (binded_count == reserved_comps.length) {
-                            allBindedEvent.emit()
-                          } else {
-                            NoBindedEvent.emit()
-                          }
-                        }
-                      }, error => {
-                        console.log(error)
-                        this.error_binded = false
-                        this.binded = true
-
-                        alert("can not bind")
-                      })
-                    }
-                  }, error => {
-                    //error in sendbindipport
-                    console.log("error i  sendip poirt", error)
-                    this.error_binded = true,
-                      this.binded = false
-                    this.designService.unreserve(this.file_id).subscribe((data) => {
-                    }, error => {
-
-                    })
-
-                  })
-
-                });
-
-
-
-              } catch (error) {
-
-              }
-              this.simComm.close()
-            })
-
+            this.reserved_comps = reserved_comps
+            this.simComm.sendBind()
           } catch (error) {
             //console.log("in try catch", error)
             //error binding
@@ -910,6 +946,7 @@ export class ToolBarComponent {
       this.error_local_connected = true
       this.closeSimulationMode()
     })
+    this.simComm.sendSimulate()
 
     this.LocalCommService.onMessage().subscribe(msg => {
       //console.log("received mesage", msg)
@@ -951,46 +988,14 @@ export class ToolBarComponent {
       this.sharedData.diagram.clearSelection();
       this.prepared = true
 
-      this.simComm.initSocket(this.file_id)
-      this.simComm.onEvent(SocketEvent.SUCCESSFULL).subscribe(() => {
-        this.connected = true
-        this.error_connected = false
-      })
-      this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe((data) => {
-        //console.log(data)
-        this.error_connected = true
-        this.connected = false
 
-        //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
-        // if (this.sim_mode) {
-        this.closeSimulationMode();
-        // } else {
-        // this.simComm.close()
-        // }
-      })
-      this.simComm.onEvent(SocketEvent.BoardStartedSimulation).subscribe((connected_component_id) => {
-        console.log("stoped")
-        this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[connected_component_id]].style = {
-          fill: "green"
-        }
-      })
-      this.simComm.onEvent(SocketEvent.BOARD_NOT_START_SIM).subscribe((coonected_component_id) => {
-        //console.log(data)
-        this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[coonected_component_id]].style = {
-          fill: "red"
-        }
-        //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
-        // if (this.sim_mode) {
-        // } else {
-        // this.simComm.close()
-        // }
-      })
+
 
     } catch (error) {
       //console.log("error in prepare diagram ", error)
       this.error_prepared = true
       this.prepared = false
-      this.simComm.close()
+      this.closeSimulationMode()
     }
 
   }

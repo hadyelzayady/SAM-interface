@@ -13,6 +13,7 @@ import * as socketIo from 'socket.io-client';
   providedIn: 'root'
 })
 export class SimCommunicationService {
+
   constructor(private sharedData: SharedVariablesService) {
   }
 
@@ -21,7 +22,7 @@ export class SimCommunicationService {
   public initSocket(fileid, mode = "simulate"): void {
     let token = JSON.parse(localStorage.getItem('currentUser')).token;
     this.socket = socketIo(this.sharedData.web_socket_server_url, {
-      query: { token: token, design_id: fileid, mode: mode }
+      query: { token: token, design_id: fileid }
     });
     // // console.log(this.socket)
     // this.webSocket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
@@ -38,6 +39,15 @@ export class SimCommunicationService {
 
   public send(message: Message): void {
     this.socket.emit('message', message);
+  }
+  public sendBind(): void {
+    this.socket.emit('bind')
+  }
+  sendEndSimulation() {
+    this.socket.emit('endSimulation')
+  }
+  public sendSimulate(): void {
+    this.socket.emit('simulate')
   }
   public bindBoards(design_id: number): void {
     this.socket.emit('bind_boards', design_id);
