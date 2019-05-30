@@ -79,7 +79,7 @@ export class ConfigureSamService {
         }, httpOptions)
     }
     getVersion() {
-        return this.http.get<String>(`${this.sharedData.localhost_trayapp}GET_BOARD_TYPE`, {
+        return this.http.get<portresp>(`${this.sharedData.localhost_trayapp}GET_BOARD_TYPE`, {
         })
     }
     sethellomsg(helloMessage: String) {
@@ -88,13 +88,13 @@ export class ConfigureSamService {
         }, httpOptions)
     }
     Sendhellomsg() {
-        return this.http.get<String>(`${this.sharedData.localhost_trayapp}SEND_HELLO_MESSAGE`, httpOptions)
+        return this.http.get<portresp>(`${this.sharedData.localhost_trayapp}SEND_HELLO_MESSAGE`, httpOptions)
     }
     sendfinish() {
-        return this.http.get<String>(`${this.sharedData.localhost_trayapp}FINISH_CONFIGURATIONS`, httpOptions)
+        return this.http.get<portresp>(`${this.sharedData.localhost_trayapp}FINISH_CONFIGURATIONS`, httpOptions)
     }
     unBindAll() {
-        return this.http.post(`${this.sharedData.localhost_trayapp}UnBindAll`, "", {
+        return this.http.post<{res:string}>(`${this.sharedData.localhost_trayapp}UnBindAll`, {
             headers: new HttpHeaders({
                 "Access-Control-Allow-Origin": "*"
             })
@@ -106,8 +106,11 @@ export class ConfigureSamService {
             return { ok: response.ok, board: comp }
         }))
     }
-    checkPort() {
-        return this.http.get<string[]>(`${this.sharedData.localhost_trayapp}checkports`)
+    checkPort(reserved_board) {
+        return this.http.get<{res:string[],board:ReserveComponentsResponse}>(`${this.sharedData.localhost_trayapp}checkports`).pipe(map(response=>{
+            console.log("inside repo smap",response)
+            return {res:response.res,board:reserved_board}
+        }))
     }
 }
 

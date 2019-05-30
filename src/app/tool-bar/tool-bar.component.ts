@@ -23,8 +23,6 @@ import { Switch } from '../_models/Switch';
 import { BoardMessage } from '../_models/local_message';
 import { ConfigureSamService } from '../_services/configure-sam.service';
 
-//TODO: if connected to vcc send 1 ,if GND send 0 in intervals
-//TODO: validate design
 @Component({
   selector: 'app-tool-bar',
   templateUrl: './tool-bar.component.html',
@@ -80,6 +78,7 @@ export class ToolBarComponent {
   reset_id = "reset"
   upload_firmware_id = "upload_id"
   fit_diagram_id = 'fitDiagram_id'
+  refresh = 'refresh'
   // to unsubscribe from observables when sim ends
   private unsubscribe: Subject<void> = new Subject();
 
@@ -470,6 +469,7 @@ export class ToolBarComponent {
     this.local_connected = false
     this.error_local_connected = false
     this.modalService.close(id)
+   
   }
   //TODO: I receive boards id with port id ,from received map get board id in the design then get port id then change its value
   setConnectorSimValue(value: 1 | 0, board_id: string, port_id: string) {
@@ -498,13 +498,24 @@ export class ToolBarComponent {
 
     this.sharedData.changeMode(false)
     this.unsubscribe.next()
+    console.log("send unbind")
+    this.configSamService.unBindAll().subscribe(data=>{
+      console.log("unbind")
+      this.simComm.close()
+      this.LocalCommService.close()
+      // this.resetComponents()
+      this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
+      this.sharedData.diagram.refreshDiagram()
+      this.sharedData.diagram.refresh()
+    },error=>{
+      console.log("error"+error)
+      alert("could't unbind port ,please")
+      this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
+      this.sharedData.diagram.refreshDiagram()
+      this.sharedData.diagram.refresh()
+    })
     // this.unsubscribe.complete();
-    this.simComm.close()
-    this.LocalCommService.close()
-    // this.resetComponents()
-    this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
-    this.sharedData.diagram.refreshDiagram()
-    this.sharedData.diagram.refresh()
+   
   }
   isReservedBinded() {
     for (const node of this.sharedData.diagram.nodes) {
@@ -546,6 +557,11 @@ export class ToolBarComponent {
         this.sharedData.diagram.zoom(.5);
         break;
       }
+      case this.refresh: {
+        this.sharedData.diagram.refresh()
+        break
+      }
+
       // case this.connector_id: {
       //   // this.sharedData.diagram.drawingObject = this.utils.getConnector() as unknown as ConnectorModel;
       //   // this.sharedData.diagram.tool = DiagramTools.DrawOnce;
@@ -687,19 +703,65 @@ export class ToolBarComponent {
               // console.log("bind succkes")
 
               try {
-                // console.log("after bind")
+                console.log("after bind")
 
-                this.configSamService.unBindAll().subscribe(data => {
-                  if (data != "ok") {
-                    this.simComm.close()
+                this.configSamService.unBindAll().subscribe(() => {
                     this.binded = false
                     this.error_binded = true
-                    this.designService.unreserve(this.file_id).subscribe((data) => {
-                      alert(data)
-                    }, error => {
-
-                    })
-                  }
+                    console.log("unbind all sent")
+                    let binded_count = 0
+                    reserved_comps.forEach((comp, index) => {
+                      // console.log("usb ip port", comp.usb_ip_port)
+    
+                      console.log("FUCKCKKCCCK", comp)
+                      this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port, comp).subscribe(data => {
+                        let reserved_board = data.board
+                        console.log("send bind io ", data, reserved_board)
+                        if (data.ok != "ok") {
+                          alert("can not bind to local port")
+                        } else {
+                          let mythis=this
+                          setTimeout(function(){
+                            mythis.configSamService.checkPort(reserved_board).subscribe(HW_ports => {
+                              console.log("HW ports",HW_ports)
+                              let resboard= HW_ports.board
+                              let board = mythis.sharedData.diagram.nodes[mythis.sharedData.connected_component_id_index[resboard.id]]
+                              board.addInfo[addInfo_isBinded] = true
+                              board.annotations[0].content=board.id + "_" + HW_ports.res[0]
+                              binded_count++
+                              if (index == reserved_comps.length - 1) {
+                                console.log("binded count,reserved count", binded_count, reserved_comps.length)
+                                if (binded_count == reserved_comps.length) {
+                                  allBindedEvent.emit()
+                                } else {
+                                  NoBindedEvent.emit()
+                                }
+                              }
+                            }, error => {
+                              console.log(error)
+                              this.error_binded = false
+                              this.binded = true
+      
+                              alert("can not bind")
+                            })
+                          },3000)
+                          
+                        }
+                      }, error => {
+                        //error in sendbindipport
+                        console.log("error i  sendip poirt", error)
+                        this.error_binded = true
+                          this.binded = false
+                        this.designService.unreserve(this.file_id).subscribe((data) => {
+                        }, error => {
+    
+                        })
+    
+                      })
+    
+                    });
+                },error=>{
+                  console.log("DMT",error)
                 })
                 this.setComponentsReserveConfigs(reserved_comps)
                 let allBindedEvent = new EventEmitter()
@@ -720,59 +782,19 @@ export class ToolBarComponent {
                   this.error_binded = true
                   this.binded = false
                   this.setUnBindAll()
-                  this.configSamService.unBindAll()
+                  this.configSamService.unBindAll().subscribe(data=>{
+                    console.log("unbind all in no binded event")
+                  },error=>{
+                    console.log("Error unbind all in no binded event",error)
+
+                  })
                   this.designService.unreserve(this.file_id).subscribe((data) => {
                   }, error => {
 
                   })
                   NoBindedEvent.unsubscribe()
                 })
-                let binded_count = 0
-                reserved_comps.forEach((comp, index) => {
-                  // console.log("usb ip port", comp.usb_ip_port)
-                  console.log("FUCKCKKCCCK", comp)
-                  this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port, comp).subscribe(data => {
-                    let reserved_board = data.board
-                    console.log("send bind io ", data, reserved_board)
-                    if (data.ok != "ok") {
-                      alert("can not bind to local port")
-                    } else {
-
-                      this.configSamService.checkPort().subscribe(HW_ports => {
-                        console.log(HW_ports)
-                        let board = this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[reserved_board.id]]
-                        board.addInfo[addInfo_isBinded] = true
-                        board.annotations[0].content = board.id + "_" + HW_ports[0]
-                        binded_count++
-                        if (index == reserved_comps.length - 1) {
-                          console.log("binded count,reserved count", binded_count, reserved_comps.length)
-                          if (binded_count == reserved_comps.length) {
-                            allBindedEvent.emit()
-                          } else {
-                            NoBindedEvent.emit()
-                          }
-                        }
-                      }, error => {
-                        console.log(error)
-                        this.error_binded = false
-                        this.binded = true
-
-                        alert("can not bind")
-                      })
-                    }
-                  }, error => {
-                    //error in sendbindipport
-                    console.log("error i  sendip poirt", error)
-                    this.error_binded = true,
-                      this.binded = false
-                    this.designService.unreserve(this.file_id).subscribe((data) => {
-                    }, error => {
-
-                    })
-
-                  })
-
-                });
+  
 
 
 
@@ -872,8 +894,10 @@ export class ToolBarComponent {
       //end validate no ground connected to VCC
       // no inpurt to VCC
       let target_port = this.sharedData.diagram.nodes[this.sharedData.nodeid_index[connector.targetID]].ports.find(port => { return port.id == connector.targetPortID })
-      if (target_port.addInfo[addInfo_pinType] == PinType_VCC)
-        throw Error("VCC should be input pin")
+      if (target_port.addInfo[addInfo_pinType] == PinType_VCC || target_port.addInfo[addInfo_pinType] == PinType_GROUND)
+        throw Error("VCC and GROUND should be output pins")
+      //no input to ground
+
     }
     //validate leds
     // let leds = this.sharedData.diagram.nodes.filter(node => {
@@ -931,8 +955,10 @@ export class ToolBarComponent {
       })
     })
     this.LocalCommService.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
-
-      // alert("local socket disconnected")
+      if (this.sim_mode) {
+        this.closeSimulationMode()
+      }
+      alert("local socket disconnected")
     })
 
     //socket with server to start and end sim
@@ -941,13 +967,16 @@ export class ToolBarComponent {
       this.PrepareDiagramForOutput();
       this.sim_mode = true
       this.sharedData.changeMode(true)
+      this.modalService.close(this.simulate_modal_id)
       this.sharedData.diagram.clearSelection();
       this.prepared = true
-
       this.simComm.initSocket(this.file_id)
       this.simComm.onEvent(SocketEvent.SUCCESSFULL).subscribe(() => {
         this.connected = true
         this.error_connected = false
+      })
+      this.simComm.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
+        this.closeSimulationMode()
       })
       this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe((data) => {
         //console.log(data)
