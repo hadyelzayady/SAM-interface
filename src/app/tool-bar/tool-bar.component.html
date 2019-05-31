@@ -30,7 +30,7 @@
         </e-items>
       </ejs-toolbar>
     </div>
-    <div [hidden]=!sim_mode">
+    <div [hidden]="!sim_mode">
       <ejs-toolbar #toolbar_sim class="toggle" (clicked)='toolbarClick($event)'>
         <e-items>
           <e-item [id]="zoomin_id" tooltipText='Zoom In' prefixIcon='e-zoomin-icon'></e-item>
@@ -45,7 +45,7 @@
   </div>
 </div>
 
-<jw-modal id="{{reserve_modal_id}}">
+<!-- <jw-modal id="{{reserve_modal_id}}">
   <h1>reserving components in the desgin</h1>
   <ul>
     <li>
@@ -72,7 +72,7 @@
   </ul>
   <button (click)='customClose(reserve_modal_id)' [hidden]="hide_modal_close_btn"> Close</button>
 
-</jw-modal>
+</jw-modal> -->
 <jw-modal id="{{simulate_modal_id}}">
   <h1> Starting design running </h1>
   <ul>
