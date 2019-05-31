@@ -178,11 +178,13 @@ export class CustomBoardComponent extends CanDeactivateComponent implements OnIn
               this.pin.addInfo[this.addinfo_selected] = false
               this.pin.addInfo[this.addinfo_SAM_MAP_PIN] = ""
               this.pin.addInfo[this.addinfo_SAM_PIN] = ""
+              this.pin.width = node.width
+              this.pin.height = node.height
               let [x, y] = this.getPinInitPosition()
               this.pin.offsetX = x
               this.pin.offsetY = y
               this.pin.annotations[0].content = `pin${this.pin_number}${this.makeid(3)}`
-
+              this.diagram.bringToFront()
               this.pin_number += 1;
               // this.pin.offsetX = node["offsetX"] + .5 * node["width"]
               // this.pin.offsetY = node["offsetY"] + .5 * node["height"]

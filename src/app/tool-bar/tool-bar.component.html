@@ -24,13 +24,13 @@
               </div>
             </ng-template>
           </e-item> -->
-          <e-item [id]="simulate_id" text="simulate"></e-item>
+          <e-item [id]="simulate_id" text="Run design"></e-item>
           <e-item [id]="reserve_id" text="reserve"></e-item>
           <!-- <e-item #upload_id [id]="upload_firmware_id" text="upload board firmware"></e-item> -->
         </e-items>
       </ejs-toolbar>
     </div>
-    <div [hidden]="!sim_mode">
+    <div [hidden]=!sim_mode">
       <ejs-toolbar #toolbar_sim class="toggle" (clicked)='toolbarClick($event)'>
         <e-items>
           <e-item [id]="zoomin_id" tooltipText='Zoom In' prefixIcon='e-zoomin-icon'></e-item>
@@ -74,7 +74,7 @@
 
 </jw-modal>
 <jw-modal id="{{simulate_modal_id}}">
-  <h1>pre simulate </h1>
+  <h1> Starting design running </h1>
   <ul>
     <li>
       <p style="display:inline">parsing components in design</p>
@@ -113,12 +113,7 @@
       <span style="display:inline" [hidden]="!error_local_connected">&#10060;</span>
     </li>
     <li>
-      <p style="display:inline"> prepare design for simulation environemnt </p>
-      <span style="display:inline" [hidden]="!prepared">&#9989;</span>
-      <span style="display:inline" [hidden]="!error_prepared">&#10060;</span>
-    </li>
-    <li>
-      <p style="display:inline"> waiting for start flag from server </p>
+      <p style="display:inline"> prepare design for running environemnt </p>
       <span style="display:inline" [hidden]="!prepared">&#9989;</span>
       <span style="display:inline" [hidden]="!error_prepared">&#10060;</span>
     </li>

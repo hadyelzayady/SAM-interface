@@ -23,7 +23,7 @@
       <ejs-diagram #diagram id="diagram" width="100%" height="100%" (connectionChange)='connectorEvent($event)'
         (selectionChange)='selectionChangeEvent($event)' [contextMenuSettings]="contextMenuSettings"
         (contextMenuClick)='contextClick($event)' (created)='diagramCreated()' (historyChange)='historyChange($event)'
-        [commandManager]="commandManager" (doubleClick)='doubleClick($event)' [constraints]='constraints'>
+        [commandManager]="commandManager" [constraints]='constraints'>
 
       </ejs-diagram>
     </div>
