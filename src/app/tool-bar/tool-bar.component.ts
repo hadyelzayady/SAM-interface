@@ -469,7 +469,7 @@ export class ToolBarComponent {
     this.local_connected = false
     this.error_local_connected = false
     this.modalService.close(id)
-   
+
   }
   //TODO: I receive boards id with port id ,from received map get board id in the design then get port id then change its value
   setConnectorSimValue(value: 1 | 0, board_id: string, port_id: string) {
@@ -499,7 +499,7 @@ export class ToolBarComponent {
     this.sharedData.changeMode(false)
     this.unsubscribe.next()
     console.log("send unbind")
-    this.configSamService.unBindAll().subscribe(data=>{
+    this.configSamService.unBindAll().subscribe(data => {
       console.log("unbind")
       this.simComm.close()
       this.LocalCommService.close()
@@ -507,15 +507,15 @@ export class ToolBarComponent {
       this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
       this.sharedData.diagram.refreshDiagram()
       this.sharedData.diagram.refresh()
-    },error=>{
-      console.log("error"+error)
+    }, error => {
+      console.log("error" + error)
       alert("could't unbind port ,please")
       this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
       this.sharedData.diagram.refreshDiagram()
       this.sharedData.diagram.refresh()
     })
     // this.unsubscribe.complete();
-   
+
   }
   isReservedBinded() {
     for (const node of this.sharedData.diagram.nodes) {
@@ -706,62 +706,60 @@ export class ToolBarComponent {
                 console.log("after bind")
 
                 this.configSamService.unBindAll().subscribe(() => {
-                    this.binded = false
-                    this.error_binded = true
-                    console.log("unbind all sent")
-                    let binded_count = 0
-                    reserved_comps.forEach((comp, index) => {
-                      // console.log("usb ip port", comp.usb_ip_port)
-    
-                      console.log("FUCKCKKCCCK", comp)
-                      this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port, comp).subscribe(data => {
-                        let reserved_board = data.board
-                        console.log("send bind io ", data, reserved_board)
-                        if (data.ok != "ok") {
-                          alert("can not bind to local port")
-                        } else {
-                          let mythis=this
-                          setTimeout(function(){
-                            mythis.configSamService.checkPort(reserved_board).subscribe(HW_ports => {
-                              console.log("HW ports",HW_ports)
-                              let resboard= HW_ports.board
-                              let board = mythis.sharedData.diagram.nodes[mythis.sharedData.connected_component_id_index[resboard.id]]
-                              board.addInfo[addInfo_isBinded] = true
-                              board.annotations[0].content=board.id + "_" + HW_ports.res[0]
-                              binded_count++
-                              if (index == reserved_comps.length - 1) {
-                                console.log("binded count,reserved count", binded_count, reserved_comps.length)
-                                if (binded_count == reserved_comps.length) {
-                                  allBindedEvent.emit()
-                                } else {
-                                  NoBindedEvent.emit()
-                                }
+                  console.log("unbind all sent")
+                  let binded_count = 0
+                  reserved_comps.forEach((comp, index) => {
+                    // console.log("usb ip port", comp.usb_ip_port)
+
+                    console.log("FUCKCKKCCCK", comp)
+                    this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port, comp).subscribe(data => {
+                      let reserved_board = data.board
+                      console.log("send bind io ", data, reserved_board)
+                      if (data.ok != "ok") {
+                        alert("can not bind to local port")
+                      } else {
+                        let mythis = this
+                        setTimeout(function () {
+                          mythis.configSamService.checkPort(reserved_board).subscribe(HW_ports => {
+                            console.log("HW ports", HW_ports)
+                            let resboard = HW_ports.board
+                            let board = mythis.sharedData.diagram.nodes[mythis.sharedData.connected_component_id_index[resboard.id]]
+                            board.addInfo[addInfo_isBinded] = true
+                            board.annotations[0].content = board.id + "_" + HW_ports.res[0]
+                            binded_count++
+                            if (index == reserved_comps.length - 1) {
+                              console.log("binded count,reserved count", binded_count, reserved_comps.length)
+                              if (binded_count == reserved_comps.length) {
+                                allBindedEvent.emit()
+                              } else {
+                                NoBindedEvent.emit()
                               }
-                            }, error => {
-                              console.log(error)
-                              this.error_binded = false
-                              this.binded = true
-      
-                              alert("can not bind")
-                            })
-                          },3000)
-                          
-                        }
+                            }
+                          }, error => {
+                            console.log(error)
+                            this.error_binded = false
+                            this.binded = true
+
+                            alert("can not bind")
+                          })
+                        }, 3000)
+
+                      }
+                    }, error => {
+                      //error in sendbindipport
+                      console.log("error i  sendip poirt", error)
+                      this.error_binded = true
+                      this.binded = false
+                      this.designService.unreserve(this.file_id).subscribe((data) => {
                       }, error => {
-                        //error in sendbindipport
-                        console.log("error i  sendip poirt", error)
-                        this.error_binded = true
-                          this.binded = false
-                        this.designService.unreserve(this.file_id).subscribe((data) => {
-                        }, error => {
-    
-                        })
-    
+
                       })
-    
-                    });
-                },error=>{
-                  console.log("DMT",error)
+
+                    })
+
+                  });
+                }, error => {
+                  console.log("DMT", error)
                 })
                 this.setComponentsReserveConfigs(reserved_comps)
                 let allBindedEvent = new EventEmitter()
@@ -782,10 +780,10 @@ export class ToolBarComponent {
                   this.error_binded = true
                   this.binded = false
                   this.setUnBindAll()
-                  this.configSamService.unBindAll().subscribe(data=>{
+                  this.configSamService.unBindAll().subscribe(data => {
                     console.log("unbind all in no binded event")
-                  },error=>{
-                    console.log("Error unbind all in no binded event",error)
+                  }, error => {
+                    console.log("Error unbind all in no binded event", error)
 
                   })
                   this.designService.unreserve(this.file_id).subscribe((data) => {
@@ -794,7 +792,7 @@ export class ToolBarComponent {
                   })
                   NoBindedEvent.unsubscribe()
                 })
-  
+
 
 
 
