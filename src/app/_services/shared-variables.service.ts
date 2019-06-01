@@ -143,11 +143,7 @@ export class SharedVariablesService {
 
   }
   //////////////////
-<<<<<<< HEAD
   domainbaseurl_without_port = "http://192.168.1.113"
-=======
-  domainbaseurl_without_port = "http://192.168.1.3"
->>>>>>> origin/new-master
   domainbaseurl = `${this.domainbaseurl_without_port}:80/`
   baseurl = `${this.domainbaseurl}api`
   imageUrl = `${this.domainbaseurl}component/`
