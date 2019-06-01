@@ -12,14 +12,14 @@
 <div [hidden]='logedin' class="container-fluid menucontainer">
     <div class="row">
         <div class="col-sm-12">
-            <!-- <a href="/">
-                <img class="logo" src="https://static.rfstat.com/renderforest/images/v2/logos/renderforest-logo2.jpg">
-            </a> -->
+            <a href="/">
+                <img class="logo" src="../assets/SAMLogo_V.png">
+            </a>
             <span class="menu">
                 <a class="menuitem" href="/"> Home</a>
                 <a class="menuitem" href="/"> About</a>
                 <a class="menuitem" href="/"> Support</a>
-                <a (click)="ScrollToBottom()" class="btn btn-link accountbtns">Login</a>
+                <a (click)="ScrollToBottom()" href="javascript:;" class="btn btn-link accountbtns">Login</a>
                 <a [routerLink]="['/register']" class="btn btn-link accountbtns ">Register</a>
             </span>
         </div>
@@ -28,9 +28,9 @@
 <div [hidden]='!logedin' class="container-fluid menucontainer">
     <div class="row">
         <div class="col-sm-12">
-            <!-- <a href="/">
-                <img class="logo" src="https://static.rfstat.com/renderforest/images/v2/logos/renderforest-logo2.jpg">
-            </a> -->
+            <a href="/">
+                <img class="logo" src="../assets/SAMLogo_V.png">
+            </a>
             <span class="menu">
                 <a class="menuitem" href="/"> Home</a>
                 <a class="menuitem" href="/"> About</a>
