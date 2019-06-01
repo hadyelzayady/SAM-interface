@@ -16,6 +16,10 @@ interface portresp {
     res: string
 
 }
+interface idinterface {
+    id: number
+
+}
 const httpOptions = {
     headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -44,7 +48,7 @@ export class ConfigureSamService {
 
 
     addcomponent(board_id: String, udpport: String, usbport: String) {
-        return this.http.post<String>(`${this.sharedData.baseurl}/users/component`, {
+        return this.http.post<idinterface>(`${this.sharedData.baseurl}/users/component`, {
             "component_id": board_id,
             "USBPORT": usbport,
             "UDPPORT": udpport

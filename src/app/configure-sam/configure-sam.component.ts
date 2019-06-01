@@ -18,7 +18,7 @@ export class ConfigureSamComponent implements OnInit {
   // @ViewChild("carousel_next") carousel_next:ElementRef;
   /// remember this is important
   // serverurl="thesambackend.herokuapp.com";
-  serverurl = this.sharedData.domainbaseurl+"SAM";
+  serverurl = this.sharedData.domainbaseurl_without_port_http+"SAM";
   boards = BOARDS;
   selectedBoard: board;
 
@@ -61,11 +61,12 @@ this.wifipassvar=""
 
       }
       else {
-        alert("please check that you are connected to sam and tray application is on" )
+        // alert("please check that you are connected to sam and tray application is on" )
+        this.next()
       }
     }, error => {
       console.log(error)
-      alert("please check that you are connected to sam and tray application is on" )
+      alert("Please check that you are connected to SAM and tray application is on" )
       // console.log("the error is "+error);
       // this.EthernetAvailable = true;
       // this.next();
@@ -97,7 +98,7 @@ this.wifipassvar=""
     let carousel_next = document.getElementById("carousel_next") as HTMLElement;
     carousel_next.click();}
     else
-      alert("please try again")
+      alert("Please try again")
     this.id_setted = false
     this.error_id = false
     this.server_setted = false
@@ -119,7 +120,7 @@ this.wifipassvar=""
       if (data.res=="0"){
       this.finish_sent = false
       this.error_finish = true
-      alert("please turn on the switch on the sam to running mode")
+      alert("Please turn on the switch on the SAM to running mode")
 }
       else {
         this.finish_sent = true
@@ -142,24 +143,25 @@ this.wifipassvar=""
     // console.log("board x is with id:"+boardid);
     this.modalService.open(this.modal_id)
 
-    this.configservice.setid(boardid).pipe(finalize(() => {
-      this.hide_modal_close_btn = false
-    })).subscribe(data => {
-      // console.log("server is set with url:"+this.serverurl);
-      this.id_setted = true
+   
       this.configservice.setserver(this.serverurl).subscribe(data => {
         // console.log("server is set with url:"+this.serverurl);
         this.server_setted = true
-        this.configservice.sethellomsg( "q="+boardid+"_Hello" ).subscribe(data => {
-          // // console.log("hellomsg is set to hello_"+boardid);
-          this.hello_setted = true
-          // console.log("hellomsg was sent");
+        this.hide_modal_close_btn = false
 
           this.configservice.addcomponent(boardid, this.portvarUDP, this.portvarUSB).subscribe(data => {
             // // console.log("id is set to"+boardid);
             // this.configservice.setport(this.portvarUDP,this.portvarUSB,boardid).subscribe(data=>{
-            //   console.log(data);
+              console.log(data.id);
+              let samboardid=data.id
             this.component_added = true
+            this.configservice.setid(samboardid.toString()).subscribe(data => {
+              // console.log("server is set with url:"+this.serverurl);
+              this.id_setted = true
+            this.configservice.sethellomsg( "q="+samboardid+"_Hello" ).subscribe(data => {
+              // // console.log("hellomsg is set to hello_"+boardid);
+              this.hello_setted = true
+              // console.log("hellomsg was sent");
             this.configservice.Sendhellomsg().subscribe(data => {
               if (data.res=="0")
             {  this.hello_sent = false
@@ -224,7 +226,7 @@ this.wifipassvar=""
   setwifi(): void {
     console.log("entered here");
     if (this.wifinamevar == "")
-      alert("empty wifi name not allowed")
+      alert("Empty wifi name not allowed")
     else {
 console.log(this.wifinamevar)
       this.configservice.setwifiname(this.wifinamevar).subscribe(data => {
@@ -235,7 +237,7 @@ console.log(this.wifinamevar)
 if (this.wifipassvar.length>7||this.wifipassvar.length==0){
           this.configservice.setwifipass(this.wifipassvar).subscribe(data => {
             if (data["res"] == "failled")
-              alert("authnetication failed")
+              alert("Authnetication failed")
             else {
               let carousel_next = document.getElementById("carousel_next") as HTMLElement;
               carousel_next.click();
@@ -244,7 +246,7 @@ if (this.wifipassvar.length>7||this.wifipassvar.length==0){
 
           }, error => {
             console.log("the error is " + error);
-            alert("can not connected to wifi ,may be the password is wrong");
+            alert("Could not connect to wifi ,may be the password is wrong");
 
           })
 
@@ -252,12 +254,12 @@ if (this.wifipassvar.length>7||this.wifipassvar.length==0){
           // let carousel_next =document.getElementById("carousel_next") as HTMLElement;
           // carousel_next.click();
         }else{
-          alert("please enter your wifi password or leave it empty if open")
+          alert("Please enter your wifi password or leave it empty if open")
         }
       }
       }, error => {
         console.log("the error is " + error);
-        alert("wifi name is not correct");
+        alert("Wifi name is not correct");
 
       })
     }

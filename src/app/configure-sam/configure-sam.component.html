@@ -5,7 +5,7 @@
       <div class="col-sm-12">
           <div class="row welcome_title ">
               <div class="col-xl-12 ">
-                <h1>welcome to SAM configuration menu</h1>
+                <h1>Welcome to SAM configuration menu</h1>
               </div>
             </div>
             <div class="row mainSection">
@@ -16,24 +16,52 @@
                         <div class=instruction_block>
                           <div>
                             <span class="badge">1</span>
-                            <span class="instruction_text">please connect your sam board to electrical outlet and make sure the
-                              red led is on</span>
+                            <span class="instruction_text">Please make sure the SAM is in configuration mode and switch is on</span>
                               <div class="imagecontainer">
                             <img class="boardimg"
-                              src='../../assets/1.png'>
+                              src='../../assets/2.png'>
                             </div>
                             </div>
                           <button type="button" class="btn" (click)="next()">Next</button>
                         </div>
                       </div>
-                      <div class="carousel-item ">
+                    <div class="carousel-inner">
+                      <div class="carousel-item">
                         <div class=instruction_block>
                           <div>
                             <span class="badge">2</span>
-                            <span class="instruction_text">please connect your sam board to usb cable with your computer using
+                            <span class="instruction_text">Please connect your sam board to electrical outlet and make sure the
+                              red led is on</span>
+                              <div class="imagecontainer">
+                            <img class="boardimg"
+                              src='../../assets/4.png'>
+                            </div>
+                            </div>
+                          <button type="button" class="btn" (click)="next()">Next</button>
+                        </div>
+                      </div>
+                      <div class="carousel-inner">
+                        <div class="carousel-item">
+                          <div class=instruction_block>
+                            <div>
+                              <span class="badge">3</span>
+                              <span class="instruction_text">Please open the tray app if you dont have it <a href='../../assets/tryapp.zip' download>click here </a>to download</span>
+                                <div class="imagecontainer">
+                              <img class="boardimg"
+                                src='../../assets/tray app.PNG'>
+                              </div>
+                              </div>
+                            <button type="button" class="btn" (click)="next()">Next</button>
+                          </div>
+                        </div>
+                      <div class="carousel-item ">
+                        <div class=instruction_block>
+                          <div>
+                            <span class="badge">4</span>
+                            <span class="instruction_text">Please connect your sam board to usb cable with your computer using
                               cable included</span>
                               <div class="imagecontainer">
-                            <img class="boardimg" src='https://i.stack.imgur.com/Bnx0H.gif'>
+                            <img class="boardimg" src='../../assets/3.png'>
                             </div>
 
                           </div>
@@ -43,8 +71,8 @@
                       <div class="carousel-item ">
                           <div class=instruction_block>
                             <div>
-                              <span class="badge">3</span>
-                              <span class="instruction_text">please enter your wifi cridentials</span>
+                              <span class="badge">5</span>
+                              <span class="instruction_text">Please enter your wifi cridentials</span>
                               <div class="imagecontainer">
                               <img class="boardimg"
                                 src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTime7aH4loQkjXri7Ybz9-Xfqkn7zZCLL7-ZAVPOY5txDhjbvB1A'>
@@ -66,7 +94,7 @@
                       <div class="carousel-item ">
                         <div class=instruction_block>
                           <div>
-                            <span class="badge">4</span>
+                            <span class="badge">6</span>
                             <span class="instruction_text">Please enable port forwarding in your router configuration and write
                               ports here</span>
                             <a href='https://www.lifewire.com/how-to-port-forward-4163829'>How to Port Forward</a>
@@ -112,7 +140,7 @@
                       <div class="carousel-item ">
                         <div class=instruction_block>
                           <div>
-                            <span class="badge">6</span>
+                            <span class="badge">7</span>
                             <span class="instruction_text">please switch sam board to running mode by turning switch back</span>
                               <div class="imagecontainer">
                             <img class="boardimg" src='https://i.stack.imgur.com/Bnx0H.gif'>
@@ -145,27 +173,29 @@
   <jw-modal id="{{modal_id}}">
     <h1>Adding Component</h1>
     <ul>
-      <li>
-        <p style="display:inline">Setting component id</p>
-        <span style="display:inline" [hidden]="!id_setted">&#9989;</span>
-        <span style="display:inline" [hidden]="!error_id">&#10060;</span>
-      </li>
+      
       <li>
         <p style="display:inline">Setting server </p>
         <span style="display:inline" [hidden]="!server_setted">&#9989;</span>
         <span style="display:inline" [hidden]="!error_server">&#10060;</span>
       </li>
       <li>
+          <p style="display:inline">Adding component</p>
+          <span style="display:inline" [hidden]="!component_added">&#9989;</span>
+          <span style="display:inline" [hidden]="!error_component">&#10060;</span>
+  
+        </li>
+      <li>
+          <p style="display:inline">Setting component id</p>
+          <span style="display:inline" [hidden]="!id_setted">&#9989;</span>
+          <span style="display:inline" [hidden]="!error_id">&#10060;</span>
+        </li>
+      <li>
         <p style="display:inline">Setting hello message </p>
         <span style="display:inline" [hidden]="!hello_setted">&#9989;</span>
         <span style="display:inline" [hidden]="!error_hello_set">&#10060;</span>
       </li>
-      <li>
-        <p style="display:inline">Adding component</p>
-        <span style="display:inline" [hidden]="!component_added">&#9989;</span>
-        <span style="display:inline" [hidden]="!error_component">&#10060;</span>
-
-      </li>
+     
       <li>
         <p style="display:inline">Sending hello</p>
         <span style="display:inline" [hidden]="!hello_sent">&#9989;</span>
