@@ -83,7 +83,7 @@ export class ToolBarComponent {
   // to unsubscribe from observables when sim ends
   private unsubscribe: Subject<void> = new Subject();
 
-  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService, private simComm: SimCommunicationService, private LocalCommService: LocalWebSocketService, private configSamService: ConfigureSamService) {
+  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService, private simComm: SimCommunicationService, private LocalCommService: LocalWebSocketService, private configSamService: ConfigureSamService,public webSocketService:WebSocketService) {
 
   }
   ngOnInit(): void {
@@ -92,6 +92,7 @@ export class ToolBarComponent {
       this.sim_mode = sim_mode;
       this.resetToolBar()
     });
+    
   }
   resetToolBar() {
     if (this.sim_mode) {
@@ -507,7 +508,8 @@ export class ToolBarComponent {
     console.log("send unbind")
     this.configSamService.unBindAll().subscribe(data=>{
       console.log("unbind")
-      this.simComm.close()
+      // this.simComm.close()
+      this.webSocketService.stopSimulation();
       this.LocalCommService.close()
       // this.resetComponents()
       this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
@@ -539,7 +541,7 @@ export class ToolBarComponent {
     })
   }
   diagram_before_sim = null
-  period=30;
+  period=5;
   toolbarClick(args: ClickEventArgs): void {
     switch (args.item.id) {
       case this.undo_id: {
@@ -703,7 +705,7 @@ export class ToolBarComponent {
   reserve()
   {
     console.log(this.period)
-    if(this.period==null || this.period <30 )
+    if(this.period==null || this.period <5 )
       return;
     this.modalService.close(this.period_modal_id)
     this.modalService.open(this.reserve_modal_id)
@@ -988,49 +990,33 @@ export class ToolBarComponent {
       this.modalService.close(this.simulate_modal_id)
       this.sharedData.diagram.clearSelection();
       this.prepared = true
-      this.simComm.initSocket(this.file_id)
-      this.simComm.onEvent(SocketEvent.SUCCESSFULL).subscribe(() => {
-        this.connected = true
-        this.error_connected = false
-      })
-      this.simComm.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
-        this.closeSimulationMode()
-      })
-      this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe((data) => {
-        //console.log(data)
-        this.error_connected = true
-        this.connected = false
+      this.webSocketService.startSimulation();
+      // this.webSocketService.onEvent(SocketEvent.SUCCESSFULL).subscribe(() => {
+      //   this.connected = true
+      //   this.error_connected = false
+      // })
+      // this.webSocketService.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
+      //   this.closeSimulationMode()
+      // })
+      // this.webSocketService.onEvent(SocketEvent.CONNECTION_ERROR).subscribe((data) => {
+      //   //console.log(data)
+      //   this.error_connected = true
+      //   this.connected = false
 
-        //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
-        // if (this.sim_mode) {
-        this.closeSimulationMode();
-        // } else {
-        // this.simComm.close()
-        // }
-      })
-      this.simComm.onEvent(SocketEvent.BoardStartedSimulation).subscribe((connected_component_id) => {
-        console.log("stoped")
-        this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[connected_component_id]].style = {
-          fill: "green"
-        }
-      })
-      this.simComm.onEvent(SocketEvent.BOARD_NOT_START_SIM).subscribe((coonected_component_id) => {
-        //console.log(data)
-        this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[coonected_component_id]].style = {
-          fill: "red"
-        }
-        //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
-        // if (this.sim_mode) {
-        // } else {
-        // this.simComm.close()
-        // }
-      })
+      //   //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
+      //   // if (this.sim_mode) {
+      //   this.closeSimulationMode();
+      //   // } else {
+      //   // this.simComm.close()
+      //   // }
+      // })
+ 
 
     } catch (error) {
       //console.log("error in prepare diagram ", error)
       this.error_prepared = true
       this.prepared = false
-      this.simComm.close()
+      this.webSocketService.stopSimulation();
     }
 
   }

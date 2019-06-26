@@ -16,6 +16,7 @@ import { Switch } from '../_models/Switch';
 import { SocketEvent } from '../_models/event';
 import { Event as NavigationEvent } from "@angular/router";
 import { CanDeactivateComponent } from '../can-deactivate/can-deactivate.component';
+import { WebSocketService } from '../_services/web-socket.service';
 //TODO enable context menu 
 interface ConnectorEnd {
   nodeId: string,
@@ -39,7 +40,7 @@ export class DesignComponent extends CanDeactivateComponent {
   public file_id: number;
   public contextMenuSettings: ContextMenuSettingsModel;
   title = 'SAM-interface';
-  constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, public designService: DesignService, private approute: Router, private localSocketService: LocalWebSocketService, private routingState: RoutingStateService) {
+  constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, public designService: DesignService, private approute: Router, private localSocketService: LocalWebSocketService, private routingState: RoutingStateService,public webSocketService:WebSocketService) {
     super()
 
   }
@@ -63,7 +64,31 @@ export class DesignComponent extends CanDeactivateComponent {
       this.sim_mode = sim_mode;
       this.setConstraints(sim_mode)
     });
-
+    this.setSocketEvents();
+  }
+  setSocketEvents()
+  {
+    this.webSocketService.initSocket(this.file_id);
+    this.webSocketService.onEvent(SocketEvent.BoardStartedSimulation).subscribe((connected_component_id) => {
+      console.log("stoped")
+      this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[connected_component_id]].style = {
+        fill: "green"
+      }
+    })
+    this.webSocketService.onEvent(SocketEvent.BOARD_NOT_START_SIM).subscribe((coonected_component_id) => {
+      //console.log(data)
+      this.sharedData.diagram.nodes[this.sharedData.connected_component_id_index[coonected_component_id]].style = {
+        fill: "red"
+      }
+      //as may connection drops after starting sim show if websocket connection drops get out of simulation mode
+      // if (this.sim_mode) {
+      // } else {
+      // this.simComm.close()
+      // }
+    })
+    this.webSocketService.onEvent(SocketEvent.RESERVE_ENDS).subscribe(data=>{
+      alert("reserve ends");
+    })
   }
   canDeactivate(): boolean {
     return this.sharedData.saved_design

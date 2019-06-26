@@ -15,5 +15,6 @@ export enum SocketEvent {
     //bind event 
     BIND_FAIL = "bind_error",
     BIND_SUCCESS = "bind_success",
-    BIND_ERROR_CONNECT = "bind_connect_error"
+    BIND_ERROR_CONNECT = "bind_connect_error",
+    RESERVE_ENDS="reserve_end"
 }

@@ -129,7 +129,7 @@
 </jw-modal>
 <jw-modal id="{{period_modal_id}}">
   <h1>Choose reserving period</h1>
-  <input required min="30" type="number" step="30" [(ngModel)]="period"> Min
+  <input required min="5" type="number" step="30" [(ngModel)]="period"> Min
   <button (click)='cancel()'> Cancel</button>
   <button (click)='reserve()'> Reserve</button>
 
