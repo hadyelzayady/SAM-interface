@@ -30,8 +30,9 @@ export class DesignService {
         });
     }
 
-    reserve(reservecomps: {}, fileid: number) {
-        return this.http.post<ReserveComponentsResponse[]>(`${this.baseurl}/${fileid}/reserve`, reservecomps)
+    reserve(reservecomps: {},period:number, fileid: number) {
+        console.log(reservecomps);
+        return this.http.post<ReserveComponentsResponse[]>(`${this.baseurl}/${fileid}/reserve`, {components:reservecomps,period:period})
     }
     saveDesign(file_data: string, diagram_image: any, fileid: number) {
         const formData: FormData = new FormData();

@@ -58,7 +58,7 @@
       <span style="display:inline" [hidden]="!reserved">&#9989;</span>
       <span style="display:inline" [hidden]="!error_reserved">&#10060;</span>
     </li>
-    <li>
+    <!-- <li>
       <p style="display:inline">binding </p>
       <span style="display:inline" [hidden]="!binded">&#9989;</span>
       <span style="display:inline" [hidden]="!error_binded">&#10060;</span>
@@ -68,7 +68,7 @@
       <span style="display:inline" [hidden]="!configured">&#9989;</span>
       <span style="display:inline" [hidden]="!error_config">&#10060;</span>
 
-    </li>
+    </li> -->
   </ul>
   <button (click)='customClose(reserve_modal_id)' [hidden]="hide_modal_close_btn"> Close</button>
 
@@ -125,5 +125,12 @@
 
   </ul>
   <button (click)='customClose(simulate_modal_id)' [hidden]="hide_modal_close_btn"> Close</button>
+
+</jw-modal>
+<jw-modal id="{{period_modal_id}}">
+  <h1>Choose reserving period</h1>
+  <input required min="30" type="number" step="30" [(ngModel)]="period"> Min
+  <button (click)='cancel()'> Cancel</button>
+  <button (click)='reserve()'> Reserve</button>
 
 </jw-modal>

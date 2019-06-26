@@ -49,6 +49,7 @@ export class ToolBarComponent {
   error_binded = false
   binded = false
   reserve_modal_id = "reserve"
+  period_modal_id = "period"
   hide_modal_close_btn = true
   //added for sim
   prepared = false
@@ -449,6 +450,11 @@ export class ToolBarComponent {
       // 
     }
   }
+  cancel()
+  {
+    this.modalService.close(this.period_modal_id);
+  }
+  
   customClose(id: string) {
     this.parsed = false;
     this.reserved = false;
@@ -533,6 +539,7 @@ export class ToolBarComponent {
     })
   }
   diagram_before_sim = null
+  period=30;
   toolbarClick(args: ClickEventArgs): void {
     switch (args.item.id) {
       case this.undo_id: {
@@ -654,177 +661,7 @@ export class ToolBarComponent {
         break;
       }
       case this.reserve_id: {
-        this.modalService.open(this.reserve_modal_id)
-        let reservecomps;
-        try {
-          reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
-          this.parsed = true
-        } catch (error) {
-          this.error_parsed = true
-          this.hide_modal_close_btn = false
-          break;
-        }
-        this.designService.reserve(reservecomps, this.file_id).pipe(finalize(() => {
-          this.hide_modal_close_btn = false
-        })).subscribe(reserved_comps => {
-          // this.status = "components reserved "
-          this.reserved = true
-          this.error_reserved = false
-          console.log("reserveing", reserved_comps)
-          try {
-            this.simComm.initSocket(this.file_id, "bind")
-            // this.simComm.bindBoards(this.file_id)
-            this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
-              // console.log("bind fail")
-
-              //TODO:
-              this.designService.unreserve(this.file_id).subscribe((data) => {
-                alert(data)
-
-              }, error => {
-                alert(error)
-              })
-              this.simComm.close()
-              this.error_binded = true
-              this.binded = false
-            })
-            this.simComm.onEvent(SocketEvent.BIND_FAIL).subscribe(() => {
-              // console.log("bind fail")
-
-              //TODO:
-              this.designService.unreserve(this.file_id).subscribe((data) => {
-                alert(data)
-
-              }, error => {
-                alert(error)
-              })
-              this.simComm.close()
-              this.error_binded = true
-              this.binded = false
-            })
-            this.simComm.onEvent(SocketEvent.BIND_SUCCESS).subscribe(() => {
-              // console.log("bind succkes")
-
-              try {
-                console.log("after bind")
-
-                this.configSamService.unBindAll().subscribe(() => {
-                    this.binded = false
-                    this.error_binded = true
-                    console.log("unbind all sent")
-                    let binded_count = 0
-                    reserved_comps.forEach((comp, index) => {
-                      // console.log("usb ip port", comp.usb_ip_port)
-    
-                      console.log("FUCKCKKCCCK", comp)
-                      this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port, comp).subscribe(data => {
-                        let reserved_board = data.board
-                        console.log("send bind io ", data, reserved_board)
-                        if (data.ok != "ok") {
-                          alert("can not bind to local port")
-                        } else {
-                          let mythis=this
-                          setTimeout(function(){
-                            mythis.configSamService.checkPort(reserved_board).subscribe(HW_ports => {
-                              console.log("HW ports",HW_ports)
-                              let resboard= HW_ports.board
-                              let board = mythis.sharedData.diagram.nodes[mythis.sharedData.connected_component_id_index[resboard.id]]
-                              board.addInfo[addInfo_isBinded] = true
-                              board.annotations[0].content=board.id + "_" + HW_ports.res[0]
-                              binded_count++
-                              if (index == reserved_comps.length - 1) {
-                                console.log("binded count,reserved count", binded_count, reserved_comps.length)
-                                if (binded_count == reserved_comps.length) {
-                                  allBindedEvent.emit()
-                                } else {
-                                  NoBindedEvent.emit()
-                                }
-                              }
-                            }, error => {
-                              console.log(error)
-                              this.error_binded = false
-                              this.binded = true
-      
-                              alert("can not bind")
-                            })
-                          },3000)
-                          
-                        }
-                      }, error => {
-                        //error in sendbindipport
-                        console.log("error i  sendip poirt", error)
-                        this.error_binded = true
-                          this.binded = false
-                        this.designService.unreserve(this.file_id).subscribe((data) => {
-                        }, error => {
-    
-                        })
-    
-                      })
-    
-                    });
-                },error=>{
-                  console.log("DMT",error)
-                })
-                this.setComponentsReserveConfigs(reserved_comps)
-                let allBindedEvent = new EventEmitter()
-                allBindedEvent.pipe(first()).subscribe(() => {
-                  this.error_binded = false
-                  this.binded = true
-                  try {
-                    this.configured = true
-                    this.error_config = false
-                  } catch (error) {
-                    this.configured = false
-                    this.error_config = true;
-                  }
-                  allBindedEvent.unsubscribe()
-                })
-                let NoBindedEvent = new EventEmitter()
-                NoBindedEvent.pipe(first()).subscribe(() => {
-                  this.error_binded = true
-                  this.binded = false
-                  this.setUnBindAll()
-                  this.configSamService.unBindAll().subscribe(data=>{
-                    console.log("unbind all in no binded event")
-                  },error=>{
-                    console.log("Error unbind all in no binded event",error)
-
-                  })
-                  this.designService.unreserve(this.file_id).subscribe((data) => {
-                  }, error => {
-
-                  })
-                  NoBindedEvent.unsubscribe()
-                })
-  
-
-
-
-              } catch (error) {
-
-              }
-              this.simComm.close()
-            })
-
-          } catch (error) {
-            //console.log("in try catch", error)
-            //error binding
-          }
-        }, error => {
-          console.log(error)
-          this.reserved = false;
-          this.error_reserved = true
-
-        })
-
-
-        // alert("reserved");
-        // this.sharedData.diagram.nodes[0].shape = {
-        //   type: 'Image',
-        //   source: "../assets/redLED_on.jpg"
-        // }
-        // this.sharedData.diagram.refreshDia gram()
+        this.modalService.open(this.period_modal_id);
         break;
       }
       case this.reset_id: {
@@ -862,6 +699,184 @@ export class ToolBarComponent {
       }
     }
 
+  }
+  reserve()
+  {
+    console.log(this.period)
+    if(this.period==null || this.period <30 )
+      return;
+    this.modalService.close(this.period_modal_id)
+    this.modalService.open(this.reserve_modal_id)
+    let reservecomps;
+    try {
+      reservecomps = this.utils.getDesignComponents(this.sharedData.diagram)
+      this.parsed = true
+    } catch (error) {
+      this.error_parsed = true
+      this.hide_modal_close_btn = false
+     return;
+    }
+    this.designService.reserve(reservecomps, this.period,this.file_id).pipe(finalize(() => {
+      this.hide_modal_close_btn = false
+    })).subscribe(reserved_comps => {
+      // this.status = "components reserved "
+      this.reserved = true
+      this.error_reserved = false
+      // console.log("reserveing", reserved_comps)
+      // try {
+      //   this.simComm.initSocket(this.file_id, "bind")
+      //   // this.simComm.bindBoards(this.file_id)
+      //   this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
+      //     // console.log("bind fail")
+
+      //     //TODO:
+      //     this.designService.unreserve(this.file_id).subscribe((data) => {
+      //       alert(data)
+
+      //     }, error => {
+      //       alert(error)
+      //     })
+      //     this.simComm.close()
+      //     this.error_binded = true
+      //     this.binded = false
+      //   })
+      //   this.simComm.onEvent(SocketEvent.BIND_FAIL).subscribe(() => {
+      //     // console.log("bind fail")
+
+      //     //TODO:
+      //     this.designService.unreserve(this.file_id).subscribe((data) => {
+      //       alert(data)
+
+      //     }, error => {
+      //       alert(error)
+      //     })
+      //     this.simComm.close()
+      //     this.error_binded = true
+      //     this.binded = false
+      //   })
+      //   this.simComm.onEvent(SocketEvent.BIND_SUCCESS).subscribe(() => {
+      //     // console.log("bind succkes")
+
+      //     try {
+      //       console.log("after bind")
+
+      //       this.configSamService.unBindAll().subscribe(() => {
+      //           this.binded = false
+      //           this.error_binded = true
+      //           console.log("unbind all sent")
+      //           let binded_count = 0
+      //           reserved_comps.forEach((comp, index) => {
+      //             // console.log("usb ip port", comp.usb_ip_port)
+
+      //             console.log("FUCKCKKCCCK", comp)
+      //             this.configSamService.sendBindIPPort(comp.IP, comp.usb_ip_port, comp).subscribe(data => {
+      //               let reserved_board = data.board
+      //               console.log("send bind io ", data, reserved_board)
+      //               if (data.ok != "ok") {
+      //                 alert("can not bind to local port")
+      //               } else {
+      //                 let mythis=this
+      //                 setTimeout(function(){
+      //                   mythis.configSamService.checkPort(reserved_board).subscribe(HW_ports => {
+      //                     console.log("HW ports",HW_ports)
+      //                     let resboard= HW_ports.board
+      //                     let board = mythis.sharedData.diagram.nodes[mythis.sharedData.connected_component_id_index[resboard.id]]
+      //                     board.addInfo[addInfo_isBinded] = true
+      //                     board.annotations[0].content=board.id + "_" + HW_ports.res[0]
+      //                     binded_count++
+      //                     if (index == reserved_comps.length - 1) {
+      //                       console.log("binded count,reserved count", binded_count, reserved_comps.length)
+      //                       if (binded_count == reserved_comps.length) {
+      //                         allBindedEvent.emit()
+      //                       } else {
+      //                         NoBindedEvent.emit()
+      //                       }
+      //                     }
+      //                   }, error => {
+      //                     console.log(error)
+      //                     this.error_binded = false
+      //                     this.binded = true
+  
+      //                     alert("can not bind")
+      //                   })
+      //                 },3000)
+                      
+      //               }
+      //             }, error => {
+      //               //error in sendbindipport
+      //               console.log("error i  sendip poirt", error)
+      //               this.error_binded = true
+      //                 this.binded = false
+      //               this.designService.unreserve(this.file_id).subscribe((data) => {
+      //               }, error => {
+
+      //               })
+
+      //             })
+
+      //           });
+      //       },error=>{
+      //         console.log("DMT",error)
+      //       })
+      //       this.setComponentsReserveConfigs(reserved_comps)
+      //       let allBindedEvent = new EventEmitter()
+      //       allBindedEvent.pipe(first()).subscribe(() => {
+      //         this.error_binded = false
+      //         this.binded = true
+      //         try {
+      //           this.configured = true
+      //           this.error_config = false
+      //         } catch (error) {
+      //           this.configured = false
+      //           this.error_config = true;
+      //         }
+      //         allBindedEvent.unsubscribe()
+      //       })
+      //       let NoBindedEvent = new EventEmitter()
+      //       NoBindedEvent.pipe(first()).subscribe(() => {
+      //         this.error_binded = true
+      //         this.binded = false
+      //         this.setUnBindAll()
+      //         this.configSamService.unBindAll().subscribe(data=>{
+      //           console.log("unbind all in no binded event")
+      //         },error=>{
+      //           console.log("Error unbind all in no binded event",error)
+
+      //         })
+      //         this.designService.unreserve(this.file_id).subscribe((data) => {
+      //         }, error => {
+
+      //         })
+      //         NoBindedEvent.unsubscribe()
+      //       })
+
+
+
+
+      //     } catch (error) {
+
+      //     }
+      //     this.simComm.close()
+      //   })
+
+      // } catch (error) {
+      //   //console.log("in try catch", error)
+      //   //error binding
+      // }
+    }, error => {
+      console.log(error)
+      this.reserved = false;
+      this.error_reserved = true
+
+    })
+
+
+    // alert("reserved");
+    // this.sharedData.diagram.nodes[0].shape = {
+    //   type: 'Image',
+    //   source: "../assets/redLED_on.jpg"
+    // }
+    // this.sharedData.diagram.refreshDia gram()
   }
   validate() {
     let is_pin_O: { [board_id: string]: { [pin_id: string]: boolean } } = {} // this pin is output true ,input false

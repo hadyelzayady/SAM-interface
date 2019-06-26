@@ -144,8 +144,8 @@ export class SharedVariablesService {
   }
   //////////////////
 
-  domainbaseurl_without_port_http = "192.168.1.113/"
-  domainbaseurl_without_port = "http://192.168.1.113"
+  domainbaseurl_without_port_http = "localhost"
+  domainbaseurl_without_port = `http://${this.domainbaseurl_without_port_http}`
   domainbaseurl = `${this.domainbaseurl_without_port}:80/`
 
   baseurl = `${this.domainbaseurl}api`
