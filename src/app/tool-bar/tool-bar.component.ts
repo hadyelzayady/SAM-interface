@@ -49,6 +49,7 @@ export class ToolBarComponent {
   error_binded = false
   binded = false
   reserve_modal_id = "reserve"
+  unreserve_modal_id= "unreserve";
   period_modal_id = "period"
   hide_modal_close_btn = true
   //added for sim
@@ -64,7 +65,7 @@ export class ToolBarComponent {
   error_local_connected = false
   //////////////
 
-  @ViewChild("toolbar_design") public designToolbar: ToolbarComponent;
+  @ViewChild("toolbar_design") public w: ToolbarComponent;
   @ViewChild("toolbar_sim") public simToolbar: ToolbarComponent;
   @ViewChild("upload_id") public upload_button: HTMLElement
   @Input() file_id: number;
@@ -76,6 +77,7 @@ export class ToolBarComponent {
   fileupload_id = 'fileupload'
   simulate_id = "simulate"
   reserve_id = "reserve"
+  unreserve_id = "unreserve"
   reset_id = "reset"
   upload_firmware_id = "upload_id"
   fit_diagram_id = 'fitDiagram_id'
@@ -99,9 +101,9 @@ export class ToolBarComponent {
       this.simToolbar.hideItem(this.toggle_switch_index, true)
       this.simToolbar.hideItem(this.reset_button_index, true)
     }
-    else {
-      this.designToolbar.hideItem(this.upload_firmware_index, true)
-    }
+    // else {
+    //   this.w.hideItem(this.upload_firmware_index, true)
+    // }
   }
 
   fileInputChange(event) {
@@ -115,7 +117,7 @@ export class ToolBarComponent {
       this.simToolbar.hideItem(4, !visibility)
   }
   resetToolbarToNormal() {
-    this.designToolbar.hideItem(10)
+    // this.designToolbar.hideItem(10)
   }
   created() {
     this.resetToolBar()
@@ -135,14 +137,14 @@ export class ToolBarComponent {
       if (!this.sim_mode) {
         //normal mode
         // this.simToolbar.hideItem(5, true)//hide switch
-        if (nodes[0].addInfo[addInfo_type] == ComponentType.Hardware) {
-          //console.log(this.upload_button)
-          this.designToolbar.hideItem(this.upload_firmware_index, false)
-        }
-        else {
-          this.designToolbar.hideItem(this.upload_firmware_index, true)
+        // if (nodes[0].addInfo[addInfo_type] == ComponentType.Hardware) {
+        //   //console.log(this.upload_button)
+        //   this.designToolbar.hideItem(this.upload_firmware_index, false)
+        // }
+        // else {
+        //   this.designToolbar.hideItem(this.upload_firmware_index, true)
 
-        }
+        // }
         // if (this.sharedData.diagram.selectedItems.nodes[0].id in this.boards_code) {
         //   this.selected_file = this.boards_code[this.sharedData.diagram.selectedItems.nodes[0].id].name
         // }
@@ -666,6 +668,10 @@ export class ToolBarComponent {
         this.modalService.open(this.period_modal_id);
         break;
       }
+      case this.unreserve_id:{
+        this.modalService.open(this.unreserve_id);
+        break;
+      }
       case this.reset_id: {
         // alert("board resetted")
         // this.simComm.initConnection()
@@ -701,6 +707,18 @@ export class ToolBarComponent {
       }
     }
 
+  }
+  unreserve(unreserve_yes)
+  {
+    if(unreserve_yes)
+    {
+      console.log("unreserve");
+      this.designService.unreserve(this.file_id).subscribe(()=>{
+        alert(`components unreserved`)
+      })
+    }
+    this.modalService.close(this.unreserve_id)
+     
   }
   reserve()
   {

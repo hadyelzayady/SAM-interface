@@ -26,6 +26,7 @@
           </e-item> -->
           <e-item [id]="simulate_id" text="simulate"></e-item>
           <e-item [id]="reserve_id" text="reserve"></e-item>
+          <e-item [id]="unreserve_id" text="unreserve"></e-item>
           <!-- <e-item #upload_id [id]="upload_firmware_id" text="upload board firmware"></e-item> -->
         </e-items>
       </ejs-toolbar>
@@ -132,5 +133,15 @@
   <input required min="5" type="number" step="30" [(ngModel)]="period"> Min
   <button (click)='cancel()'> Cancel</button>
   <button (click)='reserve()'> Reserve</button>
+
+</jw-modal>
+<jw-modal id="{{unreserve_modal_id}}">
+  <h1 style="color:red">Unreserve</h1>
+  <p>Are you sure?</p>
+  <div align="right">
+    <button  style="color: red" (click)='unreserve(true)'> Yes</button>
+    <button  (click)='unreserve(false)'> Cancel</button>
+
+  </div>
 
 </jw-modal>

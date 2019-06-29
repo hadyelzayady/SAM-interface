@@ -15,7 +15,7 @@ export class DesignService {
         return this.http.get<ReserveComponentsResponse[]>(`${this.baseurl}/${file_id}/reserve`)
     }
     unreserve(file_id: number) {
-        return this.http.delete(`${this.baseurl}/${file_id}/reserve`)
+        return this.http.delete(`${this.baseurl}/${file_id}/reserve`,{responseType: 'text'})
     }
 
     constructor(private http: HttpClient, private sharedData: SharedVariablesService) { }
