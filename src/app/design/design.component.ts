@@ -86,8 +86,11 @@ export class DesignComponent extends CanDeactivateComponent {
       // this.simComm.close()
       // }
     })
-    this.webSocketService.onEvent(SocketEvent.RESERVE_ENDS).subscribe(data=>{
-      alert("reserve ends");
+    this.webSocketService.onEvent(SocketEvent.RESERVE_ENDS).subscribe(connected_component_id=>{
+      alert(`reserve ends: ${connected_component_id}`);
+      let node_index=this.sharedData.connected_component_id_index[connected_component_id]
+      // this.diagram.nodes[node_index].
+      
     })
   }
   canDeactivate(): boolean {
