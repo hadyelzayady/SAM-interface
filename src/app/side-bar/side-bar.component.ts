@@ -58,7 +58,7 @@ export class SideBarComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
+    this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_design)).subscribe(sim_mode => {
       this.sim_mode = sim_mode;
       if (sim_mode) {
         // // console.log("sim,", sim_mode)
@@ -70,6 +70,14 @@ export class SideBarComponent implements OnInit {
 
 
     });
+    this.sharedData.currentReserveMode.pipe(takeUntil(this.sharedData.unsubscribe_design)).subscribe(reserve_mode=>{
+      if(this.sharedData.reserve_mode==reserve_mode)
+      {
+          this.sidebar.allowDrag=true
+      }else{
+        this.sidebar.allowDrag=false;
+      }
+    })
     this.palettes = [
 
       {
@@ -83,18 +91,18 @@ export class SideBarComponent implements OnInit {
         expanded: true,
         title: 'User Boards'
       },
-      {
-        id: 'connectors',
-        expanded: true,
-        symbols: this.getConnectors(),
-        title: 'Connectors',
-        iconCss: 'e-ddb-icons e-connector'
-      },
+      // {
+      //   id: 'connectors',
+      //   expanded: true,
+      //   symbols: this.getConnectors(),
+      //   title: 'Connectors',
+      //   iconCss: 'e-ddb-icons e-connector'
+      // },
       {
         id: 'Simulation-components',
         expanded: true,
         symbols: this.getSimulaionComponents(),
-        title: 'Simulation Components',
+        title: 'Simulation components',
         iconCss: 'e-ddb-icons e-basic',
       }
     ];
@@ -115,6 +123,7 @@ export class SideBarComponent implements OnInit {
         console.log(error)
         alert("error in loading sidebar items")
       });
+      this.sharedData.currentReserveMode.subscribe()
   }
 
   addBoardsToPallete() {

@@ -60,7 +60,7 @@ export class DesignComponent extends CanDeactivateComponent {
     }
     this.setCommandManager()
     this.file_id = +this.route.snapshot.paramMap.get('id');
-    this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
+    this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_design)).subscribe(sim_mode => {
       this.sim_mode = sim_mode;
       this.setConstraints(sim_mode)
     });
@@ -90,6 +90,7 @@ export class DesignComponent extends CanDeactivateComponent {
       alert(`reserve ends: ${connected_component_id}`);
       let node_index=this.sharedData.connected_component_id_index[connected_component_id]
       // this.diagram.nodes[node_index].
+      this.sharedData.changeReserveMode(this.sharedData.reserve_mode)
       
     })
   }
@@ -137,7 +138,8 @@ export class DesignComponent extends CanDeactivateComponent {
   ngOnDestroy(): void {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
-    this.sharedData
+    this.sharedData.unsubscribe_design.next()
+    this.sharedData.unsubscribe_design.unsubscribe();
   }
   historyChange(args: IHistoryChangeArgs) {
     console.log(args.cause)

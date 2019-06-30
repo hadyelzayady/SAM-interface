@@ -11,7 +11,7 @@
           <e-item type='Separator'></e-item>
           <!-- <e-item [id]="refresh" text="refresh diagram"
             tooltipText='Refresh diagram if some components does not appear fine'></e-item> -->
-          <!-- <e-item [id]="connector_id" tooltipText='Draw Connector' prefixIcon='glyphicon glyphicon-resize-horizontal'> -->
+          <e-item [id]="connector_id" tooltipText='Draw Connector' prefixIcon='glyphicon glyphicon-resize-horizontal'></e-item>
           <e-item [id]="fit_diagram_id" tooltipText='Fit Diagam' text='Fit Diagram'>
           </e-item>
           <e-item type='Separator'></e-item>
@@ -25,8 +25,8 @@
             </ng-template>
           </e-item> -->
           <e-item [id]="simulate_id" text="simulate"></e-item>
-          <e-item [id]="reserve_id" text="reserve"></e-item>
-          <e-item [id]="unreserve_id" text="unreserve"></e-item>
+          <e-item [id]="current_reserve_mode_id"  [text]="reserve_text" ></e-item>
+          <!-- <e-item [id]="unreserve_id" text="unreserve"></e-item> -->
           <!-- <e-item #upload_id [id]="upload_firmware_id" text="upload board firmware"></e-item> -->
         </e-items>
       </ejs-toolbar>

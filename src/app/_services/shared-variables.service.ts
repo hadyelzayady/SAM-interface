@@ -41,12 +41,20 @@ export class SharedVariablesService {
   // sim_mode: boolean = false;
   /////////////
   //called when design component is destroyed so every subscriber subscribes from it
-  public unsubscribe_sim: Subject<void> = new Subject();
+  public unsubscribe_design: Subject<void> = new Subject();
 
   private sim_mode: Subject<boolean> = new Subject();
   currentMode = this.sim_mode.asObservable();
   changeMode(mode: boolean) {
     this.sim_mode.next(mode)
+  }
+  //reserve mode
+  reserve_mode="reserve" // reserve mode is when the button reserve is visible so user can add components
+  unreserve_mode="unreserve"
+  private reserve_mode_subj: Subject<string> = new Subject();
+  currentReserveMode = this.reserve_mode_subj.asObservable();
+  changeReserveMode(mode: string) {
+    this.reserve_mode_subj.next(mode)
   }
 
   private logedin: Subject<boolean> = new Subject();

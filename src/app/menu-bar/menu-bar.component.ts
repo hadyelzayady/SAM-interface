@@ -60,7 +60,7 @@ export class MenuBarComponent implements OnInit {
       else
         this.setSaveStatus(false)
     })
-    this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
+    this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_design)).subscribe(sim_mode => {
       this.sim_mode = sim_mode;
     });
 

@@ -78,6 +78,7 @@ export class ToolBarComponent {
   simulate_id = "simulate"
   reserve_id = "reserve"
   unreserve_id = "unreserve"
+  current_reserve_mode_id=this.reserve_id
   reset_id = "reset"
   upload_firmware_id = "upload_id"
   fit_diagram_id = 'fitDiagram_id'
@@ -89,11 +90,19 @@ export class ToolBarComponent {
 
   }
   ngOnInit(): void {
-    this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_sim)).subscribe(sim_mode => {
+    this.sharedData.currentMode.pipe(takeUntil(this.sharedData.unsubscribe_design)).subscribe(sim_mode => {
       //console.log("sim mode change to ", sim_mode)
       this.sim_mode = sim_mode;
       this.resetToolBar()
     });
+    this.webSocketService.onEvent(SocketEvent.RESERVE_ENDS).subscribe(connected_component_id=>{
+      this.setReserveMode(this.sharedData.reserve_mode);
+      if(this.sim_mode)
+      {
+        this.closeSimulationMode();
+      }
+      
+    })
     
   }
   resetToolBar() {
@@ -119,10 +128,11 @@ export class ToolBarComponent {
   resetToolbarToNormal() {
     // this.designToolbar.hideItem(10)
   }
+  public reserve_element:HTMLElement
   created() {
     this.resetToolBar()
-
-
+    this.reserve_element=document.getElementById(this.reserve_id);
+  
   }
 
   selected_board: NodeModel;
@@ -573,11 +583,18 @@ export class ToolBarComponent {
         break
       }
 
-      // case this.connector_id: {
-      //   // this.sharedData.diagram.drawingObject = this.utils.getConnector() as unknown as ConnectorModel;
-      //   // this.sharedData.diagram.tool = DiagramTools.DrawOnce;
-      //   break;
-      // }
+      case this.connector_id: {
+        if(this.sharedData.diagram.drawingObject ==null)
+        {
+
+          this.sharedData.diagram.drawingObject = this.utils.getConnector() as unknown as ConnectorModel;
+          this.sharedData.diagram.tool = DiagramTools.ContinuousDraw;
+        }else{
+          this.sharedData.diagram.drawingObject=null;
+        }
+
+        break;
+      }
       case this.fit_diagram_id: {
         console.log("fit diagram")
         this.sharedData.diagram.fitToPage()
@@ -712,13 +729,34 @@ export class ToolBarComponent {
   {
     if(unreserve_yes)
     {
+
       console.log("unreserve");
+      this.configSamService.unBindAll().subscribe(()=>{
+
+      })
       this.designService.unreserve(this.file_id).subscribe(()=>{
         alert(`components unreserved`)
+        this.setReserveMode(this.sharedData.reserve_mode)
+      },error=>{
+        alert('unreserving failed')
       })
     }
     this.modalService.close(this.unreserve_id)
      
+  }
+
+  reserve_text=this.sharedData.reserve_mode
+  setReserveMode(reserve_mode){
+    this.sharedData.changeReserveMode(reserve_mode);
+    if(reserve_mode== this.sharedData.reserve_mode)
+    {
+      this.current_reserve_mode_id=this.reserve_id
+      this.reserve_text=this.sharedData.reserve_mode
+    }else{
+
+      this.current_reserve_mode_id=this.unreserve_id
+      this.reserve_text=this.sharedData.unreserve_mode
+    }
   }
   reserve()
   {
@@ -741,6 +779,7 @@ export class ToolBarComponent {
     })).subscribe(reserved_comps => {
       // this.status = "components reserved "
       this.reserved = true
+      this.setReserveMode(this.sharedData.unreserve_mode)
       this.error_reserved = false
       // console.log("reserveing", reserved_comps)
       // try {
@@ -839,6 +878,7 @@ export class ToolBarComponent {
       //         console.log("DMT",error)
       //       })
       //       this.setComponentsReserveConfigs(reserved_comps)
+      //        //setreservemode();
       //       let allBindedEvent = new EventEmitter()
       //       allBindedEvent.pipe(first()).subscribe(() => {
       //         this.error_binded = false
