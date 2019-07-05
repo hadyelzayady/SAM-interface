@@ -5,7 +5,7 @@ import { SharedVariablesService } from '../_services/shared-variables.service';
 import { ToolBarComponent } from '../tool-bar/tool-bar.component';
 import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { DesignService } from '../_services';
-import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue, addinfo_IP, addinfo_port, addInfo_isBinded, addInfo_reserved, UNDEFINED, addInfo_pinType, PinType_GROUND, PinType_VCC, addInfo_componentId, addInfo_type, ComponentType, annotationsStyle } from '../utils';
+import { nodeSimConstraints, connectorSimConstraints, nodeDesignConstraints, connectorDesignConstraints, addInfo_name, addInfo_simValue, addinfo_IP, addinfo_port, addInfo_isBinded, addInfo_reserved, UNDEFINED, addInfo_pinType, PinType_GROUND, PinType_VCC, addInfo_componentId, addInfo_type, ComponentType, annotationsStyle, nodeReserveConstraints } from '../utils';
 import { takeUntil, filter } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 import { LocalWebSocketService } from '../_services/local-web-socket.service';
@@ -64,6 +64,9 @@ export class DesignComponent extends CanDeactivateComponent {
       this.sim_mode = sim_mode;
       this.setConstraints(sim_mode)
     });
+    this.sharedData.currentReserveMode.pipe(takeUntil(this.sharedData.unsubscribe_design)).subscribe(reserve_mode => {
+      this.setReserveConstraints(this.sharedData.reserve_mode == reserve_mode)
+    })
     this.setSocketEvents();
   }
   setSocketEvents() {
@@ -197,6 +200,19 @@ export class DesignComponent extends CanDeactivateComponent {
       //this should be the last line
     }
   }
+  setReserveConstraints(is_reserve: boolean) {
+    if (is_reserve) {
+      this.diagram.nodes.forEach(node => {
+        node.constraints = nodeDesignConstraints;
+      });
+    }
+    else {
+      this.diagram.nodes.forEach(node => {
+        node.constraints = nodeReserveConstraints;
+      });
+    }
+  }
+
   options: IExportOptions;
   loadDesignFile(): void {
 
