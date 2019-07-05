@@ -49,11 +49,13 @@ export class SharedVariablesService {
     this.sim_mode.next(mode)
   }
   //reserve mode
-  reserve_mode="reserve" // reserve mode is when the button reserve is visible so user can add components
-  unreserve_mode="unreserve"
+  reserve_mode = "reserve" // reserve mode is when the button reserve is visible so user can add components
+  unreserve_mode = "unreserve"
   private reserve_mode_subj: Subject<string> = new Subject();
   currentReserveMode = this.reserve_mode_subj.asObservable();
+  is_reservemode: boolean;
   changeReserveMode(mode: string) {
+    this.is_reservemode = mode == this.reserve_mode
     this.reserve_mode_subj.next(mode)
   }
 
@@ -62,6 +64,12 @@ export class SharedVariablesService {
   changeLogin(mode: boolean) {
     this.logedin.next(mode)
 
+  }
+
+  private save_status: Subject<boolean> = new Subject();
+  currentSaveStatus = this.save_status.asObservable();
+  changeSaveStatus(saved: boolean) {
+    this.save_status.next(saved)
   }
   /////////////
   ////////////////

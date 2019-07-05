@@ -3,3 +3,7 @@ export interface DesignFile {
     original_file_name: string
 
 }
+
+export interface reserve_status {
+    reserve_status: boolean
+}

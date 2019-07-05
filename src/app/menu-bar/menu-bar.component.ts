@@ -70,6 +70,10 @@ export class MenuBarComponent implements OnInit {
     this.options.fileName = 'format';
     this.options.format = 'JPG';
     this.options.region = 'Content';
+
+    this.sharedData.currentSaveStatus.subscribe(status => {
+      this.setSaveStatus(status)
+    })
   }
   setSaveStatus(saved: boolean) {
     this.sharedData.saved_design = saved
@@ -81,6 +85,8 @@ export class MenuBarComponent implements OnInit {
       this.menubar.items[1].iconCss = "em-icons e-cross-mark"
     }
   }
+
+
   //openadd file dialoge
   save_modal_id = "save-diagram-id"
   saved = false

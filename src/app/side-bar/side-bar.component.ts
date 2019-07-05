@@ -70,14 +70,7 @@ export class SideBarComponent implements OnInit {
 
 
     });
-    this.sharedData.currentReserveMode.pipe(takeUntil(this.sharedData.unsubscribe_design)).subscribe(reserve_mode=>{
-      if(this.sharedData.reserve_mode==reserve_mode)
-      {
-          this.sidebar.allowDrag=true
-      }else{
-        this.sidebar.allowDrag=false;
-      }
-    })
+
     this.palettes = [
 
       {
@@ -123,7 +116,7 @@ export class SideBarComponent implements OnInit {
         console.log(error)
         alert("error in loading sidebar items")
       });
-      this.sharedData.currentReserveMode.subscribe()
+    this.sharedData.currentReserveMode.subscribe()
   }
 
   addBoardsToPallete() {
@@ -141,8 +134,17 @@ export class SideBarComponent implements OnInit {
       open.pipe(first()).subscribe(() => {
         //check if all boards have image setted to add these boards to pallete
         this.added_count += 1
-        if (this.added_count == this.total_boards_count)
+        if (this.added_count == this.total_boards_count) {
           this.addBoardsToPallete()
+          this.sidebar.allowDrag = this.sharedData.is_reservemode
+          this.sharedData.currentReserveMode.pipe(takeUntil(this.sharedData.unsubscribe_design)).subscribe(reserve_mode => {
+            if (this.sharedData.reserve_mode == reserve_mode) {
+              this.sidebar.allowDrag = true
+            } else {
+              this.sidebar.allowDrag = false;
+            }
+          })
+        }
       })
 
       let reader = new FileReader();

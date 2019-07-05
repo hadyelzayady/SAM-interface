@@ -40,7 +40,7 @@ export class DesignComponent extends CanDeactivateComponent {
   public file_id: number;
   public contextMenuSettings: ContextMenuSettingsModel;
   title = 'SAM-interface';
-  constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, public designService: DesignService, private approute: Router, private localSocketService: LocalWebSocketService, private routingState: RoutingStateService,public webSocketService:WebSocketService) {
+  constructor(public sharedData: SharedVariablesService, private route: ActivatedRoute, public designService: DesignService, private approute: Router, private localSocketService: LocalWebSocketService, private routingState: RoutingStateService, public webSocketService: WebSocketService) {
     super()
 
   }
@@ -66,8 +66,7 @@ export class DesignComponent extends CanDeactivateComponent {
     });
     this.setSocketEvents();
   }
-  setSocketEvents()
-  {
+  setSocketEvents() {
     this.webSocketService.initSocket(this.file_id);
     this.webSocketService.onEvent(SocketEvent.BoardStartedSimulation).subscribe((connected_component_id) => {
       console.log("stoped")
@@ -86,12 +85,10 @@ export class DesignComponent extends CanDeactivateComponent {
       // this.simComm.close()
       // }
     })
-    this.webSocketService.onEvent(SocketEvent.RESERVE_ENDS).subscribe(connected_component_id=>{
-      alert(`reserve ends: ${connected_component_id}`);
-      let node_index=this.sharedData.connected_component_id_index[connected_component_id]
-      // this.diagram.nodes[node_index].
-      this.sharedData.changeReserveMode(this.sharedData.reserve_mode)
-      
+    this.webSocketService.onEvent(SocketEvent.RESERVE_ENDS).subscribe((data) => {
+      alert("reserve ends");
+    }, errro => {
+      alert("he")
     })
   }
   canDeactivate(): boolean {
@@ -139,7 +136,7 @@ export class DesignComponent extends CanDeactivateComponent {
     //Called once, before the instance is destroyed.
     //Add 'implements OnDestroy' to the class.
     this.sharedData.unsubscribe_design.next()
-    this.sharedData.unsubscribe_design.unsubscribe();
+    // this.sharedData.unsubscribe_design.unsubscribe();
   }
   historyChange(args: IHistoryChangeArgs) {
     console.log(args.cause)
@@ -212,6 +209,7 @@ export class DesignComponent extends CanDeactivateComponent {
           if (file != null) {
             console.log("file: ", file)
             this.diagram.loadDiagram(JSON.stringify(file))
+            console.log("EEEEEEEEEEEEEEEEEEEEEEEEE")
             this.options = {};
             this.options.mode = 'Download';
             this.options.format = 'PNG'

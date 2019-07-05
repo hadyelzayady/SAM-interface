@@ -1,7 +1,7 @@
 import { Injectable, Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { User, DesignFile, ReserveComponentsResponse } from '../_models';
+import { User, DesignFile, ReserveComponentsResponse, reserve_status } from '../_models';
 import { SharedVariablesService } from './shared-variables.service';
 import { Components } from '../_models/Components';
 import { Observable } from 'rxjs';
@@ -15,7 +15,7 @@ export class DesignService {
         return this.http.get<ReserveComponentsResponse[]>(`${this.baseurl}/${file_id}/reserve`)
     }
     unreserve(file_id: number) {
-        return this.http.delete(`${this.baseurl}/${file_id}/reserve`,{responseType: 'text'})
+        return this.http.delete(`${this.baseurl}/${file_id}/reserve`, { responseType: 'text' })
     }
 
     constructor(private http: HttpClient, private sharedData: SharedVariablesService) { }
@@ -30,9 +30,9 @@ export class DesignService {
         });
     }
 
-    reserve(reservecomps: {},period:number, fileid: number) {
+    reserve(reservecomps: {}, period: number, fileid: number) {
         console.log(reservecomps);
-        return this.http.post<ReserveComponentsResponse[]>(`${this.baseurl}/${fileid}/reserve`, {components:reservecomps,period:period})
+        return this.http.post<ReserveComponentsResponse[]>(`${this.baseurl}/${fileid}/reserve`, { components: reservecomps, period: period })
     }
     saveDesign(file_data: string, diagram_image: any, fileid: number) {
         const formData: FormData = new FormData();
@@ -46,6 +46,9 @@ export class DesignService {
         return this.http.get<string>(`${this.baseurl}/designfile/${id}`)
     }
 
+    getFileReserveStatus(file_id) {
+        return this.http.get<reserve_status>(`${this.baseurl}/designfile/${file_id}/reservestatus`)
+    }
     createDesignFile(filename: string) {
         return this.http.post<DesignFile>(`${this.baseurl}/designfile`, { filename: filename })
     }
