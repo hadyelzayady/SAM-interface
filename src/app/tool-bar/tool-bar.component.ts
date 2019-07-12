@@ -498,6 +498,8 @@ export class ToolBarComponent {
     this.error_connected = false
     this.local_connected = false
     this.error_local_connected = false
+    this.validated = false
+    this.error_validate = false
     this.modalService.close(id)
 
   }
@@ -652,6 +654,7 @@ export class ToolBarComponent {
                         this.send_connections = true
                         //prepare sim env
                         this.startSockets()
+                        console.log("get reserve composn")
                         //TODO: wait for start simulaion in websocket
                       }, error => {
                         this.error_send_connections = true
@@ -669,6 +672,7 @@ export class ToolBarComponent {
                 }
 
               }, error => {
+                console.log("new error", error);
                 this.reserved = false;
                 this.error_reserved = true
               });
@@ -1069,7 +1073,7 @@ export class ToolBarComponent {
       this.PrepareDiagramForOutput();
       this.sim_mode = true
       this.sharedData.changeMode(true)
-      this.modalService.close(this.simulate_modal_id)
+      // this.modalService.close(this.simulate_modal_id)
       this.sharedData.diagram.clearSelection();
       this.prepared = true
       this.webSocketService.startSimulation();
