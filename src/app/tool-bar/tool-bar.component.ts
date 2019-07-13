@@ -798,7 +798,6 @@ export class ToolBarComponent {
       })).subscribe(reserved_comps => {
         // this.status = "components reserved "
         this.reserved = true
-        this.setReserveMode(this.sharedData.unreserve_mode)
         this.error_reserved = false
         // console.log("reserveing", reserved_comps)
         try {
@@ -905,6 +904,7 @@ export class ToolBarComponent {
                 try {
                   this.configured = true
                   this.error_config = false
+                  this.setReserveMode(this.sharedData.unreserve_mode)
                 } catch (error) {
                   this.configured = false
                   this.error_config = true;
