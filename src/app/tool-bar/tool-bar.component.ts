@@ -480,6 +480,9 @@ export class ToolBarComponent {
   }
 
   customClose(id: string) {
+    if (id == this.reserve_modal_id && this.configured != true) {
+      this.designService.unreserve(this.file_id).subscribe(() => { }, error => { });
+    }
     this.parsed = false;
     this.reserved = false;
     this.configured = false;
@@ -802,9 +805,11 @@ export class ToolBarComponent {
         // console.log("reserveing", reserved_comps)
         try {
           this.simComm.initSocket(this.file_id, "bind")
+          console.log("after init socker1")
           // this.simComm.bindBoards(this.file_id)
           this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
             // console.log("bind fail")
+            console.log("after init socker2")
 
             //TODO:
             this.designService.unreserve(this.file_id).subscribe((data) => {
@@ -814,11 +819,13 @@ export class ToolBarComponent {
               alert(error)
             })
             this.simComm.close()
+            console.log("set error binded 1")
             this.error_binded = true
             this.binded = false
           })
           this.simComm.onEvent(SocketEvent.BIND_FAIL).subscribe(() => {
             // console.log("bind fail")
+            console.log("after init socke3")
 
             //TODO:
             this.designService.unreserve(this.file_id).subscribe((data) => {
@@ -828,20 +835,21 @@ export class ToolBarComponent {
               alert(error)
             })
             this.simComm.close()
+            console.log("set error binded 2")
+
             this.error_binded = true
             this.binded = false
           })
           this.simComm.onEvent(SocketEvent.BIND_SUCCESS).subscribe(() => {
             // console.log("bind succkes")
+            console.log("after init socker4")
 
             try {
               console.log("after bind")
 
               this.configSamService.unBindAll().subscribe(() => {
-                this.binded = false
-                this.error_binded = true
-                console.log("unbind all sent")
                 let binded_count = 0
+                console.log("send unvind all")
                 reserved_comps.forEach((comp, index) => {
                   // console.log("usb ip port", comp.usb_ip_port)
 
@@ -854,18 +862,20 @@ export class ToolBarComponent {
                     } else {
                       let mythis = this
                       setTimeout(function () {
+                        console.log("inside timout")
                         mythis.configSamService.checkPort(reserved_board).subscribe(HW_ports => {
                           console.log("HW ports", HW_ports)
                           let resboard = HW_ports.board
-                          let board = mythis.sharedData.diagram.nodes[mythis.sharedData.connected_component_id_index[resboard.id]]
-                          board.addInfo[addInfo_isBinded] = true
-                          board.annotations[0].content = board.id + "_" + HW_ports.res[0]
+                          // let board = mythis.sharedData.diagram.nodes[mythis.sharedData.connected_component_id_index[resboard.id]]
+                          // board.addInfo[addInfo_isBinded] = true
+                          // board.annotations[0].content = board.id + "_" + HW_ports.res[0]
                           binded_count++
                           if (index == reserved_comps.length - 1) {
                             console.log("binded count,reserved count", binded_count, reserved_comps.length)
                             if (binded_count == reserved_comps.length) {
                               allBindedEvent.emit()
                             } else {
+                              console.log("emit unbinded event")
                               NoBindedEvent.emit()
                             }
                           }
@@ -895,13 +905,13 @@ export class ToolBarComponent {
               }, error => {
                 console.log("DMT", error)
               })
-              this.setComponentsReserveConfigs(reserved_comps)
               //setreservemode();
               let allBindedEvent = new EventEmitter()
               allBindedEvent.pipe(first()).subscribe(() => {
                 this.error_binded = false
                 this.binded = true
                 try {
+                  this.setComponentsReserveConfigs(reserved_comps)
                   this.configured = true
                   this.error_config = false
                   this.setReserveMode(this.sharedData.unreserve_mode)
@@ -913,6 +923,8 @@ export class ToolBarComponent {
               })
               let NoBindedEvent = new EventEmitter()
               NoBindedEvent.pipe(first()).subscribe(() => {
+                console.log("set error binded 4")
+
                 this.error_binded = true
                 this.binded = false
                 this.setUnBindAll()
@@ -929,13 +941,14 @@ export class ToolBarComponent {
                 NoBindedEvent.unsubscribe()
               })
             } catch (error) {
+              console.log("error oin somewhere")
 
             }
             this.simComm.close()
           })
 
         } catch (error) {
-          //console.log("in try catch", error)
+          console.log("in try catch", error)
           //error binding
         }
       }, error => {
@@ -945,6 +958,7 @@ export class ToolBarComponent {
 
       })
     }, error => {
+      console.log('errro nsave')
       this.error_saved = true;
       this.saved = false;
     })
@@ -1094,7 +1108,7 @@ export class ToolBarComponent {
 
 
     } catch (error) {
-      //console.log("error in prepare diagram ", error)
+      console.log("error in prepare diagram ", error)
       this.error_prepared = true
       this.prepared = false
       this.webSocketService.stopSimulation();

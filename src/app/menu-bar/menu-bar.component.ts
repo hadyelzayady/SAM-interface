@@ -90,7 +90,7 @@ export class MenuBarComponent implements OnInit {
   //openadd file dialoge
   save_modal_id = "save-diagram-id"
   saved = false
-  error_saved = true
+  error_saved = false
   hide_modal_close_btn = true
   saveModalClose() {
     this.error_saved = false

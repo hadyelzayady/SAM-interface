@@ -23,6 +23,7 @@ export class SimCommunicationService {
     this.socket = socketIo(this.sharedData.web_socket_server_url, {
       query: { token: token, design_id: fileid, mode: mode }
     });
+    console.log("listeners: ", this.socket.listenerCount);
     // // console.log(this.socket)
     // this.webSocket.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
     //   alert("the local server not running ")

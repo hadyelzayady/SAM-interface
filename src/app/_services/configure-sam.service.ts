@@ -98,7 +98,7 @@ export class ConfigureSamService {
         return this.http.get<portresp>(`${this.sharedData.localhost_trayapp}FINISH_CONFIGURATIONS`, httpOptions)
     }
     unBindAll() {
-        return this.http.post<{res:string}>(`${this.sharedData.localhost_trayapp}UnBindAll`, {
+        return this.http.post<{ res: string }>(`${this.sharedData.localhost_trayapp}UnBindAll`, {
             headers: new HttpHeaders({
                 "Access-Control-Allow-Origin": "*"
             })
@@ -106,14 +106,14 @@ export class ConfigureSamService {
         })
     }
     sendBindIPPort(ip, port, comp: ReserveComponentsResponse) {
-        return this.http.post<{ ok: string, board: NodeModel }>(`${this.sharedData.localhost_trayapp}Bind`, { ip: ip, port: port }).pipe(map(response => {
+        return this.http.post<{ ok: string, board: NodeModel }>(`${this.sharedData.localhost_trayapp}Bind`, { ip: ip }).pipe(map(response => {
             return { ok: response.ok, board: comp }
         }))
     }
     checkPort(reserved_board) {
-        return this.http.get<{res:string[],board:ReserveComponentsResponse}>(`${this.sharedData.localhost_trayapp}checkports`).pipe(map(response=>{
-            console.log("inside repo smap",response)
-            return {res:response.res,board:reserved_board}
+        return this.http.get<{ res: string[], board: ReserveComponentsResponse }>(`${this.sharedData.localhost_trayapp}checkports`).pipe(map(response => {
+            console.log("inside repo smap", response)
+            return { res: response.res, board: reserved_board }
         }))
     }
 }

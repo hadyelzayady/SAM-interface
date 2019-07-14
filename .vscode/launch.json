@@ -3,9 +3,10 @@
     "configurations": [
         {
             "name": "Launch angular",
-            "type": "firefox",
+            "type": "chrome",
             "request": "launch",
             "reAttach": true,
+            "runtimeExecutable": "/usr/bin/google-chrome-stable",
             "url": "http://localhost:4200",
             "webRoot": "${workspaceFolder}"
         }
