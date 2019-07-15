@@ -5,7 +5,7 @@ export const connectorSimConstraints = ConnectorConstraints.None
 
 export const nodeDesignConstraints = NodeConstraints.Default & ~NodeConstraints.InConnect & ~NodeConstraints.OutConnect;
 export const nodeSimConstraints = NodeConstraints.Default & ~NodeConstraints.Delete & ~NodeConstraints.InConnect;
-export const nodeReserveConstraints = NodeConstraints.Default & ~NodeConstraints.Delete;
+export const nodeReserveConstraints = NodeConstraints.Default & ~NodeConstraints.Delete & ~NodeConstraints.InConnect & ~NodeConstraints.OutConnect;
 
 export const addInfo_componentId = "componentId";
 export const addinfo_IP = "IP";
