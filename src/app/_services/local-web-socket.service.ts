@@ -42,6 +42,12 @@ export class LocalWebSocketService {
     // })
   }
 
+  public isConnected(): boolean {
+    if (this.socket == undefined)
+      return false;
+    console.log("connection status", this.socket.connected);
+    return this.socket.connected
+  }
 
   public close(): void {
     this.socket.close()

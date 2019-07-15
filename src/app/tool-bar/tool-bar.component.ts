@@ -86,7 +86,7 @@ export class ToolBarComponent {
   // to unsubscribe from observables when sim ends
   private unsubscribe: Subject<void> = new Subject();
 
-  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService, private simComm: SimCommunicationService, private LocalCommService: LocalWebSocketService, private configSamService: ConfigureSamService, public webSocketService: WebSocketService) {
+  constructor(public sharedData: SharedVariablesService, public utils: UtilsService, public diagramService: DiagramApiService, private designService: DesignService, private modalService: ModalService, private LocalCommService: LocalWebSocketService, private configSamService: ConfigureSamService, public webSocketService: WebSocketService) {
 
   }
   ngOnInit(): void {
@@ -533,23 +533,22 @@ export class ToolBarComponent {
 
     this.sharedData.changeMode(false)
     this.unsubscribe.next()
-    console.log("send unbind")
-    this.configSamService.unBindAll().subscribe(data => {
-      console.log("unbind")
-      // this.simComm.close()
-      this.webSocketService.stopSimulation();
-      this.LocalCommService.close()
-      // this.resetComponents()
-      this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
-      this.sharedData.diagram.refreshDiagram()
-      this.sharedData.diagram.refresh()
-    }, error => {
-      console.log("error" + error)
-      alert("could't unbind port ,please")
-      this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
-      this.sharedData.diagram.refreshDiagram()
-      this.sharedData.diagram.refresh()
-    })
+    // console.log("send unbind")
+    // this.configSamService.unBindAll().subscribe(data => {
+    // this.simComm.close()
+    this.webSocketService.stopSimulation();
+    // this.LocalCommService.close()
+    // this.resetComponents()
+    this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
+    this.sharedData.diagram.refreshDiagram()
+    this.sharedData.diagram.refresh()
+    // }, error => {
+    //   console.log("error" + error)
+    //   alert("could't unbind port ,please")
+    //   this.sharedData.diagram.loadDiagram(this.diagram_before_sim)
+    //   this.sharedData.diagram.refreshDiagram()
+    //   this.sharedData.diagram.refresh()
+    // })
     // this.unsubscribe.complete();
 
   }
@@ -804,26 +803,25 @@ export class ToolBarComponent {
         this.error_reserved = false
         // console.log("reserveing", reserved_comps)
         try {
-          this.simComm.initSocket(this.file_id, "bind")
-          console.log("after init socker1")
+          // this.webSocketService.initSocket(this.file_id, "bind")
+          // console.log("after init socker1")
           // this.simComm.bindBoards(this.file_id)
-          this.simComm.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
-            // console.log("bind fail")
-            console.log("after init socker2")
+          // this.webSocketService.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
+          //   // console.log("bind fail")
+          //   console.log("after init socker2")
 
-            //TODO:
-            this.designService.unreserve(this.file_id).subscribe((data) => {
-              alert(data)
+          //   //TODO:
+          //   this.designService.unreserve(this.file_id).subscribe((data) => {
+          //     alert(data)
 
-            }, error => {
-              alert(error)
-            })
-            this.simComm.close()
-            console.log("set error binded 1")
-            this.error_binded = true
-            this.binded = false
-          })
-          this.simComm.onEvent(SocketEvent.BIND_FAIL).subscribe(() => {
+          //   }, error => {
+          //     alert(error)
+          //   })
+          //   console.log("set error binded 1")
+          //   this.error_binded = true
+          //   this.binded = false
+          // })
+          this.webSocketService.onEvent(SocketEvent.BIND_FAIL).subscribe(() => {
             // console.log("bind fail")
             console.log("after init socke3")
 
@@ -834,13 +832,12 @@ export class ToolBarComponent {
             }, error => {
               alert(error)
             })
-            this.simComm.close()
             console.log("set error binded 2")
 
             this.error_binded = true
             this.binded = false
           })
-          this.simComm.onEvent(SocketEvent.BIND_SUCCESS).subscribe(() => {
+          this.webSocketService.onEvent(SocketEvent.BIND_SUCCESS).subscribe(() => {
             // console.log("bind succkes")
             console.log("after init socker4")
 
@@ -944,7 +941,6 @@ export class ToolBarComponent {
               console.log("error oin somewhere")
 
             }
-            this.simComm.close()
           })
 
         } catch (error) {
@@ -1032,49 +1028,52 @@ export class ToolBarComponent {
     return true
   }
   startSockets() {
-    this.LocalCommService.initSocket()
-    this.LocalCommService.onEvent(SocketEvent.CONNECT).subscribe(() => {
-      this.local_connected = true
-      this.error_local_connected = false
-    })
-    this.LocalCommService.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
-      this.local_connected = false
-      this.error_local_connected = true
-      this.closeSimulationMode()
-    })
+    if (!this.LocalCommService.isConnected()) {
 
-    this.LocalCommService.onMessage().subscribe(msg => {
-      //console.log("received mesage", msg)
-      //console.log(this.sharedData.connected_component_id_index)
-      // let component_index = this.sharledData.connected_component_id_index[msg.connected_component_id]
-      // let source_node = this.sharedData.diagram.nodes[component_index]
-      // let port_index = source_node.ports.findIndex(port => {
-      //   return port.id == "" + msg.port_id
-      // })
-      msg.forEach(([pin_number, value]) => {
-
-        // console.log("gloab map", this.utils.globalPinId_boardid_portid)
-        let mapping = this.utils.globalPinId_boardid_portid[pin_number]
-        //console.log("mapping, msg value", mapping, msg.value)
-        let component_index = mapping.component_index
-        let port_index = mapping.port_index
-        if (port_index > -1) {
-
-          // console.log("port_index", port_index)
-          // console.log("component_index", component_index)
-          // console.log("port value table", this.sharedData.port_value_table)
-          // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
-          //console.log("received change port", port_index)
-          this.sharedData.changePortValue(value, port_index, component_index, component_index, port_index)
-        }
+      this.LocalCommService.initSocket()
+      this.LocalCommService.onEvent(SocketEvent.CONNECT).subscribe(() => {
+        this.local_connected = true
+        this.error_local_connected = false
       })
-    })
-    this.LocalCommService.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
-      if (this.sim_mode) {
+      this.LocalCommService.onEvent(SocketEvent.CONNECTION_ERROR).subscribe(() => {
+        this.local_connected = false
+        this.error_local_connected = true
         this.closeSimulationMode()
-      }
-      alert("local socket disconnected")
-    })
+      })
+
+      this.LocalCommService.onMessage().subscribe(msg => {
+        //console.log("received mesage", msg)
+        //console.log(this.sharedData.connected_component_id_index)
+        // let component_index = this.sharledData.connected_component_id_index[msg.connected_component_id]
+        // let source_node = this.sharedData.diagram.nodes[component_index]
+        // let port_index = source_node.ports.findIndex(port => {
+        //   return port.id == "" + msg.port_id
+        // })
+        msg.forEach(([pin_number, value]) => {
+
+          // console.log("gloab map", this.utils.globalPinId_boardid_portid)
+          let mapping = this.utils.globalPinId_boardid_portid[pin_number]
+          //console.log("mapping, msg value", mapping, msg.value)
+          let component_index = mapping.component_index
+          let port_index = mapping.port_index
+          if (port_index > -1) {
+
+            // console.log("port_index", port_index)
+            // console.log("component_index", component_index)
+            // console.log("port value table", this.sharedData.port_value_table)
+            // source_node.ports[port_index].addInfo[addInfo_simValue] = msg.value
+            //console.log("received change port", port_index)
+            this.sharedData.changePortValue(value, port_index, component_index, component_index, port_index)
+          }
+        })
+      })
+      this.LocalCommService.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
+        if (this.sim_mode) {
+          this.closeSimulationMode()
+        }
+        alert("local socket disconnected")
+      })
+    }
 
     //socket with server to start and end sim
     try {
