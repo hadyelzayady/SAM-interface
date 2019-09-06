@@ -873,7 +873,7 @@ export class ToolBarComponent {
                               allBindedEvent.emit()
                             } else {
                               console.log("emit unbinded event")
-                              NoBindedEvent.emit()
+                              // NoBindedEvent.emit()
                             }
                           }
                         }, error => {
