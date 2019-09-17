@@ -234,7 +234,7 @@ export class ToolBarComponent {
     let reserved_index = 0
     let connected_components_id_index = {}
     let nodeid_index = {}
-    //console.log("start config")
+    console.log("start config")
     this.sharedData.diagram.nodes.forEach((node, index) => {
       if (node.addInfo[addInfo_type] == ComponentType.Hardware) {
         if (node.addInfo[addInfo_componentId] in cache) {
@@ -637,9 +637,9 @@ export class ToolBarComponent {
                   let count = this.utils.getDesignHWComponentsCount(this.sharedData.diagram)
                   let isBinded = this.isReservedBinded()
                   // // console.log("simulate", isBinded, count, reserved_components)
-                  if (reserved_components.length != count || !isBinded) {
-                    throw Error("re-reserve")
-                  }
+                  // if (reserved_components.length != count || !isBinded) {
+                  //   throw Error("re-reserve")
+                  // }
                   this.setComponentsReserveConfigs(reserved_components)
                   this.configured = true
                   this.error_config = false
@@ -669,6 +669,7 @@ export class ToolBarComponent {
 
                   }
                 } catch (error) {
+                  console.log("errin in sim config", error)
                   this.configured = false
                   this.error_config = true;
                 }
@@ -913,6 +914,7 @@ export class ToolBarComponent {
                   this.error_config = false
                   this.setReserveMode(this.sharedData.unreserve_mode)
                 } catch (error) {
+                  console.log("new error in config", error)
                   this.configured = false
                   this.error_config = true;
                 }
@@ -942,6 +944,10 @@ export class ToolBarComponent {
 
             }
           })
+          // setTimeout(() => {
+          //   this.error_binded = true;
+          //   this.binded = false
+          // }, 30000);
 
         } catch (error) {
           console.log("in try catch", error)
@@ -1069,6 +1075,7 @@ export class ToolBarComponent {
       })
       this.LocalCommService.onEvent(SocketEvent.DISCONNECT).subscribe(() => {
         if (this.sim_mode) {
+          this.webSocketService.stopSimulation();
           this.closeSimulationMode()
         }
         alert("local socket disconnected")
